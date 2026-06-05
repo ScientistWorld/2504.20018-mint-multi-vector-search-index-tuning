@@ -94,6 +94,7 @@ def _score_method(
         raise ValueError("method artifact is missing query plans")
 
     recalls = []
+    candidate_counts = []
     weighted_cost = 0.0
     used_indexes: set[tuple[int, ...]] = set()
     for query in workload.queries:
@@ -116,16 +117,29 @@ def _score_method(
 
         gt = set(int(item) for item in gt_by_query[query.name])
         recall = len(gt & candidates) / len(gt)
+        candidate_counts.append(len(candidates))
         query_dim = int(sum(workload.columns[c].shape[1] for c in query.columns))
         query_cost = sum(indexes[key].dim * ek for key, ek in zip(index_keys, eks)) + query_dim * len(candidates)
         weighted_cost += query.probability * float(query_cost)
         recalls.append(recall)
 
+    mean_recall = float(sum(recalls) / len(recalls))
+    min_recall = float(min(recalls))
+    configuration = method_payload.get("configuration")
+    if isinstance(configuration, list):
+        storage_indexes = float(len({_parse_index_name(str(name)) for name in configuration}))
+    else:
+        storage_indexes = float(len(used_indexes))
+    mean_candidates = float(sum(candidate_counts) / len(candidate_counts))
     return {
         "weighted_cost": float(weighted_cost),
-        "mean_recall_at_k": float(sum(recalls) / len(recalls)),
-        "min_recall_at_k": float(min(recalls)),
-        "storage_indexes": float(len(used_indexes)),
+        "mean_recall_at_k": mean_recall,
+        "min_recall_at_k": min_recall,
+        "recall_floor_violation": float(max(0.0, workload.recall_threshold - min_recall)),
+        "storage_indexes": storage_indexes,
+        "storage_budget_violation": float(max(0.0, storage_indexes - workload.storage_budget)),
+        "mean_candidate_multiplier_at_k": float(mean_candidates / workload.top_k),
+        "max_candidate_multiplier_at_k": float(max(candidate_counts) / workload.top_k),
     }
 
 
@@ -144,22 +158,21 @@ def build_experiment_scores(result_path: Path) -> tuple[str, dict]:
 
     raw = {name: _score_method(method, workload, indexes, gt_by_query) for name, method in payload["results"].items()}
     per_column_cost = raw["per_column"]["weighted_cost"]
-    return payload["workload"], {
-        "results": {
-            "per_column": {
-                "weighted_cost": ratio(raw["per_column"]["weighted_cost"], per_column_cost),
-                "mean_recall_at_k": raw["per_column"]["mean_recall_at_k"],
-                "min_recall_at_k": raw["per_column"]["min_recall_at_k"],
-                "storage_indexes": raw["per_column"]["storage_indexes"],
-            },
-            "mint": {
-                "weighted_cost": ratio(raw["mint"]["weighted_cost"], per_column_cost),
-                "mean_recall_at_k": raw["mint"]["mean_recall_at_k"],
-                "min_recall_at_k": raw["mint"]["min_recall_at_k"],
-                "storage_indexes": raw["mint"]["storage_indexes"],
-                "speedup_vs_per_column": ratio(raw["per_column"]["weighted_cost"], raw["mint"]["weighted_cost"]),
-            },
+    results = {}
+    for name, metrics in raw.items():
+        results[name] = {
+            "weighted_cost": ratio(metrics["weighted_cost"], per_column_cost),
+            "mean_recall_at_k": metrics["mean_recall_at_k"],
+            "min_recall_at_k": metrics["min_recall_at_k"],
+            "recall_floor_violation": metrics["recall_floor_violation"],
+            "storage_indexes": metrics["storage_indexes"],
+            "storage_budget_violation": metrics["storage_budget_violation"],
+            "mean_candidate_multiplier_at_k": metrics["mean_candidate_multiplier_at_k"],
+            "max_candidate_multiplier_at_k": metrics["max_candidate_multiplier_at_k"],
+            "speedup_vs_per_column": ratio(per_column_cost, metrics["weighted_cost"]),
         }
+    return payload["workload"], {
+        "results": results
     }
 
 
