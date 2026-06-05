@@ -38,15 +38,15 @@ The implementation uses FAISS CPU `IndexHNSWFlat` as the graph ANN backend. The 
 
 # Evaluation Protocol
 
-Evaluation reads a saved method artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the tuner. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
+Evaluation reads a saved result artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the submitting system. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
 
 The main experiment is `naive_small`. It compares:
 
 - `per_column`: one single-column index per vector column
 - `per_query`: one index per query column set, reported as a lower-bound baseline that may exceed the storage budget
-- `mint`: the proposed tuned configuration under the same storage budget as `per_column`
+- `mint`: the constrained submitted method under the same storage budget as `per_column` (the baseline reproduction uses this legacy key)
 
-`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized MINT comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
+`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
 
 Metrics:
 
@@ -225,6 +225,34 @@ Metrics:
 - Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
 - MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
 - `python validate.py --compare` passed all scoring and structure checks.
+
+</details>
+
+### Iteration 8: gpt-5.5 (verifier)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 5m | **GPU**: 0.0h
+- **Jobs**: 9 total (5 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-06-05 03:56] - method_runs
+- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
+- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
+
+### [2026-06-05 05:03] - method_runs
+- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
+- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
+
+### [2026-06-05 05:43] - core_claim
+- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
+- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
+- `python validate.py --compare` passed all scoring and structure checks.
+
+### [2026-06-05 06:09] - core_claim
+- Final verification kept the milestone at `core_claim`.
+- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
+- `python validate.py --compare` passed after the verification edits.
 
 </details>
 
