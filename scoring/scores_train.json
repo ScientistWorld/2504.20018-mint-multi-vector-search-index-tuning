@@ -34,8 +34,8 @@
           "mean_recall_at_k": 0.9,
           "min_recall_at_k": 0.9,
           "recall_floor_violation": 0.0,
-          "storage_indexes": 2.0,
-          "storage_budget_violation": 0.0,
+          "storage_indexes": 4.0,
+          "storage_budget_violation": 1.0,
           "mean_candidate_multiplier_at_k": 0.9,
           "max_candidate_multiplier_at_k": 0.9,
           "speedup_vs_per_column": 3.7254808954630385
