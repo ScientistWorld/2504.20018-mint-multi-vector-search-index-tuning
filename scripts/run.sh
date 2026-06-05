@@ -13,6 +13,8 @@ set -e
 
 cd /home/user
 
-echo "[run] regenerate standardized recall@100 naive_small result"
-bash scripts/method.sh naive_small 3000 checkpoints/mint_results.json
-python validate.py --compare
+echo "[run] score visible train slice"
+bash scripts/evaluate_train.sh
+
+echo "[run] score held-out test slice"
+bash scripts/evaluate_test.sh
