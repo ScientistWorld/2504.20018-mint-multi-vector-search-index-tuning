@@ -7,6 +7,8 @@
 - Implemented evaluator that reads saved method artifacts and writes `scoring/scores.json`.
 - Lightweight local smoke runs complete on 500 and 2000 rows.
 - Completed the scheduled 8000-row CPU reproduction job and wrote final scores.
+- Extended the evaluator so one run can score multiple saved workload artifacts.
+- Updated query planning to estimate recall from the ANN backend's actual HNSW returned order, aligning planned recall with measured execution recall.
 
 ## Results
 
@@ -31,12 +33,14 @@ This supports the paper's core claim on the scaled workload: tuning multi-vector
 
 ## Remaining
 
-- Optional extension: add a second workload with different query mix or dimensionality to reach `core_claim_plus`.
+- Submitted extension: run `bicomplex_small`, a five-column/eight-query workload, alongside `naive_small` to test whether the core claim holds on an additional setting.
 - Optional extension: add a DiskANN-like backend or larger public embedding dataset for closer coverage of the paper's full experiments.
 
 ## Issues
 
 - `hnswlib` could not build on the login host because Python headers were unavailable. The implementation now uses FAISS CPU HNSW, which installs from wheels and preserves the graph ANN backend required by the method.
+- FAISS is installed in the reproducible container overlay, not the login-node Python environment. Local direct Python smoke commands that import `faiss` fail outside the container; scheduled jobs use the correct environment.
+- `apptainer` is not available in the interactive login shell, so container smoke checks are submitted through the scheduler.
 
 ## Deviations from Paper
 

@@ -57,13 +57,13 @@ class HnswIndex:
         _, labels = self.index.search(self.query_vector(query)[None, :], min(k, self.matrix.shape[0]))
         return labels[0].astype("int64")
 
-    def rank_ground_truth(self, query: Query, gt: np.ndarray) -> dict[int, int]:
-        scores = self.matrix @ self.query_vector(query)
-        gt_scores = scores[gt]
-        ranks = {}
-        for item, score in zip(gt, gt_scores):
-            ranks[int(item)] = int(np.count_nonzero(scores > score) + 1)
-        return ranks
+    def rank_ground_truth(self, query: Query, gt: np.ndarray, max_rank: int) -> dict[int, int]:
+        # Use the ANN backend's actual returned order for planning. This keeps
+        # the recall estimator aligned with execution instead of assuming an
+        # exact scan over the indexed concatenated vectors.
+        labels = self.search(query, max_rank)
+        gt_set = {int(x) for x in gt}
+        return {int(item): rank for rank, item in enumerate(labels, start=1) if int(item) in gt_set}
 
     def scan_cost(self, ek: int) -> float:
         if ek <= 0:
@@ -99,7 +99,7 @@ def plan_query(
     relevant: list[list[int]] = []
     covers: list[dict[int, set[int]]] = []
     for idx in selected:
-        ranks = idx.rank_ground_truth(query, gt)
+        ranks = idx.rank_ground_truth(query, gt, max_rank=max_rank)
         vals = sorted({0, *(min(max_rank, r) for r in ranks.values())})
         relevant.append(vals)
         cover_for_ek = {}

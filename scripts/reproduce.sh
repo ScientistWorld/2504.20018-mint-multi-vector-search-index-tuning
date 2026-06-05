@@ -18,4 +18,6 @@ set -e
 
 cd /home/user
 
-bash scripts/method.sh naive_small 8000 checkpoints/mint_results.json
+python -m method.mint --workload naive_small --n-rows 8000 --output checkpoints/mint_results.json
+python -m method.mint --workload bicomplex_small --n-rows 8000 --output checkpoints/bicomplex_results.json
+bash scripts/evaluate.sh checkpoints/mint_results.json checkpoints/bicomplex_results.json

@@ -15,8 +15,9 @@
 # This file is read by the system for automated comparison.
 #
 # Example usage:
-#   ./evaluate.sh <method_and_run_name>                             # evaluate with defaults
-#   ./evaluate.sh <method_and_run_name> checkpoints/epoch_10.pt     # evaluate a specific checkpoint
+#   ./evaluate.sh
+#   ./evaluate.sh checkpoints/mint_results.json
+#   ./evaluate.sh checkpoints/mint_results.json checkpoints/bicomplex_results.json
 #
 # Called from run.sh after training, or independently.
 
@@ -26,5 +27,8 @@ cd /home/user
 
 mkdir -p scoring
 
-RESULT_PATH="${1:-checkpoints/mint_results.json}"
-python -m eval.evaluate_results "$RESULT_PATH" --output scoring/scores.json
+if [ "$#" -eq 0 ]; then
+  python -m eval.evaluate_results checkpoints/mint_results.json --output scoring/scores.json
+else
+  python -m eval.evaluate_results "$@" --output scoring/scores.json
+fi
