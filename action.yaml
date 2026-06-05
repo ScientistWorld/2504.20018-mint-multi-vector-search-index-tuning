@@ -3,4 +3,4 @@ action: submit
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Run evaluate_train.sh and evaluate_test.sh against existing checkpoint artifacts; populate train/test scores for inspection."
+notes: "Re-run train/test scoring after fixing storage metrics to use each method's global index configuration."

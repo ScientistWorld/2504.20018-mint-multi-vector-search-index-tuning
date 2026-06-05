@@ -114,7 +114,6 @@ def _score_method(
     recalls = []
     candidate_counts = []
     weighted_cost = 0.0
-    used_indexes: set[tuple[int, ...]] = set()
     for query in slice_queries:
         if query.name not in plans:
             raise ValueError(f"method artifact is missing plan for {query.name}")
@@ -130,7 +129,6 @@ def _score_method(
                 continue
             if not set(key).issubset(query.columns):
                 raise ValueError(f"plan for {query.name} uses index {key} outside query columns {query.columns}")
-            used_indexes.add(key)
             candidates.update(int(item) for item in indexes[key].search(query, ek))
 
         gt = set(int(item) for item in gt_by_query[query.name])
@@ -143,7 +141,19 @@ def _score_method(
 
     mean_recall = float(sum(recalls) / len(recalls))
     min_recall = float(min(recalls))
-    storage_indexes = float(len(used_indexes))
+    configuration = method_payload.get("configuration")
+    if isinstance(configuration, list):
+        storage_indexes = float(len({_parse_index_name(str(name)) for name in configuration}))
+    else:
+        storage_indexes = float(
+            len(
+                {
+                    key
+                    for plan in plans.values()
+                    for key in (_parse_index_name(name) for name in plan["indexes"])
+                }
+            )
+        )
     mean_candidates = float(sum(candidate_counts) / len(candidate_counts))
     return {
         "weighted_cost": float(weighted_cost),
