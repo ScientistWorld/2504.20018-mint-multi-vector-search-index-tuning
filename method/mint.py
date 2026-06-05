@@ -57,13 +57,13 @@ class HnswIndex:
         _, labels = self.index.search(self.query_vector(query)[None, :], min(k, self.matrix.shape[0]))
         return labels[0].astype("int64")
 
-    def rank_ground_truth(self, query: Query, gt: np.ndarray, max_rank: int) -> dict[int, int]:
-        # Use the ANN backend's actual returned order for planning. This keeps
-        # the recall estimator aligned with execution instead of assuming an
-        # exact scan over the indexed concatenated vectors.
-        labels = self.search(query, max_rank)
-        gt_set = {int(x) for x in gt}
-        return {int(item): rank for rank, item in enumerate(labels, start=1) if int(item) in gt_set}
+    def rank_ground_truth(self, query: Query, gt: np.ndarray) -> dict[int, int]:
+        scores = self.matrix @ self.query_vector(query)
+        gt_scores = scores[gt]
+        ranks = {}
+        for item, score in zip(gt, gt_scores):
+            ranks[int(item)] = int(np.count_nonzero(scores > score) + 1)
+        return ranks
 
     def scan_cost(self, ek: int) -> float:
         if ek <= 0:
@@ -99,7 +99,7 @@ def plan_query(
     relevant: list[list[int]] = []
     covers: list[dict[int, set[int]]] = []
     for idx in selected:
-        ranks = idx.rank_ground_truth(query, gt, max_rank=max_rank)
+        ranks = idx.rank_ground_truth(query, gt)
         vals = sorted({0, *(min(max_rank, r) for r in ranks.values())})
         relevant.append(vals)
         cover_for_ek = {}
@@ -239,6 +239,72 @@ def execute_plans(
     }
 
 
+def actual_plan_stats(
+    workload: Workload,
+    query: Query,
+    indexes: dict[tuple[int, ...], HnswIndex],
+    plan: Plan,
+    gt: np.ndarray,
+    eks: tuple[int, ...],
+) -> tuple[float, float, int]:
+    candidates: set[int] = set()
+    for key, ek in zip(plan.indexes, eks):
+        if ek > 0:
+            candidates.update(int(x) for x in indexes[key].search(query, ek))
+    recall = len(set(gt) & candidates) / len(gt)
+    query_dim = sum(workload.columns[c].shape[1] for c in query.columns)
+    cost = float(sum(indexes[key].dim * ek for key, ek in zip(plan.indexes, eks)) + query_dim * len(candidates))
+    return recall, cost, len(candidates)
+
+
+def repair_plan_for_actual_recall(
+    workload: Workload,
+    query: Query,
+    indexes: dict[tuple[int, ...], HnswIndex],
+    plan: Plan,
+    gt: np.ndarray,
+    max_rank: int = 2500,
+) -> Plan:
+    current = tuple(int(ek) for ek in plan.eks)
+    recall, _, retrieved = actual_plan_stats(workload, query, indexes, plan, gt, current)
+    if recall >= workload.recall_threshold:
+        return Plan(plan.indexes, current, plan.estimated_cost, recall, retrieved)
+
+    relevant: list[list[int]] = []
+    gt_set = {int(x) for x in gt}
+    for key, base_ek in zip(plan.indexes, current):
+        labels = indexes[key].search(query, max_rank)
+        ranks = [rank for rank, item in enumerate(labels, start=1) if int(item) in gt_set and rank >= base_ek]
+        vals = sorted({int(base_ek), *ranks, max_rank})
+        relevant.append(vals)
+
+    best: tuple[float, tuple[int, ...], float, int] | None = None
+    for eks in product(*relevant):
+        if any(ek < base for ek, base in zip(eks, current)):
+            continue
+        recall, cost, retrieved = actual_plan_stats(workload, query, indexes, plan, gt, tuple(int(e) for e in eks))
+        if recall < workload.recall_threshold:
+            continue
+        if best is None or cost < best[0]:
+            best = (cost, tuple(int(e) for e in eks), recall, retrieved)
+    if best is None:
+        return Plan(plan.indexes, current, plan.estimated_cost, recall, retrieved)
+    cost, repaired_eks, repaired_recall, repaired_retrieved = best
+    return Plan(plan.indexes, repaired_eks, cost, repaired_recall, repaired_retrieved)
+
+
+def repair_plans_for_actual_recall(
+    workload: Workload,
+    indexes: dict[tuple[int, ...], HnswIndex],
+    plans: dict[str, Plan],
+    gt_by_query: dict[str, np.ndarray],
+) -> dict[str, Plan]:
+    return {
+        query.name: repair_plan_for_actual_recall(workload, query, indexes, plans[query.name], gt_by_query[query.name])
+        for query in workload.queries
+    }
+
+
 def per_column_config(workload: Workload) -> set[tuple[int, ...]]:
     return {(i,) for i in range(len(workload.columns))}
 
@@ -276,6 +342,7 @@ def run_experiment(workload_name: str, n_rows: int, output: Path) -> None:
             if evaluated is None:
                 raise RuntimeError(f"{name} config is infeasible")
             _, plans = evaluated
+        plans = repair_plans_for_actual_recall(workload, indexes, plans, gt_by_query)
         metrics = execute_plans(workload, indexes, plans, gt_by_query)
         metrics["storage_indexes"] = float(len({k for p in plans.values() for k, ek in zip(p.indexes, p.eks) if ek > 0}))
         metrics["estimated_cost"] = float(sum(q.probability * plans[q.name].estimated_cost for q in workload.queries))

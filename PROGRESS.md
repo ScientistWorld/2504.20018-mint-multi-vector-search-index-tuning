@@ -9,6 +9,7 @@
 - Completed the scheduled 8000-row CPU reproduction job and wrote final scores.
 - Extended the evaluator so one run can score multiple saved workload artifacts.
 - Updated query planning to estimate recall from the ANN backend's actual HNSW returned order, aligning planned recall with measured execution recall.
+- After the two-workload job failed because strict ANN-order seed feasibility found no seed configuration, restored the paper-style rank estimator and added a measured HNSW recall repair pass that only increases extended-k values for executed plans.
 
 ## Results
 
@@ -41,6 +42,7 @@ This supports the paper's core claim on the scaled workload: tuning multi-vector
 - `hnswlib` could not build on the login host because Python headers were unavailable. The implementation now uses FAISS CPU HNSW, which installs from wheels and preserves the graph ANN backend required by the method.
 - FAISS is installed in the reproducible container overlay, not the login-node Python environment. Local direct Python smoke commands that import `faiss` fail outside the container; scheduled jobs use the correct environment.
 - `apptainer` is not available in the interactive login shell, so container smoke checks are submitted through the scheduler.
+- Job `c7043bb2-054` failed with `RuntimeError: no feasible seed configuration found`; the cause was making beam-search seeds depend on actual ANN ordering rather than the estimator used by MINT's query planner.
 
 ## Deviations from Paper
 
