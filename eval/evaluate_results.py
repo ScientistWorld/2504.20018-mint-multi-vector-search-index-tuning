@@ -13,24 +13,25 @@ def build_scores(result_path: Path) -> dict:
     payload = json.loads(result_path.read_text(encoding="utf-8"))
     res = payload["results"]
     experiment = payload["workload"]
+    per_column_cost = res["per_column"]["weighted_cost"]
     scores = {
         "experiments": {
             experiment: {
                 "results": {
                     "per_column": {
-                        "weighted_cost": res["per_column"]["weighted_cost"],
+                        "weighted_cost": ratio(res["per_column"]["weighted_cost"], per_column_cost),
                         "mean_recall_at_k": res["per_column"]["mean_recall_at_k"],
                         "min_recall_at_k": res["per_column"]["min_recall_at_k"],
                         "storage_indexes": res["per_column"]["storage_indexes"],
                     },
                     "per_query": {
-                        "weighted_cost": res["per_query"]["weighted_cost"],
+                        "weighted_cost": ratio(res["per_query"]["weighted_cost"], per_column_cost),
                         "mean_recall_at_k": res["per_query"]["mean_recall_at_k"],
                         "min_recall_at_k": res["per_query"]["min_recall_at_k"],
                         "storage_indexes": res["per_query"]["storage_indexes"],
                     },
                     "mint": {
-                        "weighted_cost": res["mint"]["weighted_cost"],
+                        "weighted_cost": ratio(res["mint"]["weighted_cost"], per_column_cost),
                         "mean_recall_at_k": res["mint"]["mean_recall_at_k"],
                         "min_recall_at_k": res["mint"]["min_recall_at_k"],
                         "storage_indexes": res["mint"]["storage_indexes"],

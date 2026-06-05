@@ -20,14 +20,14 @@ Local 2000-row smoke result on `naive_small`:
 
 Final 8000-row reproduction result on `naive_small`:
 
-- PerColumn weighted cost: 50562.84
-- PerQuery weighted cost: 7188.74
-- MINT weighted cost: 16643.23
+- PerColumn weighted cost: 50562.84 raw, 1.000 normalized
+- PerQuery weighted cost: 7188.74 raw, 0.142 normalized
+- MINT weighted cost: 16643.23 raw, 0.329 normalized
 - MINT speedup vs PerColumn: 3.04x
 - MINT mean and minimum recall@50: 0.90
 - MINT storage indexes: 3, matching the storage budget
 
-This supports the paper's core claim on the scaled workload: tuning multi-vector indexes and query plans can substantially reduce query cost relative to independent per-column indexes while meeting recall and storage constraints.
+This supports the paper's core claim on the scaled workload: tuning multi-vector indexes and query plans can substantially reduce query cost relative to independent per-column indexes while meeting recall and storage constraints. `scoring/scores.json` reports normalized weighted cost to match the paper reference scale.
 
 ## Remaining
 

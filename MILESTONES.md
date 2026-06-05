@@ -16,7 +16,7 @@
 ### [2026-06-05 03:10] - core_claim
 - Completed the 8000-row `naive_small` reproduction job successfully.
 - MINT reached mean/min recall@50 of 0.90 with 3 stored indexes, satisfying the recall and storage constraints.
-- MINT reduced weighted cost from PerColumn's 50562.84 to 16643.23, a 3.04x speedup/cost reduction.
+- MINT reduced weighted cost from PerColumn's 50562.84 raw cost to 16643.23 raw cost, or from 1.000 to 0.329 on the paper-normalized scale, a 3.04x speedup/cost reduction.
 
 ## Stop Justification
 - Core claim reproduced on the scaled HNSW multi-vector workload. Stopping at `core_claim`; larger public datasets and DiskANN-style backend coverage remain possible extensions.
