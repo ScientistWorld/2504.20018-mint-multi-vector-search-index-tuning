@@ -24,12 +24,6 @@ def build_scores(result_path: Path) -> dict:
                         "min_recall_at_k": res["per_column"]["min_recall_at_k"],
                         "storage_indexes": res["per_column"]["storage_indexes"],
                     },
-                    "per_query": {
-                        "weighted_cost": ratio(res["per_query"]["weighted_cost"], per_column_cost),
-                        "mean_recall_at_k": res["per_query"]["mean_recall_at_k"],
-                        "min_recall_at_k": res["per_query"]["min_recall_at_k"],
-                        "storage_indexes": res["per_query"]["storage_indexes"],
-                    },
                     "mint": {
                         "weighted_cost": ratio(res["mint"]["weighted_cost"], per_column_cost),
                         "mean_recall_at_k": res["mint"]["mean_recall_at_k"],

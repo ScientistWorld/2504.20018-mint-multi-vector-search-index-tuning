@@ -8,6 +8,8 @@ The main experiment is `naive_small`. It compares:
 - `per_query`: one index per query column set, reported as a lower-bound baseline that may exceed the storage budget
 - `mint`: the proposed tuned configuration under the same storage budget as `per_column`
 
+`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized MINT comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
+
 Metrics:
 
 - `weighted_cost`: probability-weighted machine-independent cost proxy; lower is better
