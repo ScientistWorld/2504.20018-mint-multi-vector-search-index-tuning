@@ -2,4 +2,4 @@ action: submit
 gpus: 0
 test: true
 milestone: method_runs
-notes: "Audit found the implementation is real, but the ANN-aligned planner and two-workload scores need a completed container run. CPU test job runs scripts/reproduce.sh and validate.py --compare."
+notes: "Retry after fixing no-feasible-seed failure: restore estimator-based planning and add measured HNSW recall repair for executed plans. Runs both workloads and validate.py --compare."
