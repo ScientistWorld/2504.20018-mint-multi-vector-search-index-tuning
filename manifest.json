@@ -1,0 +1,116 @@
+{
+  "paper": {
+    "arxiv_id": "2504.20018",
+    "title": "MINT: Multi-Vector Search Index Tuning",
+    "date": null,
+    "topics": null
+  },
+  "reproduction": {
+    "milestone": "core_claim",
+    "status": "done",
+    "error": null,
+    "scaffold": "codex",
+    "model": "gpt-5.5",
+    "profile": "gpt-5.5-medium",
+    "effort": "medium",
+    "gpu_hours_used": 0.0,
+    "current_iteration_gpu_budget": 30,
+    "current_iteration_gpu_hours_used": 0.0,
+    "total_gpu_hours_used": 0.0,
+    "current_iteration_cpu_hours_used": 0.011,
+    "total_cpu_hours_used": 0.011,
+    "gpu_budget": 30,
+    "duration_sec": 747.5,
+    "cost_usd": null,
+    "input_tokens": 3156870,
+    "output_tokens": 20393,
+    "cached_input_tokens": 3002112,
+    "cache_creation_tokens": null,
+    "reasoning_tokens": 0,
+    "total_input_tokens": 3156870,
+    "num_turns": 67,
+    "duration_api_ms": null,
+    "num_runs": 1,
+    "iteration_count": 0,
+    "workflow": "standard",
+    "workflow_step": 0,
+    "total_gpu_jobs": 1,
+    "time_breakdown": {
+      "working": 528.5702931880951,
+      "building": 0.10220527648925781,
+      "installing": 17.99492883682251,
+      "waiting": 45.91054058074951
+    }
+  },
+  "agents": [
+    {
+      "scaffold": "codex",
+      "model": "gpt-5.5",
+      "profile": "gpt-5.5-medium",
+      "effort": "medium",
+      "role": "reproducer",
+      "is_iteration": false,
+      "iteration": 1,
+      "workflow": "standard",
+      "workflow_step": 0,
+      "started_at": 1780628377.984362,
+      "finished_at": 1780629125.5249314,
+      "duration_sec": 747.5,
+      "blocked_sec": 0.0,
+      "status": "done",
+      "error": null,
+      "milestone": "core_claim",
+      "gpu_budget": 30,
+      "gpu_hours_used": 0.0,
+      "total_gpu_hours_used": 0.0,
+      "cpu_hours_used": 0.011,
+      "time_breakdown": {
+        "working": 528.5702931880951,
+        "building": 0.10220527648925781,
+        "installing": 17.99492883682251,
+        "waiting": 45.91054058074951
+      },
+      "cost_usd": null,
+      "input_tokens": 3156870,
+      "output_tokens": 20393,
+      "cached_input_tokens": 3002112,
+      "cache_creation_tokens": null,
+      "reasoning_tokens": 0,
+      "total_input_tokens": 3156870,
+      "num_turns": 67,
+      "duration_api_ms": null,
+      "tool_uses": {
+        "shell": 56,
+        "file_edit": 11
+      },
+      "gpu_jobs": [
+        {
+          "run_id": "2b7a69ae-55f",
+          "command": "bash /home/user/scripts/run.sh",
+          "num_gpus": 0,
+          "num_cpus": 1,
+          "resource": "gpu-cpu",
+          "hive_job_id": "03eee71c",
+          "status": "completed",
+          "returncode": 0,
+          "duration_sec": 41.1,
+          "submitted_at": 1780628929.4618719,
+          "started_at": 1780628931.606854,
+          "completed_at": 1780628972.7330973
+        }
+      ],
+      "progress_log": "### [2026-06-05 03:07] - none\n- Started reproduction work.\n- Read the paper and identified MINT's core components: HNSW/DiskANN candidate indexes, relevant-extended-k query planning, cost/recall constraints, and beam-search configuration tuning.\n\n### [2026-06-05 03:07] - method_runs\n- Implemented the paper's MINT computation with FAISS HNSW multi-column indexes, relevant-extended-k query planning, and beam-search configuration search.\n- Implemented PerColumn and PerQuery baselines plus method-independent evaluation.\n- Verified lightweight local smoke runs complete end to end.\n\n### [2026-06-05 03:10] - core_claim\n- Completed the 8000-row `naive_small` reproduction job successfully.\n- MINT reached mean/min recall@50 of 0.90 with 3 stored indexes, satisfying the recall and storage constraints.\n- MINT reduced weighted cost from PerColumn's 50562.84 to 16643.23, a 3.04x speedup/cost reduction."
+    }
+  ],
+  "components": {
+    "has_container": true,
+    "has_method_code": true,
+    "has_evaluation": true,
+    "has_download_script": true,
+    "has_reproduce_script": true,
+    "has_method_script": true,
+    "has_baseline": true,
+    "has_reference": true,
+    "has_data": true
+  }
+}
