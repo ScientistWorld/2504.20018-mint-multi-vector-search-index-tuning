@@ -1,8 +1,8 @@
 # IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends. Sleeping blocks the entire pipeline.
-action: submit
+action: done
 gpus: 0
-test: true
-milestone: method_runs
-notes: "Retry the standardized recall@100 MINT core experiment only, using optimized cached HNSW repair and 3000 rows; then independently evaluate and validate scores."
+test: false
+milestone: core_claim
+notes: "Corrected recall@100 naive_small reproduction passed validation: MINT achieved 1.80x speedup over PerColumn while maintaining 0.90 mean/min recall and the 3-index storage budget."

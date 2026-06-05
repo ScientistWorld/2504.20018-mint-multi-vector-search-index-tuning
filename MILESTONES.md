@@ -1,6 +1,6 @@
 # Reproduction Milestones
 
-**Current: method_runs**
+**Current: core_claim**
 
 ## Progress Log
 
@@ -12,5 +12,10 @@
 - Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
 - Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
 
+### [2026-06-05 05:43] - core_claim
+- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
+- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
+- `python validate.py --compare` passed all scoring and structure checks.
+
 ## Stop Justification
-- Not stopped; next action submits a corrected recall@100 reproduction job.
+- Core claim reproduced and environment packaged. Additional workloads remain optional extensions.

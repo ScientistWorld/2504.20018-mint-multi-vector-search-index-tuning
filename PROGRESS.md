@@ -14,6 +14,16 @@
 
 ## Results
 
+Corrected scheduled 3000-row reproduction result on `naive_small` from job `232db930-132` under the paper's recall@100 protocol:
+
+- PerColumn weighted cost: 53788.54 raw, 1.000 normalized
+- PerQuery weighted cost: 16819.94 raw, retained in the checkpoint as an unconstrained lower-bound baseline
+- MINT weighted cost: 29939.28 raw, 0.557 normalized
+- MINT speedup vs PerColumn: 1.80x
+- MINT mean and minimum recall@100: 0.90
+- MINT storage indexes: 3, matching the storage budget
+- `python validate.py --compare` passed all scoring and structure checks
+
 Earlier local 2000-row smoke result on `naive_small` before the recall@100 correction:
 
 - PerColumn weighted cost: 25223.04
@@ -31,11 +41,10 @@ Earlier 8000-row reproduction result on `naive_small` from scheduled job `50adc4
 - MINT mean and minimum recall@50: 0.90
 - MINT storage indexes: 3, matching the storage budget
 
-This supported the paper's core claim on the scaled workload under recall@50. The benchmark has now been corrected to the paper's recall@100 protocol, so the next submitted job must regenerate `checkpoints/mint_results.json` and `scoring/scores.json` before claiming `core_claim` on the corrected setting.
+The earlier recall@50 result supported the core claim on the first scaled workload version. The standardized result above supersedes it and supports the core claim under the corrected recall@100 protocol.
 
 ## Remaining
 
-- Regenerate standardized `naive_small` results after changing the workload to recall@100.
 - Optional extension: revisit `bicomplex_small` with bounded seed generation and DP planning if pushing beyond `core_claim`.
 - Optional extension: add a DiskANN-like backend or larger public embedding dataset for closer coverage of the paper's full experiments.
 
