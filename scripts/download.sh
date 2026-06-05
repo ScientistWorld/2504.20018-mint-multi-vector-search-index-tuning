@@ -17,7 +17,10 @@
 
 set -e
 
-cd /home/user
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
 # No external data or pretrained models are required. The benchmark uses a
 # deterministic semi-synthetic multi-vector generator in data/.
+mkdir -p data/downloads
