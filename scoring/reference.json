@@ -5,11 +5,51 @@
       "weight": 1.0,
       "primary_metric": "weighted_cost",
       "metrics": {
-        "weighted_cost": {"higher_is_better": false, "coefficient": -1.0},
-        "mean_recall_at_k": {"higher_is_better": true, "coefficient": 0.5},
-        "min_recall_at_k": {"higher_is_better": true, "coefficient": 0.5},
-        "storage_indexes": {"higher_is_better": false, "coefficient": -0.3},
-        "speedup_vs_per_column": {"higher_is_better": true, "coefficient": 1.0}
+        "weighted_cost": {
+          "higher_is_better": false,
+          "coefficient": -1.0,
+          "description": "Normalized machine-independent query cost on the evaluated query slice."
+        },
+        "mean_recall_at_k": {
+          "higher_is_better": true,
+          "coefficient": 0.5,
+          "description": "Average top-k recall across the evaluated queries."
+        },
+        "min_recall_at_k": {
+          "higher_is_better": true,
+          "coefficient": 0.5,
+          "description": "Worst-query top-k recall, which catches methods that only optimize easy query patterns."
+        },
+        "recall_floor_violation": {
+          "higher_is_better": false,
+          "coefficient": -0.6,
+          "description": "Amount by which the worst-query recall falls below the workload recall target."
+        },
+        "storage_indexes": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Number of distinct index configurations used by the submitted plans."
+        },
+        "storage_budget_violation": {
+          "higher_is_better": false,
+          "coefficient": -0.6,
+          "description": "Amount by which the submitted plans exceed the workload index budget."
+        },
+        "mean_candidate_multiplier_at_k": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Average candidate-set size divided by k, penalizing methods that maintain recall by over-retrieving."
+        },
+        "max_candidate_multiplier_at_k": {
+          "higher_is_better": false,
+          "coefficient": -0.2,
+          "description": "Worst-query candidate-set size divided by k, catching concentrated over-retrieval on held-out query types."
+        },
+        "speedup_vs_per_column": {
+          "higher_is_better": true,
+          "coefficient": 1.0,
+          "description": "Cost improvement relative to the one-index-per-column baseline on the same query slice."
+        }
       },
       "results": {
         "per_column": {

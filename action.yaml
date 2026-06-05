@@ -2,8 +2,8 @@
 # Once you set action to 'done', STOP immediately.
 # Do NOT sleep, poll, or wait. The system reads this file
 # only after your turn ends.
-action: pending
+action: done
 gpus: 0
 test: false
 milestone: core_claim
-notes: ""
+notes: "Improvements: added recall/storage violation metrics, candidate-pressure metrics, and required metric descriptions for train/test scoring. Notes: split remains small; runner should watch for recall saturation and FAISS scoring runtime."
