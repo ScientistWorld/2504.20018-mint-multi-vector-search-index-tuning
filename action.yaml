@@ -1,3 +1,8 @@
-action: done
-milestone: core_claim
-notes: "Fresh CPU job 50adc4a0-617 passed validate.py --compare. MINT achieved 3.03x speedup over PerColumn on naive_small with mean/min recall@50 = 0.90 and storage_indexes = 3."
+# IMPORTANT: Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends. Sleeping blocks the entire pipeline.
+action: pending
+gpus: 1
+test: false
+milestone: method_runs
+notes: ""
