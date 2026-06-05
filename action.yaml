@@ -2,4 +2,4 @@ action: submit
 gpus: 0
 test: true
 milestone: method_runs
-notes: "Retry after fixing no-feasible-seed failure: restore estimator-based planning and add measured HNSW recall repair for executed plans. Runs both workloads and validate.py --compare."
+notes: "Run focused naive_small core reproduction after removing the hanging bicomplex extension from standard scoring."
