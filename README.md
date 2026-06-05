@@ -15,7 +15,7 @@ Given a workload of such queries with probabilities, choose a set of indexes tha
 - each query must meet a recall@k threshold against exact full-scan top-k results
 - the number of created indexes must not exceed the storage budget
 
-The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@50, and a storage budget of three indexes.
+The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@100, and a storage budget of three indexes.
 
 ---
 
@@ -38,7 +38,7 @@ The implementation uses FAISS CPU `IndexHNSWFlat` as the graph ANN backend. The 
 
 # Evaluation Protocol
 
-Evaluation reads a saved method artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the tuner.
+Evaluation reads a saved method artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the tuner. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
 
 The main experiment is `naive_small`. It compares:
 
@@ -50,7 +50,7 @@ The main experiment is `naive_small`. It compares:
 
 Metrics:
 
-- `weighted_cost`: probability-weighted machine-independent cost proxy; lower is better
+- `weighted_cost`: probability-weighted machine-independent cost proxy at recall@100; lower is better
 - `mean_recall_at_k`: mean recall@k across queries; higher is better
 - `min_recall_at_k`: worst query recall@k; higher is better
 - `storage_indexes`: number of used indexes; lower is better and must respect the configured budget for constrained methods
@@ -113,12 +113,35 @@ Metrics:
 
 </details>
 
+### Iteration 3: gpt-5.5
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 14m | **GPU**: 0.0h
+- **Jobs**: 7 total (3 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-06-05 03:56] - method_runs
+- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
+- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
+
+### [2026-06-05 05:03] - method_runs
+- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
+- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
+
+### [2026-06-05 05:43] - core_claim
+- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
+- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
+- `python validate.py --compare` passed all scoring and structure checks.
+
+</details>
+
 
 ---
 
 # Reproduction Milestones
 
-**Current: method_runs**
+**Current: core_claim**
 
 ## Stop Justification
-- Completed at milestone `method_runs`.
+- Completed at milestone `core_claim`.

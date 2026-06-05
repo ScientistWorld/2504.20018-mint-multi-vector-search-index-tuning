@@ -18,4 +18,4 @@
 - `python validate.py --compare` passed all scoring and structure checks.
 
 ## Stop Justification
-- Core claim reproduced and environment packaged. Additional workloads remain optional extensions.
+- Completed at milestone `core_claim`.
