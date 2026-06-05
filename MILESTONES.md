@@ -1,21 +1,17 @@
 # Reproduction Milestones
 
-**Current: none**
-
-<!-- Milestone levels (update "Current" above as you progress):
-  none             — just started, no meaningful progress yet
-  method_runs      — the paper's method executes end-to-end without errors
-  core_claim       — minimum experiment supports the paper's central claim
-  core_claim_plus  — core claim reproduced on additional settings
-  secondary_claims — secondary results or contributions reproduced
-  majority         — more than half of reported results reproduced
-  near_complete    — most results reproduced, only minor gaps remain
-  full             — all reported results reproduced
--->
+**Current: method_runs**
 
 ## Progress Log
 
-<!-- Write your progress here -->
+### [2026-06-05 03:07] - none
+- Started reproduction work.
+- Read the paper and identified MINT's core components: HNSW/DiskANN candidate indexes, relevant-extended-k query planning, cost/recall constraints, and beam-search configuration tuning.
+
+### [2026-06-05 03:07] - method_runs
+- Implemented the paper's MINT computation with FAISS HNSW multi-column indexes, relevant-extended-k query planning, and beam-search configuration search.
+- Implemented PerColumn and PerQuery baselines plus method-independent evaluation.
+- Verified lightweight local smoke runs complete end to end.
 
 ## Stop Justification
-- Completed at milestone `none`.
+- Not stopped. An 8000-row CPU reproduction job is being submitted to test the core claim.

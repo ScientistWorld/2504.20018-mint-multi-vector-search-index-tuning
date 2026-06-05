@@ -26,5 +26,5 @@ cd /home/user
 
 mkdir -p scoring
 
-# TODO: implement evaluation using code in eval/
-# Must write scoring/scores.json at the end
+RESULT_PATH="${1:-checkpoints/mint_results.json}"
+python -m eval.evaluate_results "$RESULT_PATH" --output scoring/scores.json

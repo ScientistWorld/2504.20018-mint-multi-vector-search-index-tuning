@@ -2,36 +2,33 @@
 
 ## What Works
 
-<!-- What has been successfully reproduced so far. -->
+- Implemented MINT's HNSW-based multi-column index construction, relevant-extended-k query planning, and beam-search configuration search.
+- Implemented PerColumn and PerQuery baselines.
+- Implemented evaluator that reads saved method artifacts and writes `scoring/scores.json`.
+- Lightweight local smoke runs complete on 500 and 2000 rows.
 
 ## Results
 
-<!-- Reproduced numbers compared to the paper's reported numbers. -->
+Local 2000-row smoke result on `naive_small`:
+
+- PerColumn weighted cost: 25223.04
+- MINT weighted cost: 11190.24
+- MINT speedup vs PerColumn: 2.25x
+- Mean and minimum recall@50: 0.90
+- MINT storage indexes: 3
+
+The official 8000-row result is being submitted as a CPU job.
 
 ## Remaining
 
-<!-- What still needs to be done to reach higher milestones. -->
+- Run the scheduled 8000-row reproduction job.
+- Inspect `scoring/scores.json` after the job and update milestone if the result supports the core claim.
 
 ## Issues
 
-<!-- Blockers, bugs, or difficulties encountered. -->
+- `hnswlib` could not build on the login host because Python headers were unavailable. The implementation now uses FAISS CPU HNSW, which installs from wheels and preserves the graph ANN backend required by the method.
 
 ## Deviations from Paper
 
-<!-- Do not edit this section unless you deviated from the paper's original setup.
-     For each deviation, document: what the paper used, what you substituted, and why.
-
-     ACCEPTABLE deviations (data/resource/scale substitutions — milestones still valid):
-       - Replaced a proprietary dataset with a public one
-       - Used a smaller model of the same architecture
-       - Scaled down training (fewer epochs, smaller batch)
-       - Used a different library for the same algorithm
-
-     UNACCEPTABLE deviations (algorithm substitutions — milestones above 'none' are void):
-       - Replaced the paper's algorithm with a fundamentally different one
-       - Wrote a generic model trained to approximate the method's outputs
-         instead of implementing the method's computational steps
-
-     The test: could someone reading your code identify which algorithm from
-     the paper you implemented? If not, you replaced the method. -->
-
+- The paper used million-row public embedding datasets and a real News embedding workload. This reproduction uses a deterministic scaled semi-synthetic workload because downloading and building the full million-row HNSW/DiskANN benchmark is unnecessary for the minimum core claim and would be expensive for iterative reproduction.
+- The paper evaluated HNSW and DiskANN C++ backends. This reproduction uses FAISS CPU HNSW for the core experiment to keep the environment portable while retaining graph-based ANN indexes.

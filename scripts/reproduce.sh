@@ -18,7 +18,4 @@ set -e
 
 cd /home/user
 
-# TODO: implement full reproduction pipeline
-# e.g.:
-#   bash scripts/baseline.sh
-#   bash scripts/method.sh
+bash scripts/method.sh naive_small 8000 checkpoints/mint_results.json

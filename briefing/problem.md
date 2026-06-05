@@ -1,17 +1,10 @@
 # Problem Definition
 
-What problem does this paper address? Write this so that someone with no knowledge of the paper can understand what needs to be solved and how success is measured.
+The task is multi-vector search index tuning. A database row represents one item and contains several vector-valued columns. A query names a subset of columns and provides one query vector per selected column. The query result is the top-k rows by the sum of cosine similarities over the selected columns.
 
-Do NOT describe the paper's method or solution here — only the problem itself. Think about if a future scientist agent try to solve this problem from scratch without knowing what approach the paper took. If you leak the solution, you compromise the benchmark.
+Given a workload of such queries with probabilities, choose a set of indexes that minimizes probability-weighted query cost while satisfying two constraints:
 
-## Research Question
+- each query must meet a recall@k threshold against exact full-scan top-k results
+- the number of created indexes must not exceed the storage budget
 
-<!-- What problem or challenge does this paper tackle? What gap in existing work does it address? -->
-
-## Why It Matters
-
-<!-- Why is this problem important? What would a good solution enable? Make it short -->
-
-## Success Criteria
-
-<!-- What would a successful solution look like? What properties should it have? This is about the goal, not the paper's specific approach. Make it short -->
+The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@50, and a storage budget of three indexes.

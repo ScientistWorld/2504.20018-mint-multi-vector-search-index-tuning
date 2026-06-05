@@ -17,4 +17,9 @@ set -e
 
 cd /home/user
 
-# TODO: run baseline
+WORKLOAD="${1:-naive_small}"
+N_ROWS="${2:-8000}"
+OUTPUT="${3:-checkpoints/baseline_results.json}"
+
+python -m baseline.run_baselines --workload "$WORKLOAD" --n-rows "$N_ROWS" --output "$OUTPUT"
+bash scripts/evaluate.sh "$OUTPUT"

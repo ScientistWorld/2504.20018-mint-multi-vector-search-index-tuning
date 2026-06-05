@@ -1,14 +1,5 @@
 # Overview
 
-- **Paper ID:** <!-- e.g. 1706.03762 -->
-- **Title:** <!-- e.g. Attention Is All You Need -->
-- **Domain:** <!-- e.g. Computer Vision / Object Detection -->
-- **TL;DR:** <!-- One sentence: what this paper does and why it matters -->
+The paper proposes MINT, a multi-vector search index tuner. Instead of creating only one index per vector column or one full index per query, MINT can recommend shared multi-column indexes and query plans that retrieve fewer candidates while maintaining recall and storage constraints.
 
-## Short Summary
-
-<!-- 3-5 sentences covering the problem, approach, and main findings -->
-
-## Key Results
-
-<!-- 2-3 bullet points: main findings or numbers in bullet points -->
+This reproduction packages a compact semi-synthetic benchmark, a FAISS-HNSW implementation of MINT's query planner and beam-search configuration tuner, PerColumn and PerQuery baselines, and a reusable evaluator that scores cost, recall, storage, and speedup.

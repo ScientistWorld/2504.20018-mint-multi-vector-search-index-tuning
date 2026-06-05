@@ -10,5 +10,9 @@ set -e
 
 cd /home/user
 
-# TODO: run the paper's method
-# TODO: call scripts/evaluate.sh to score
+WORKLOAD="${1:-naive_small}"
+N_ROWS="${2:-8000}"
+OUTPUT="${3:-checkpoints/mint_results.json}"
+
+python -m method.mint --workload "$WORKLOAD" --n-rows "$N_ROWS" --output "$OUTPUT"
+bash scripts/evaluate.sh "$OUTPUT"
