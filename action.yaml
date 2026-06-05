@@ -3,4 +3,4 @@ action: done
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Query-heldout split; 27 train metrics, 27 test metrics across 3 methods; MINT cost improves from 0.661 train to 0.386 test with recall/storage constraints satisfied; per_query is declared in reference and flagged over storage budget; validate.py passes."
+notes: "Made download setup repo-relative, ensured data/downloads exists on fresh clones, and fixed tracking for its .gitkeep marker."
