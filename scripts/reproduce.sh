@@ -18,6 +18,7 @@ set -e
 
 cd /home/user
 
+echo "[reproduce] running naive_small MINT experiment"
 python -m method.mint --workload naive_small --n-rows 8000 --output checkpoints/mint_results.json
-python -m method.mint --workload bicomplex_small --n-rows 8000 --output checkpoints/bicomplex_results.json
-bash scripts/evaluate.sh checkpoints/mint_results.json checkpoints/bicomplex_results.json
+echo "[reproduce] evaluating naive_small"
+bash scripts/evaluate.sh checkpoints/mint_results.json

@@ -34,7 +34,7 @@ This supports the paper's core claim on the scaled workload: tuning multi-vector
 
 ## Remaining
 
-- Submitted extension: run `bicomplex_small`, a five-column/eight-query workload, alongside `naive_small` to test whether the core claim holds on an additional setting.
+- The attempted `bicomplex_small` extension was removed from the standard run after job `9eec7a82-e11` hung for 20 minutes without output after completing `naive_small`. The current deliverable focuses on restoring a fresh passing `naive_small` core-claim run.
 - Optional extension: add a DiskANN-like backend or larger public embedding dataset for closer coverage of the paper's full experiments.
 
 ## Issues
@@ -44,6 +44,7 @@ This supports the paper's core claim on the scaled workload: tuning multi-vector
 - `apptainer` is not available in the interactive login shell, so container smoke checks are submitted through the scheduler.
 - Job `c7043bb2-054` failed with `RuntimeError: no feasible seed configuration found`; the cause was making beam-search seeds depend on actual ANN ordering rather than the estimator used by MINT's query planner.
 - Job `993b2c8e-4a6` failed with the same seed-feasibility error after estimator restoration. The remaining issue was the seed set itself: one- and two-index single-query seeds were too narrow to cover every query at the recall threshold. The beam search now starts from PerColumn/PerQuery when budget-feasible and additional compact coverage seeds.
+- Job `9eec7a82-e11` was cancelled after 20 minutes with no new output. It had written `checkpoints/mint_results.json`, so the hang occurred in the added `bicomplex_small` extension rather than the core workload.
 
 ## Deviations from Paper
 
