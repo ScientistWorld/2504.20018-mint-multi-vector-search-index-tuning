@@ -1,6 +1,6 @@
 # The system reads this file after the turn ends.
-action: submit
+action: done
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Re-run train/test scoring after fixing storage metrics to use each method's global index configuration."
+notes: "Query-heldout split; 27 train metrics, 27 test metrics across 3 methods; MINT cost improves from 0.661 train to 0.386 test with recall/storage constraints satisfied; per_query is flagged over storage budget on both slices."
