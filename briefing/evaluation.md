@@ -1,6 +1,6 @@
 # Evaluation Protocol
 
-Evaluation reads a saved method artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the tuner.
+Evaluation reads a saved method artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the tuner. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
 
 The main experiment is `naive_small`. It compares:
 

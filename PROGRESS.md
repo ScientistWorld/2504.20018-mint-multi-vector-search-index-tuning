@@ -8,6 +8,7 @@
 - Lightweight local smoke runs completed on 500 and 2000 rows with the earlier recall@50 setting.
 - Completed the scheduled 8000-row CPU reproduction job and wrote final scores for the earlier recall@50 setting.
 - Extended the evaluator so one run can score multiple saved workload artifacts.
+- Hardened the evaluator so it rejects stale `naive_small` artifacts that do not use recall@100 and recomputes metrics by executing saved plans instead of trusting method-reported numbers.
 - Updated query planning to estimate recall from the ANN backend's actual HNSW returned order, aligning planned recall with measured execution recall.
 - After the two-workload job failed because strict ANN-order seed feasibility found no seed configuration, restored the paper-style rank estimator and added a measured HNSW recall repair pass that only increases extended-k values for executed plans.
 
@@ -48,6 +49,7 @@ This supported the paper's core claim on the scaled workload under recall@50. Th
 - Job `9eec7a82-e11` was cancelled after 20 minutes with no new output. It had written `checkpoints/mint_results.json`, so the hang occurred in the added `bicomplex_small` extension rather than the core workload.
 - Job `50adc4a0-617` completed successfully after narrowing standardized scoring back to `naive_small`; all validation checks passed.
 - The initial benchmark used recall@50. The paper uses recall@100, so `data/synthetic_multivector.py` has been corrected and a fresh job is required.
+- Audit found that the old evaluator trusted metrics stored by `method/`. It now independently executes artifact plans from `checkpoints/` and recomputes standardized scores without importing `method/`.
 
 ## Deviations from Paper
 
