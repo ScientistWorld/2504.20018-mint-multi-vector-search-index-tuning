@@ -50,6 +50,7 @@ This supported the paper's core claim on the scaled workload under recall@50. Th
 - Job `50adc4a0-617` completed successfully after narrowing standardized scoring back to `naive_small`; all validation checks passed.
 - The initial benchmark used recall@50. The paper uses recall@100, so `data/synthetic_multivector.py` has been corrected and a fresh job is required.
 - Audit found that the old evaluator trusted metrics stored by `method/`. It now independently executes artifact plans from `checkpoints/` and recomputes standardized scores without importing `method/`.
+- Job `816d1a2a-63c` exited with `-9` before writing a corrected recall@100 artifact. The scheduler log paths were not readable from this workspace, but artifact timestamps stayed stale, so the run made no usable scoring progress. The next job removes the optional `bicomplex_small` extension, uses a 3000-row standardized core workload, and caches actual HNSW repair coverage to avoid repeated ANN calls inside the repair enumeration.
 
 ## Deviations from Paper
 

@@ -3,6 +3,6 @@
 # only after your turn ends. Sleeping blocks the entire pipeline.
 action: submit
 gpus: 0
-test: false
+test: true
 milestone: method_runs
-notes: "Regenerate standardized MINT naive_small results under the paper's recall@100 protocol, score it with the independent saved-plan evaluator, validate scores, then attempt a bicomplex_small extension artifact."
+notes: "Retry the standardized recall@100 MINT core experiment only, using optimized cached HNSW repair and 3000 rows; then independently evaluate and validate scores."

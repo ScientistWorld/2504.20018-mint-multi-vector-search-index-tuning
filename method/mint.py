@@ -401,20 +401,28 @@ def repair_plan_for_actual_recall(
         return Plan(plan.indexes, current, plan.estimated_cost, recall, retrieved)
 
     relevant: list[list[int]] = []
+    covers: list[dict[int, set[int]]] = []
     gt_set = {int(x) for x in gt}
     for key, base_ek in zip(plan.indexes, current):
         labels = indexes[key].search(query, max_rank)
         ranks = [rank for rank, item in enumerate(labels, start=1) if int(item) in gt_set and rank >= base_ek]
         vals = sorted({int(base_ek), *ranks, max_rank})
         relevant.append(vals)
+        covers.append({ek: {int(item) for item in labels[:ek]} for ek in vals})
 
     best: tuple[float, tuple[int, ...], float, int] | None = None
+    query_dim = sum(workload.columns[c].shape[1] for c in query.columns)
     for eks in product(*relevant):
         if any(ek < base for ek, base in zip(eks, current)):
             continue
-        recall, cost, retrieved = actual_plan_stats(workload, query, indexes, plan, gt, tuple(int(e) for e in eks))
+        candidates: set[int] = set()
+        for ek, cover_for_ek in zip(eks, covers):
+            candidates.update(cover_for_ek[int(ek)])
+        recall = len(gt_set & candidates) / len(gt)
         if recall < workload.recall_threshold:
             continue
+        cost = float(sum(indexes[key].dim * ek for key, ek in zip(plan.indexes, eks)) + query_dim * len(candidates))
+        retrieved = len(candidates)
         if best is None or cost < best[0]:
             best = (cost, tuple(int(e) for e in eks), recall, retrieved)
     if best is None:
@@ -445,13 +453,17 @@ def per_query_config(workload: Workload) -> set[tuple[int, ...]]:
 
 def run_experiment(workload_name: str, n_rows: int, output: Path) -> None:
     start = time.perf_counter()
+    print(f"[mint] building workload={workload_name} rows={n_rows}", flush=True)
     workload = make_workload(workload_name, n_rows=n_rows)
+    print("[mint] computing exact top-k ground truth", flush=True)
     gt_by_query = {q.name: exact_topk(workload.columns, q, workload.top_k) for q in workload.queries}
     candidate_keys = all_candidate_indexes([q.columns for q in workload.queries], subset_diff=2)
     candidate_keys.update(per_column_config(workload))
     candidate_keys.update(per_query_config(workload))
+    print(f"[mint] building {len(candidate_keys)} candidate HNSW indexes", flush=True)
     indexes = {key: HnswIndex(workload.columns, key) for key in sorted(candidate_keys, key=lambda x: (len(x), x))}
 
+    print("[mint] running MINT beam-search configuration tuning", flush=True)
     mint_config, mint_est_cost, mint_plans = beam_search_configuration(workload, indexes, gt_by_query)
     methods = {
         "per_column": (per_column_config(workload), None),
@@ -460,6 +472,7 @@ def run_experiment(workload_name: str, n_rows: int, output: Path) -> None:
     }
     results = {}
     for name, (config, plans) in methods.items():
+        print(f"[mint] scoring {name}", flush=True)
         if plans is None:
             evaluated = evaluate_configuration(
                 workload,
@@ -487,6 +500,7 @@ def run_experiment(workload_name: str, n_rows: int, output: Path) -> None:
         }
         results[name] = metrics
 
+    print(f"[mint] writing artifact to {output}", flush=True)
     payload = {
         "workload": workload.name,
         "n_rows": n_rows,
