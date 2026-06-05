@@ -88,13 +88,7 @@ def plan_query(
     if not useful_keys:
         return None
     if len(useful_keys) > 3:
-        best_subset_plan: Plan | None = None
-        for size in (1, 2, 3):
-            for subset in combinations(useful_keys, size):
-                plan = plan_query(workload, query, gt, indexes, subset, max_rank)
-                if plan is not None and (best_subset_plan is None or plan.estimated_cost < best_subset_plan.estimated_cost):
-                    best_subset_plan = plan
-        return best_subset_plan
+        return plan_query_dp(workload, query, gt, indexes, useful_keys, max_rank=max_rank)
     selected = tuple(indexes[k] for k in useful_keys)
     relevant: list[list[int]] = []
     covers: list[dict[int, set[int]]] = []
@@ -125,6 +119,68 @@ def plan_query(
     return best
 
 
+def plan_query_dp(
+    workload: Workload,
+    query: Query,
+    gt: np.ndarray,
+    indexes: dict[tuple[int, ...], HnswIndex],
+    useful_keys: tuple[tuple[int, ...], ...],
+    max_rank: int,
+    sample_k: int = 5,
+) -> Plan | None:
+    """Algorithm 2 style DP query planning for configurations with >3 indexes."""
+    selected = tuple(indexes[k] for k in useful_keys)
+    gt_sample = gt[: min(sample_k, len(gt))]
+    n_sample = len(gt_sample)
+    if n_sample == 0:
+        return None
+    full_mask = (1 << n_sample) - 1
+    required = math.ceil(workload.recall_threshold * n_sample)
+    query_dim = int(sum(workload.columns[c].shape[1] for c in query.columns))
+
+    cover_options: list[list[tuple[int, float, int]]] = []
+    for idx in selected:
+        ranks = idx.rank_ground_truth(query, gt_sample)
+        options = []
+        for mask in range(full_mask + 1):
+            if mask == 0:
+                ek = 0
+            else:
+                ek = 0
+                for pos, item in enumerate(gt_sample):
+                    if mask & (1 << pos):
+                        ek = max(ek, min(max_rank, int(ranks[int(item)])))
+            cost = idx.scan_cost(ek) + query_dim * ek
+            options.append((mask, float(cost), int(ek)))
+        cover_options.append(options)
+
+    dp: dict[int, tuple[float, tuple[int, ...]]] = {0: (0.0, tuple())}
+    for options in cover_options:
+        next_dp: dict[int, tuple[float, tuple[int, ...]]] = {}
+        for covered, (base_cost, base_eks) in dp.items():
+            for mask, add_cost, ek in options:
+                new_mask = covered | mask
+                new_cost = base_cost + add_cost
+                prior = next_dp.get(new_mask)
+                if prior is None or new_cost < prior[0]:
+                    next_dp[new_mask] = (new_cost, (*base_eks, ek))
+        dp = next_dp
+
+    best_mask = None
+    best_cost = math.inf
+    best_eks: tuple[int, ...] | None = None
+    for mask, (cost, eks) in dp.items():
+        if int(mask).bit_count() < required:
+            continue
+        if cost < best_cost:
+            best_mask = mask
+            best_cost = cost
+            best_eks = eks
+    if best_mask is None or best_eks is None:
+        return None
+    return Plan(useful_keys, best_eks, float(best_cost), int(best_mask).bit_count() / n_sample, int(sum(best_eks)))
+
+
 def evaluate_configuration(
     workload: Workload,
     indexes: dict[tuple[int, ...], HnswIndex],
@@ -146,6 +202,67 @@ def evaluate_configuration(
     if enforce_storage and len(used) > workload.storage_budget:
         return None
     return total_cost, plans
+
+
+def used_indexes(plans: dict[str, Plan]) -> set[tuple[int, ...]]:
+    return {k for plan in plans.values() for k, ek in zip(plan.indexes, plan.eks) if ek > 0}
+
+
+def _coverage_seed_candidates(
+    candidates: list[tuple[int, ...]],
+    query_sets: list[tuple[int, ...]],
+    storage_budget: int,
+) -> set[frozenset[tuple[int, ...]]]:
+    """Bounded feasible seed generation for Algorithm 3.
+
+    The paper seeds from small per-query candidate subsets. On compact
+    generated workloads those seeds may not cover every query, so we add a few
+    deterministic set-cover style seeds without enumerating all budget-sized
+    candidate combinations.
+    """
+    seeds: set[frozenset[tuple[int, ...]]] = set()
+
+    def covers(seed: set[tuple[int, ...]], qcols: tuple[int, ...]) -> bool:
+        return any(set(idx).issubset(qcols) for idx in seed)
+
+    # Greedy coverage seeds from several starts.
+    starts = [(), *candidates[: min(len(candidates), 12)]]
+    for start in starts:
+        seed: set[tuple[int, ...]] = set()
+        if start:
+            seed.add(start)
+        while len(seed) < storage_budget:
+            uncovered = [qcols for qcols in query_sets if not covers(seed, qcols)]
+            if not uncovered:
+                break
+            best = max(
+                (cand for cand in candidates if cand not in seed),
+                key=lambda cand: (
+                    sum(set(cand).issubset(qcols) for qcols in uncovered),
+                    len(cand),
+                    -sum(cand),
+                ),
+            )
+            seed.add(best)
+        if all(covers(seed, qcols) for qcols in query_sets):
+            seeds.add(frozenset(seed))
+
+    # Query-exact indexes plus singleton fallbacks are often strong starts.
+    exact_first: set[tuple[int, ...]] = set()
+    for qcols in sorted(query_sets, key=lambda q: (-len(q), q)):
+        if qcols in candidates and len(exact_first) < storage_budget:
+            exact_first.add(qcols)
+    for qcols in query_sets:
+        if len(exact_first) >= storage_budget:
+            break
+        for c in qcols:
+            exact_first.add((c,))
+            if len(exact_first) >= storage_budget:
+                break
+    if exact_first:
+        seeds.add(frozenset(exact_first))
+
+    return seeds
 
 
 def beam_search_configuration(
@@ -176,11 +293,9 @@ def beam_search_configuration(
     # Add compact coverage seeds. MINT's beam search needs at least one
     # feasible starting configuration; single-query seeds can be too narrow
     # when no one- or two-index subset reaches the recall threshold for all
-    # query column sets.
-    for combo in combinations(candidates, min(workload.storage_budget, len(candidates))):
-        covered = {qcols: any(set(idx).issubset(qcols) for idx in combo) for qcols in query_sets}
-        if all(covered.values()):
-            seeds.add(frozenset(combo))
+    # query column sets. Keep this bounded rather than enumerating all
+    # storage-budget-sized combinations.
+    seeds.update(_coverage_seed_candidates(candidates, query_sets, workload.storage_budget))
 
     best_seen: tuple[set[tuple[int, ...]], float, dict[str, Plan]] | None = None
     scored = []
@@ -188,9 +303,10 @@ def beam_search_configuration(
         result = evaluate_configuration(workload, indexes, seed, gt_by_query, max_rank)
         if result is not None:
             cost, plans = result
-            scored.append((cost, set(seed), plans))
+            pruned = used_indexes(plans)
+            scored.append((cost, pruned, plans))
             if best_seen is None or cost < best_seen[1]:
-                best_seen = (set(seed), cost, plans)
+                best_seen = (pruned, cost, plans)
     if not scored:
         raise RuntimeError("no feasible seed configuration found")
     scored.sort(key=lambda x: x[0])
@@ -202,8 +318,6 @@ def beam_search_configuration(
         for _, config, _ in best:
             for cand in candidates:
                 proposal = frozenset(set(config) | {cand})
-                if len(proposal) > workload.storage_budget:
-                    continue
                 expanded[proposal] = None
         scored = []
         for proposal in expanded:
@@ -211,9 +325,10 @@ def beam_search_configuration(
             if result is None:
                 continue
             cost, plans = result
-            scored.append((cost, set(proposal), plans))
+            pruned = used_indexes(plans)
+            scored.append((cost, pruned, plans))
             if best_seen is None or cost < best_seen[1]:
-                best_seen = (set(proposal), cost, plans)
+                best_seen = (pruned, cost, plans)
         if not scored:
             break
         scored.sort(key=lambda x: x[0])

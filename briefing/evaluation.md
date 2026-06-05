@@ -12,7 +12,7 @@ The main experiment is `naive_small`. It compares:
 
 Metrics:
 
-- `weighted_cost`: probability-weighted machine-independent cost proxy; lower is better
+- `weighted_cost`: probability-weighted machine-independent cost proxy at recall@100; lower is better
 - `mean_recall_at_k`: mean recall@k across queries; higher is better
 - `min_recall_at_k`: worst query recall@k; higher is better
 - `storage_indexes`: number of used indexes; lower is better and must respect the configured budget for constrained methods

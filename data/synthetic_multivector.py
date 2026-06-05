@@ -88,7 +88,7 @@ def make_workload(name: str = "naive_small", n_rows: int = 8000, seed: int = 7) 
     if name == "naive_small":
         dims = (32, 40, 48)
         query_sets = ((0,), (0, 1), (1, 2), (0, 1, 2))
-        top_k = 50
+        top_k = 100
         recall = 0.90
         budget = 3
     elif name == "bicomplex_small":
@@ -99,7 +99,7 @@ def make_workload(name: str = "naive_small", n_rows: int = 8000, seed: int = 7) 
             if len(cols) >= 2 and cols not in all_sets:
                 all_sets.append(cols)
         query_sets = tuple(all_sets)
-        top_k = 50
+        top_k = 100
         recall = 0.90
         budget = len(dims)
     else:

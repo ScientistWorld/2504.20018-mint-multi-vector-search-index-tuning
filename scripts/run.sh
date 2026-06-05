@@ -13,5 +13,9 @@ set -e
 
 cd /home/user
 
-bash scripts/reproduce.sh
+echo "[run] regenerate standardized recall@100 naive_small result"
+bash scripts/method.sh naive_small 8000 checkpoints/mint_results.json
 python validate.py --compare
+
+echo "[run] attempt bicomplex_small extension artifact"
+python -m method.mint --workload bicomplex_small --n-rows 3000 --output checkpoints/bicomplex_results.json

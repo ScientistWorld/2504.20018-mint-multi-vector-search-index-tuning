@@ -7,4 +7,4 @@ Given a workload of such queries with probabilities, choose a set of indexes tha
 - each query must meet a recall@k threshold against exact full-scan top-k results
 - the number of created indexes must not exceed the storage budget
 
-The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@50, and a storage budget of three indexes.
+The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@100, and a storage budget of three indexes.
