@@ -1,5 +1,5 @@
-action: submit
+action: done
 gpus: 0
 test: false
-milestone: method_runs
-notes: "Run the 8000-row MINT reproduction on CPU, write scoring/scores.json, and compare against reference."
+milestone: core_claim
+notes: "Core claim reproduced on naive_small: MINT achieved 3.04x lower weighted cost than PerColumn while meeting recall@50 0.90 and storage budget 3."

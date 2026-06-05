@@ -6,6 +6,7 @@
 - Implemented PerColumn and PerQuery baselines.
 - Implemented evaluator that reads saved method artifacts and writes `scoring/scores.json`.
 - Lightweight local smoke runs complete on 500 and 2000 rows.
+- Completed the scheduled 8000-row CPU reproduction job and wrote final scores.
 
 ## Results
 
@@ -17,12 +18,21 @@ Local 2000-row smoke result on `naive_small`:
 - Mean and minimum recall@50: 0.90
 - MINT storage indexes: 3
 
-The official 8000-row result is being submitted as a CPU job.
+Final 8000-row reproduction result on `naive_small`:
+
+- PerColumn weighted cost: 50562.84
+- PerQuery weighted cost: 7188.74
+- MINT weighted cost: 16643.23
+- MINT speedup vs PerColumn: 3.04x
+- MINT mean and minimum recall@50: 0.90
+- MINT storage indexes: 3, matching the storage budget
+
+This supports the paper's core claim on the scaled workload: tuning multi-vector indexes and query plans can substantially reduce query cost relative to independent per-column indexes while meeting recall and storage constraints.
 
 ## Remaining
 
-- Run the scheduled 8000-row reproduction job.
-- Inspect `scoring/scores.json` after the job and update milestone if the result supports the core claim.
+- Optional extension: add a second workload with different query mix or dimensionality to reach `core_claim_plus`.
+- Optional extension: add a DiskANN-like backend or larger public embedding dataset for closer coverage of the paper's full experiments.
 
 ## Issues
 
