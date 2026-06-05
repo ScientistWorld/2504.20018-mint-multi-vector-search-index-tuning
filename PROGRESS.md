@@ -43,6 +43,7 @@ This supports the paper's core claim on the scaled workload: tuning multi-vector
 - FAISS is installed in the reproducible container overlay, not the login-node Python environment. Local direct Python smoke commands that import `faiss` fail outside the container; scheduled jobs use the correct environment.
 - `apptainer` is not available in the interactive login shell, so container smoke checks are submitted through the scheduler.
 - Job `c7043bb2-054` failed with `RuntimeError: no feasible seed configuration found`; the cause was making beam-search seeds depend on actual ANN ordering rather than the estimator used by MINT's query planner.
+- Job `993b2c8e-4a6` failed with the same seed-feasibility error after estimator restoration. The remaining issue was the seed set itself: one- and two-index single-query seeds were too narrow to cover every query at the recall threshold. The beam search now starts from PerColumn/PerQuery when budget-feasible and additional compact coverage seeds.
 
 ## Deviations from Paper
 

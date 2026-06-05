@@ -161,11 +161,26 @@ def beam_search_configuration(
     query_sets = [q.columns for q in workload.queries]
     candidates = sorted(all_candidate_indexes(query_sets, subset_diff=subset_diff), key=lambda x: (len(x), x))
     seeds: set[frozenset[tuple[int, ...]]] = set()
+    all_columns = frozenset((i,) for i in range(len(workload.columns)))
+    per_query = frozenset(q.columns for q in workload.queries)
+    if len(all_columns) <= workload.storage_budget:
+        seeds.add(all_columns)
+    if len(per_query) <= workload.storage_budget:
+        seeds.add(per_query)
     for qcols in query_sets:
         cand_q = [c for c in candidates if set(c).issubset(qcols)]
         for r in range(1, min(seed_limit, len(cand_q)) + 1):
             for combo in combinations(cand_q, r):
                 seeds.add(frozenset(combo))
+
+    # Add compact coverage seeds. MINT's beam search needs at least one
+    # feasible starting configuration; single-query seeds can be too narrow
+    # when no one- or two-index subset reaches the recall threshold for all
+    # query column sets.
+    for combo in combinations(candidates, min(workload.storage_budget, len(candidates))):
+        covered = {qcols: any(set(idx).issubset(qcols) for idx in combo) for qcols in query_sets}
+        if all(covered.values()):
+            seeds.add(frozenset(combo))
 
     best_seen: tuple[set[tuple[int, ...]], float, dict[str, Plan]] | None = None
     scored = []
