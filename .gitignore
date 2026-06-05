@@ -1,5 +1,7 @@
 # Large files — do not commit (applies everywhere, including tmp/)
-checkpoints/
+checkpoints/*
+!checkpoints/.gitkeep
+!checkpoints/mint_results.json
 *.pt
 *.pth
 *.ckpt
@@ -231,6 +233,3 @@ tmp/
 protocol.md
 *.egg-info
 core.[0-9]*
-
-# Auto-added by swarm
-data/downloads/

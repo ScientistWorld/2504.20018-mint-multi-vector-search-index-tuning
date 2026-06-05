@@ -17,5 +17,10 @@
 - MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
 - `python validate.py --compare` passed all scoring and structure checks.
 
+### [2026-06-05 06:09] - core_claim
+- Final verification kept the milestone at `core_claim`.
+- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
+- `python validate.py --compare` passed after the verification edits.
+
 ## Stop Justification
 - Completed at milestone `core_claim`.

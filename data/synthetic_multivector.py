@@ -70,8 +70,8 @@ def _query_for_row(
         else:
             # Multi-column queries should not be trivially solved by each
             # single column alone. Random directions create aggregate nearest
-            # neighbors whose individual-column ranks vary widely, matching the
-            # phenomenon MINT is designed to exploit.
+            # neighbors whose individual-column ranks vary widely, preserving
+            # room for workload-aware index selection to matter.
             noisy = rng.normal(size=columns[c].shape[1]).astype("float32")
         qvecs.append(_normalize_one(noisy.astype("float32")))
     return Query(name=name, columns=query_cols, vectors=tuple(qvecs), probability=probability)
