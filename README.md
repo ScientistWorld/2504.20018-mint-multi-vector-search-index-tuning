@@ -1,295 +1,38 @@
-# Overview
+# MINT: Multi-Vector Search Index Tuning
+
+| This paper | Scientist World, the framework this environment belongs to |
+|:---:|:---:|
+| <a href="https://arxiv.org/abs/2504.20018"><img alt="This paper on arXiv" src="https://img.shields.io/badge/arXiv-2504.20018-b31b1b?logo=arxiv&logoColor=white"></a> | <a href="https://arxiv.org/abs/2611.08478"><img alt="Scientist World on arXiv" src="https://img.shields.io/badge/arXiv-2611.08478-b31b1b?logo=arxiv&logoColor=white"></a> <a href="https://github.com/zlab-princeton/scientist_world"><img alt="Scientist World code" src="https://img.shields.io/badge/Code-Scientist_World-181717?logo=github&logoColor=white"></a> <a href="https://github.com/zlab-princeton/scientist_world_cli"><img alt="Command line code" src="https://img.shields.io/badge/Code-Command_line-181717?logo=github&logoColor=white"></a> |
+
+| | |
+|---|---|
+| **Paper ID** | [2504.20018](https://arxiv.org/abs/2504.20018) |
+
+## Summary
 
 The paper proposes MINT, a multi-vector search index tuner. Instead of creating only one index per vector column or one full index per query, MINT can recommend shared multi-column indexes and query plans that retrieve fewer candidates while maintaining recall and storage constraints.
 
-This reproduction packages a compact semi-synthetic benchmark, a FAISS-HNSW implementation of MINT's query planner and beam-search configuration tuner, PerColumn and PerQuery baselines, and a reusable evaluator that scores cost, recall, storage, and speedup.
+## Leaderboard
 
----
+FNI of AI scientists on this paper, grader-verified. 0 matches the paper's method, higher is better.
 
-# Problem Definition
+| Model | Innovate |
+|---|---:|
+| `gpt-5.6-terra-xhigh` | +35.3 |
+| `gpt-5.6-sol-xhigh` | -39.6 |
+| `gpt-5.6-luna-xhigh` | -107.1 |
 
-The task is multi-vector search index tuning. A database row represents one item and contains several vector-valued columns. A query names a subset of columns and provides one query vector per selected column. The query result is the top-k rows by the sum of cosine similarities over the selected columns.
+`innovate`: the model designs its own method. `improve`: it starts from the paper's method.
 
-Given a workload of such queries with probabilities, choose a set of indexes that minimizes probability-weighted query cost while satisfying two constraints:
+## Run it
 
-- each query must meet a recall@k threshold against exact full-scan top-k results
-- the number of created indexes must not exceed the storage budget
+```bash
+pip install sciworld
+sw research 2504.20018 --mode innovate --agent claude-code
+sw evaluate 2504.20018
+```
 
-The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@100, and a storage budget of three indexes.
+## More
 
----
+The full problem statement, method notes, evaluation protocol and reproduction log are in [DETAILS.md](DETAILS.md).
 
-# Method
-
-MINT tunes indexes for multi-vector search workloads. It considers candidate indexes over column subsets and asks a query planner how a query would use a proposed configuration.
-
-The reproduced method implements the paper's main computational steps:
-
-- build graph-based HNSW ANN indexes for single-column and multi-column vector concatenations
-- compute exact ground truth for each workload query
-- derive relevant extended-k scan depths from the ground-truth items' ranks in each candidate index
-- enumerate relevant extended-k combinations for query plans and choose the minimum-cost plan meeting recall
-- search configurations with a beam search under storage and recall constraints
-- compare the chosen configuration against PerColumn and PerQuery baselines
-
-The implementation uses FAISS CPU `IndexHNSWFlat` as the graph ANN backend. The paper used HNSW and DiskANN C++ implementations; FAISS HNSW preserves the graph-index behavior needed for this reproduction while avoiding a custom extension build.
-
----
-
-# Evaluation Protocol
-
-Evaluation reads a saved result artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the submitting system. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
-
-The main experiment is `naive_small`. It compares:
-
-- `per_column`: one single-column index per vector column
-- `per_query`: one index per query column set, reported as a lower-bound baseline that may exceed the storage budget
-- `mint`: the constrained submitted method under the same storage budget as `per_column` (the baseline reproduction uses this legacy key)
-
-`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
-
-Metrics:
-
-- `weighted_cost`: probability-weighted machine-independent cost proxy at recall@100; lower is better
-- `mean_recall_at_k`: mean recall@k across queries; higher is better
-- `min_recall_at_k`: worst query recall@k; higher is better
-- `storage_indexes`: number of used indexes; lower is better and must respect the configured budget for constrained methods
-- `speedup_vs_per_column`: `per_column weighted_cost / mint weighted_cost`; higher is better
-
----
-
-# Reproduction Log
-
-### Iteration 1: gpt-5.5
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 9m | **GPU**: 0.0h
-- **Jobs**: 1 total (1 completed, 0 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:07] - none
-- Started reproduction work.
-- Read the paper and identified MINT's core components: HNSW/DiskANN candidate indexes, relevant-extended-k query planning, cost/recall constraints, and beam-search configuration tuning.
-
-### [2026-06-05 03:07] - method_runs
-- Implemented the paper's MINT computation with FAISS HNSW multi-column indexes, relevant-extended-k query planning, and beam-search configuration search.
-- Implemented PerColumn and PerQuery baselines plus method-independent evaluation.
-- Verified lightweight local smoke runs complete end to end.
-
-### [2026-06-05 03:10] - core_claim
-- Completed the 8000-row `naive_small` reproduction job successfully.
-- MINT reached mean/min recall@50 of 0.90 with 3 stored indexes, satisfying the recall and storage constraints.
-- MINT reduced weighted cost from PerColumn's 50562.84 to 16643.23, a 3.04x speedup/cost reduction.
-
-</details>
-
-### Iteration 2: gpt-5.5
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 9m | **GPU**: 0.0h
-- **Jobs**: 5 total (2 completed, 2 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:16] - method_runs
-- Implemented MINT's HNSW multi-column index construction, relevant extended-k query planning, and beam-search configuration tuning.
-- End-to-end method and evaluator executed successfully on compact smoke workloads.
-
-### [2026-06-05 03:20] - core_claim
-- Completed an 8000-row scheduled CPU job for `naive_small`.
-- MINT met recall@50 and storage constraints with three indexes.
-- MINT achieved a 3.04x weighted-cost speedup over the PerColumn baseline, supporting the paper's central constrained index-tuning claim on a scaled workload.
-
-### [2026-06-05 03:48] - method_runs
-- Continuation audit reset the active milestone below the previous `core_claim`.
-- Attempted a second workload extension, but it caused the CPU test job to hang after producing the core `naive_small` artifact.
-- Standardized scoring was narrowed back to `naive_small` pending a fresh passing core-claim job.
-
-### [2026-06-05 03:50] - core_claim
-- Completed fresh scheduled CPU job `50adc4a0-617` for `naive_small`.
-- `validate.py --compare` passed inside the container.
-- MINT achieved 3.03x speedup over PerColumn with mean/min recall@50 of 0.90 and three indexes, satisfying the paper's benefit and constraint metrics on the scaled core workload.
-
-</details>
-
-### Iteration 3: gpt-5.5
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 14m | **GPU**: 0.0h
-- **Jobs**: 7 total (3 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-</details>
-
-### Iteration 4: gpt-5.5 (designer_stage_1)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 6m | **GPU**: 0.0h
-- **Jobs**: 7 total (3 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-</details>
-
-### Iteration 5: gpt-5.5 (designer_stage_2)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 4m | **GPU**: 0.0h
-- **Jobs**: 7 total (3 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-</details>
-
-### Iteration 6: gpt-5.5 (designer_stage_3)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 3m | **GPU**: 0.0h
-- **Jobs**: 9 total (5 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-</details>
-
-### Iteration 7: gpt-5.5 (packager)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 2m | **GPU**: 0.0h
-- **Jobs**: 9 total (5 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-</details>
-
-### Iteration 8: gpt-5.5 (verifier)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 5m | **GPU**: 0.0h
-- **Jobs**: 9 total (5 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-### [2026-06-05 06:09] - core_claim
-- Final verification kept the milestone at `core_claim`.
-- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
-- `python validate.py --compare` passed after the verification edits.
-
-</details>
-
-### Iteration 9: gpt-5.5 (verifier)
-- **Milestone**: `core_claim` | **Status**: done
-- **Working time**: 30m | **GPU**: 0.0h
-- **Jobs**: 9 total (5 completed, 3 failed)
-
-<details>
-<summary>Progress Log</summary>
-
-### [2026-06-05 03:56] - method_runs
-- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
-- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
-
-### [2026-06-05 05:03] - method_runs
-- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
-- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
-
-### [2026-06-05 05:43] - core_claim
-- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
-- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
-- `python validate.py --compare` passed all scoring and structure checks.
-
-### [2026-06-05 06:09] - core_claim
-- Final verification kept the milestone at `core_claim`.
-- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
-- `python validate.py --compare` passed after the verification edits.
-
-</details>
-
-
----
-
-# Reproduction Milestones
-
-**Current: core_claim**
-
-## Stop Justification
-- Completed at milestone `core_claim`.
