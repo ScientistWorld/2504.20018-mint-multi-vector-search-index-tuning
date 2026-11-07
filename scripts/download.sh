@@ -12,8 +12,9 @@
 # Estimated total download size: 0 GB
 # Estimated disk usage after extraction: 0 GB
 #
-# This reproduction has no network downloads. The script is intentionally
-# retained so a fresh clone has an idempotent setup entry point.
+# This reproduction has no network downloads: both workloads are generated
+# deterministically by data/synthetic_multivector.py (public) and by the
+# evaluator (held-out queries). Python packages are installed by environment/setup.sh.
 
 set -e
 

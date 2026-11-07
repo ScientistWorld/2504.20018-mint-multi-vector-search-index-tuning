@@ -1,19 +1,55 @@
 # Evaluation Protocol
 
-Evaluation reads a saved result artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the submitting system. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
+Evaluation reads saved result artifacts (`checkpoints/*_results.json`), executes their plans and recomputes every number. It never imports `method/` and never trusts numbers, flags or declarations written in an artifact (reported costs, recalls, configuration lists, row counts, thresholds and budgets are ignored).
 
-The main experiment is `naive_small`. It compares:
+## Artifact format
 
-- `per_column`: one single-column index per vector column
-- `per_query`: one index per query column set, reported as a lower-bound baseline that may exceed the storage budget
-- `mint`: the constrained submitted method under the same storage budget as `per_column` (the baseline reproduction uses this legacy key)
+One JSON file per workload:
 
-`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
+```json
+{
+  "workload": "naive_small",
+  "results": {
+    "<method name>": {
+      "plans": {
+        "q1": {"indexes": ["x1"], "ek": [93]},
+        "q2": {"indexes": ["x1,2", "x2"], "ek": [120, 0]}
+      }
+    }
+  }
+}
+```
 
-Metrics:
+- `plans` needs an entry for every template of the workload (`q1`..`q4` for `naive_small`, `q1`..`q8` for `bicomplex_small`).
+- `"x1,3"` names an index over the concatenation of columns 1 and 3 (1-based). Every index in a plan must use only that template's columns, appear once, and have an integer `ek` in `[0, 3000]`. `ek = 0` means the index is not scanned.
+- The names `per_column` and `per_query` are reserved for the evaluator's own baselines; artifact entries with these names are ignored.
+- A method present in some artifacts but missing a workload is scored as failed on that workload.
 
-- `weighted_cost`: probability-weighted machine-independent cost proxy at recall@100; lower is better
-- `mean_recall_at_k`: mean recall@k across queries; higher is better
-- `min_recall_at_k`: worst query recall@k; higher is better
-- `storage_indexes`: number of used indexes; lower is better and must respect the configured budget for constrained methods
-- `speedup_vs_per_column`: `per_column weighted_cost / mint weighted_cost`; higher is better
+## Execution
+
+For each template, every evaluation query is executed: each listed index with `ek > 0` is searched for its top-`ek` items with a fixed FAISS `IndexHNSWFlat` engine (inner product on L2-normalized concatenated columns, M=16, efConstruction=120, efSearch=300, single-threaded), the union is formed, and recall@100 against the exact top-100 and the cost are computed. Storage is the number of distinct indexes with `ek > 0` across all template plans.
+
+## Feasibility gate
+
+A run is **failed** on a workload if any plan is invalid, any template's mean recall@100 is below 0.90, or storage exceeds the budget. A failed run gets fixed worst-case values on every metric (cost at least 100x PerColumn, speedup 0, recall 0, maximal violations and candidate counts), so it ranks below every feasible run.
+
+## Slices
+
+- `scripts/evaluate_train.sh` -> `scoring/scores_train.json`: the visible training queries (in-sample for any method that plans on them).
+- `scripts/evaluate_test.sh` -> `scoring/scores_test.json`: held-out queries of the same templates (500 per template), generated only inside the evaluator.
+- `scripts/evaluate.sh` -> `scoring/scores.json`: same as the train slice.
+
+All three score every `checkpoints/*_results.json` when called without arguments.
+
+## Comparator and metrics
+
+`per_column` (one single-column index per column, planned once on the training queries and frozen in `eval/*/baselines.json`) is the normalization baseline on the same queries. Per workload:
+
+- `weighted_cost`: probability-weighted mean query cost / PerColumn's (lower is better; primary)
+- `speedup_vs_per_column`: PerColumn cost / submission cost
+- `mean_recall_at_k`, `min_recall_at_k`: mean and worst template mean recall@100
+- `recall_floor_violation`, `storage_budget_violation`: 0 for every feasible run
+- `storage_indexes`: distinct indexes used
+- `mean_candidate_multiplier_at_k`, `max_candidate_multiplier_at_k`: mean / largest template mean distinct-candidate count divided by k
+
+The ranking combines metrics with the coefficients in `scoring/reference.json` (both workloads weigh 0.5); cost and speedup dominate, recall above the floor, storage and candidate counts act as tie-breakers. A one-index-per-template layout (`per_query`) is reported under `_raw` for reference only: it exceeds the storage budget.

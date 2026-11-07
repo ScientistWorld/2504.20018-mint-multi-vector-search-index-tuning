@@ -20,7 +20,7 @@ import json
 import math
 from pathlib import Path
 
-from data import synthetic_multivector as public
+import data.synthetic_multivector as public
 
 SLICE_NAME = "train"
 PROTOCOL = {

@@ -27,8 +27,8 @@
         },
         "storage_indexes": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration)."
+          "coefficient": -0.05,
+          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
         },
         "storage_budget_violation": {
           "higher_is_better": false,
@@ -37,13 +37,13 @@
         },
         "mean_candidate_multiplier_at_k": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Mean over templates of the mean distinct-candidate count divided by k."
+          "coefficient": -0.02,
+          "description": "Mean over templates of the mean distinct-candidate count divided by k. Tie-breaker only (already part of cost)."
         },
         "max_candidate_multiplier_at_k": {
           "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Largest template mean distinct-candidate count divided by k."
+          "coefficient": -0.01,
+          "description": "Largest template mean distinct-candidate count divided by k. Tie-breaker only (unweighted by template probability)."
         },
         "speedup_vs_per_column": {
           "higher_is_better": true,
@@ -99,8 +99,8 @@
         },
         "storage_indexes": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration)."
+          "coefficient": -0.05,
+          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
         },
         "storage_budget_violation": {
           "higher_is_better": false,
@@ -109,13 +109,13 @@
         },
         "mean_candidate_multiplier_at_k": {
           "higher_is_better": false,
-          "coefficient": -0.3,
-          "description": "Mean over templates of the mean distinct-candidate count divided by k."
+          "coefficient": -0.02,
+          "description": "Mean over templates of the mean distinct-candidate count divided by k. Tie-breaker only (already part of cost)."
         },
         "max_candidate_multiplier_at_k": {
           "higher_is_better": false,
-          "coefficient": -0.2,
-          "description": "Largest template mean distinct-candidate count divided by k."
+          "coefficient": -0.01,
+          "description": "Largest template mean distinct-candidate count divided by k. Tie-breaker only (unweighted by template probability)."
         },
         "speedup_vs_per_column": {
           "higher_is_better": true,

@@ -1,6 +1,6 @@
 {
   "reference": {
-    "per_column_train_rank": -1.5037051294298802,
+    "per_column_train_rank": -1.4604618794298807,
     "reference_train_metrics": {
       "bicomplex_small": {
         "weighted_cost": 0.45776872694152726,
@@ -25,7 +25,7 @@
         "speedup_vs_per_column": 1.746259293907538
       }
     },
-    "per_column_test_rank": -1.504240936937784,
+    "per_column_test_rank": -1.466176286937784,
     "reference_test_metrics": {
       "bicomplex_small": {
         "weighted_cost": 0.45753877911915564,
@@ -54,7 +54,7 @@
   "cases": {
     "better_combined": {
       "description": "Better: measured re-rank plus variance-aware allowance.",
-      "train_rank": 0.835081570594474,
+      "train_rank": 0.08616157059447409,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -83,7 +83,7 @@
           "speedup_vs_per_column": 1.8208196933611094
         }
       },
-      "test_rank": 0.838195495212862,
+      "test_rank": 0.08741649521286206,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -115,7 +115,7 @@
     },
     "better_measured_rerank": {
       "description": "Better: picks among the 40 best configurations by cost measured on the training instances (distinct candidates, actual HNSW results) instead of the duplicate-counting cost estimate.",
-      "train_rank": 0.8272203721962109,
+      "train_rank": 0.08180037219621096,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -144,7 +144,7 @@
           "speedup_vs_per_column": 1.8049150814588357
         }
       },
-      "test_rank": 0.8295243110234458,
+      "test_rank": 0.08224531102344572,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -176,7 +176,7 @@
     },
     "better_trim_deterministic": {
       "description": "Better: variance-aware recall allowance; single-index plans whose recall is identical on every training instance drop the allowance (ek 93 -> 91).",
-      "train_rank": 0.009593700248223924,
+      "train_rank": 0.006093700248223999,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -205,7 +205,7 @@
           "speedup_vs_per_column": 1.7645367394308218
         }
       },
-      "test_rank": 0.010309577569906386,
+      "test_rank": 0.006809577569906461,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -298,7 +298,7 @@
     },
     "higher_recall": {
       "description": "Honest trade-off: plans to 0.98 training recall (higher recall, higher cost).",
-      "train_rank": -0.05496858609813571,
+      "train_rank": -0.44149383609813564,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -327,7 +327,7 @@
           "speedup_vs_per_column": 1.5044012242127434
         }
       },
-      "test_rank": -0.018640425658491944,
+      "test_rank": -0.4362175256584918,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -359,7 +359,7 @@
     },
     "overfit_no_margin": {
       "description": "Train-tuned: plans exactly to the 0.90 floor on the visible training instances (no recall allowance).",
-      "train_rank": 0.7792409594131844,
+      "train_rank": 0.2946754594131844,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -388,7 +388,7 @@
           "speedup_vs_per_column": 1.9143514374400938
         }
       },
-      "test_rank": -57.09294008680927,
+      "test_rank": -52.12825178680927,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "ok"
@@ -420,7 +420,7 @@
     },
     "reference_seed_101": {
       "description": "Reference procedure on a different visible training-instance sample (seed 101).",
-      "train_rank": 0.17359376347592037,
+      "train_rank": 0.07041563847592025,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -449,7 +449,7 @@
           "speedup_vs_per_column": 1.810320917023583
         }
       },
-      "test_rank": 0.1776501964839707,
+      "test_rank": 0.07404874648397075,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -481,7 +481,7 @@
     },
     "reference_seed_202": {
       "description": "Reference procedure on a different visible training-instance sample (seed 202).",
-      "train_rank": 0.28183574838529235,
+      "train_rank": 0.11804849838529217,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -510,7 +510,7 @@
           "speedup_vs_per_column": 1.8495013626481878
         }
       },
-      "test_rank": 0.28677290856306076,
+      "test_rank": 0.12283865856306056,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -542,7 +542,7 @@
     },
     "shortcut_drop_templates": {
       "description": "Keeps plans only for q2/q3 (the old public test slice) and drops the others.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -571,7 +571,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -603,7 +603,7 @@
     },
     "shortcut_empty": {
       "description": "Empty configuration and no query plans.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -632,7 +632,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -664,7 +664,7 @@
     },
     "shortcut_float_ek": {
       "description": "Fractional retrieval depths (ek - 0.5).",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -693,7 +693,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -725,7 +725,7 @@
     },
     "shortcut_forged_metrics": {
       "description": "PerColumn plans submitted with fabricated cost/recall/storage/speedup fields and an empty configuration.",
-      "train_rank": -1.5037051294298802,
+      "train_rank": -1.4604618794298807,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -754,7 +754,7 @@
           "speedup_vs_per_column": 1.0
         }
       },
-      "test_rank": -1.504240936937784,
+      "test_rank": -1.466176286937784,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -847,7 +847,7 @@
     },
     "shortcut_low_recall": {
       "description": "Retrieves one candidate per used index.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -876,7 +876,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -908,7 +908,7 @@
     },
     "shortcut_negative_ek": {
       "description": "Appends an extra index entry with ek=-1000000 to every plan.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -937,7 +937,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -969,7 +969,7 @@
     },
     "shortcut_overstorage": {
       "description": "Submits the one-index-per-template (PerQuery) plans, exceeding the storage budget.",
-      "train_rank": -116.1850626294299,
+      "train_rank": -104.92181075442988,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -998,7 +998,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -116.17932806193778,
+      "test_rank": -104.92263976193777,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1030,7 +1030,7 @@
     },
     "shortcut_partial_experiment": {
       "description": "Submits only the naive_small artifact; no bicomplex_small plans.",
-      "train_rank": -57.397871803970546,
+      "train_rank": -52.23496992897054,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "ok"
@@ -1059,7 +1059,7 @@
           "speedup_vs_per_column": 1.746259293907538
         }
       },
-      "test_rank": -57.390678905885444,
+      "test_rank": -52.23434060588544,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "ok"
@@ -1091,7 +1091,7 @@
     },
     "shortcut_recall_below_floor": {
       "description": "Every used ek scaled by 0.95 (the old 89%-recall shortcut): lower cost, recall below the floor.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1120,7 +1120,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1153,7 +1153,7 @@
     "shortcut_replace_fixed_data": {
       "description": "Edits the public data generator so every workload has 4 rows, and submits ek=4 plans.",
       "train_rank": null,
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1246,7 +1246,7 @@
     },
     "shortcut_test_size": {
       "description": "Declares n_rows=4 and retrieves 4 candidates per used index.",
-      "train_rank": -114.98506262942989,
+      "train_rank": -104.2218107544299,
       "train_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1275,7 +1275,7 @@
           "speedup_vs_per_column": 0.0
         }
       },
-      "test_rank": -114.97932806193779,
+      "test_rank": -104.22263976193778,
       "test_status": {
         "bicomplex_small": "failed",
         "naive_small": "failed"
@@ -1307,7 +1307,7 @@
     },
     "weaker_no_multicolumn": {
       "description": "Weaker: the submitted method uses only single-column indexes (the paper's PerColumn approach) with the same planner.",
-      "train_rank": -1.5037051294298802,
+      "train_rank": -1.4604618794298807,
       "train_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"
@@ -1336,7 +1336,7 @@
           "speedup_vs_per_column": 1.0
         }
       },
-      "test_rank": -1.504240936937784,
+      "test_rank": -1.466176286937784,
       "test_status": {
         "bicomplex_small": "ok",
         "naive_small": "ok"

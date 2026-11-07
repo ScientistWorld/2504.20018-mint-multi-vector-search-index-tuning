@@ -1,13 +1,11 @@
 #!/bin/bash
-# Hardening job (CPU, no internet): rerun the reference end to end on the
-# hardened gym, freeze the evaluator-owned comparator plans, score train/test,
-# then run better/weaker variants and shortcut artifacts through the hidden
-# test. Resumable: finished stages are skipped on resubmission.
+# Job entry point (CPU, no internet): reproduce the reference end to end.
+# Tunes both workloads with MINT, then scores every checkpoints/*_results.json
+# on the visible train slice, the held-out test slice and scores.json.
+# (The hardening audit itself is redteam/hardening/run_hardening.py.)
 
 set -e
 
 cd /home/user
 
-export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONUNBUFFERED=1
-
-python redteam/hardening/run_hardening.py
+bash scripts/reproduce.sh

@@ -65,3 +65,11 @@ The earlier recall@50 result supported the core claim on the first scaled worklo
 
 - The paper used million-row public embedding datasets and a real News embedding workload. This reproduction uses a deterministic scaled semi-synthetic workload because downloading and building the full million-row HNSW/DiskANN benchmark is unnecessary for the minimum core claim and would be expensive for iterative reproduction.
 - The paper evaluated HNSW and DiskANN C++ backends. This reproduction uses FAISS CPU HNSW for the core experiment to keep the environment portable while retaining graph-based ANN indexes.
+
+## Hardening (iteration 11)
+
+- The test now executes per-template plans on 500 held-out query instances per template, generated only in `eval/test/`. Methods plan from 200 public training instances per template.
+- The evaluator owns the protocol, the database copy and the frozen PerColumn comparator. It validates plans, derives storage from them, and fails any run below the 0.90 recall floor or above the storage budget.
+- Added the `bicomplex_small` experiment (scaled BiComplex). Weights are 0.5/0.5. Storage and candidate-count coefficients were reduced to tie-breakers.
+- Reference rerun (job `949f7afa-637`), hidden test: naive cost 0.572 (1.75x vs PerColumn), bicomplex 0.458 (2.19x); recall >= 0.916; storage at budget.
+- Better variants score higher (+0.08), weaker ones lower (−1.47), and train-tuned plans fail the hidden test. All previously paying shortcuts now fail or tie. See `HARDENING.md`.

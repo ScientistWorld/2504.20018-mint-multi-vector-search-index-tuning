@@ -20,7 +20,7 @@ import json
 import math
 from pathlib import Path
 
-from eval.test import hidden_workload as hw
+import eval.test.hidden_workload as hw
 
 SLICE_NAME = "test"
 RESERVED_BASELINES = ("per_column", "per_query")

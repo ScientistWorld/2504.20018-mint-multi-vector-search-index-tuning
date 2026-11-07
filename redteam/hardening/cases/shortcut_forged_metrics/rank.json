@@ -1,7 +1,7 @@
 {
   "train": {
     "method": "mint",
-    "rank_delta": -1.5037051294298802,
+    "rank_delta": -1.4604618794298807,
     "terms": {
       "naive_small": {
         "weighted_cost": -0.2136736785055735,
@@ -10,8 +10,8 @@
         "recall_floor_violation": -0.0,
         "storage_indexes": -0.0,
         "storage_budget_violation": -0.0,
-        "mean_candidate_multiplier_at_k": -0.17525624999999995,
-        "max_candidate_multiplier_at_k": 0.32676,
+        "mean_candidate_multiplier_at_k": -0.011683749999999998,
+        "max_candidate_multiplier_at_k": 0.016338,
         "speedup_vs_per_column": -0.37312964695376905
       },
       "bicomplex_small": {
@@ -21,15 +21,15 @@
         "recall_floor_violation": -0.0,
         "storage_indexes": -0.0,
         "storage_budget_violation": -0.0,
-        "mean_candidate_multiplier_at_k": -0.4614431249999999,
-        "max_candidate_multiplier_at_k": 0.2532500000000001,
+        "mean_candidate_multiplier_at_k": -0.030762874999999995,
+        "max_candidate_multiplier_at_k": 0.012662500000000004,
         "speedup_vs_per_column": -0.5922546049413007
       }
     }
   },
   "test": {
     "method": "mint",
-    "rank_delta": -1.504240936937784,
+    "rank_delta": -1.466176286937784,
     "terms": {
       "naive_small": {
         "weighted_cost": -0.21382662166847294,
@@ -38,8 +38,8 @@
         "recall_floor_violation": -0.0,
         "storage_indexes": -0.0,
         "storage_budget_violation": -0.0,
-        "mean_candidate_multiplier_at_k": -0.17541225000000005,
-        "max_candidate_multiplier_at_k": 0.3271960000000001,
+        "mean_candidate_multiplier_at_k": -0.011694150000000004,
+        "max_candidate_multiplier_at_k": 0.016359800000000004,
         "speedup_vs_per_column": -0.3735962843838646
       },
       "bicomplex_small": {
@@ -49,8 +49,8 @@
         "recall_floor_violation": -0.0,
         "storage_indexes": -0.0,
         "storage_budget_violation": -0.0,
-        "mean_candidate_multiplier_at_k": -0.4616808750000001,
-        "max_candidate_multiplier_at_k": 0.2586519999999998,
+        "mean_candidate_multiplier_at_k": -0.030778725000000007,
+        "max_candidate_multiplier_at_k": 0.012932599999999992,
         "speedup_vs_per_column": -0.5928035454450218
       }
     }

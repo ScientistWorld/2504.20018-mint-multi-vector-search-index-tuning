@@ -16,4 +16,4 @@
 
 set -e
 
-uv pip install --system numpy faiss-cpu
+uv pip install --system "numpy==2.4.6" "faiss-cpu==1.14.2"
