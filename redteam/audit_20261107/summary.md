@@ -14,6 +14,7 @@
 | shortcut_storage_declaration | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
 | shortcut_rewrite_protocol | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
 | shortcut_test_size | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_replace_fixed_data | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
 | shortcut_rank_tradeoff | -0.010303964 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
 | shortcut_low_recall | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
 | shortcut_below_floor | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |

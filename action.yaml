@@ -1,4 +1,4 @@
 action: submit
 gpus: 0
 test: false
-notes: "Audit current gym: 3 fresh reference seeds, stronger measured-cost and 800-query variants, weaker baseline, and 21 shortcut checks; all hidden tests run with no arguments and saved under redteam/audit_20261107."
+notes: "Resume audit: score the fixed-data replacement shortcut despite its expected public-train rejection, skip 27 completed comparisons, and calculate final scientific-ordering and failure-compensation bounds."

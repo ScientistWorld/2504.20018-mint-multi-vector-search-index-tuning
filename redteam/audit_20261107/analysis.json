@@ -1,0 +1,82 @@
+{
+  "reference_seed_ranks": {
+    "20240501": 0.0,
+    "101": 0.07404874648397075,
+    "202": 0.12283865856306056
+  },
+  "seed_spread": 0.12283865856306056,
+  "better_variants": {
+    "better_measured_cost": {
+      "rank_delta": 0.08224531102344572,
+      "exceeds_seed_spread": false,
+      "all_feasible": true
+    },
+    "better_more_queries": {
+      "rank_delta": 0.2427624047969602,
+      "exceeds_seed_spread": true,
+      "all_feasible": true
+    }
+  },
+  "weaker_delta": -1.466176286937784,
+  "weaker_exceeds_seed_spread": true,
+  "reference_cost_speedup": {
+    "naive_small": {
+      "cost": 0.5723467566630541,
+      "speedup": 1.7471925687677292,
+      "beats_per_column": true,
+      "recall_floor_met": true,
+      "storage_budget_met": true,
+      "loose_feasible_cost_lower_bound": 0.2413910239516292,
+      "optimistic_maximum_rank_contribution": 1.5438333864076712
+    },
+    "bicomplex_small": {
+      "cost": 0.45753877911915564,
+      "speedup": 2.1856070908900436,
+      "beats_per_column": true,
+      "recall_floor_met": true,
+      "storage_budget_met": true,
+      "loose_feasible_cost_lower_bound": 0.10882387061299448,
+      "optimistic_maximum_rank_contribution": 3.9373276477275274
+    }
+  },
+  "reference_metrics_at_bounds": {
+    "naive_small": {
+      "absolute_optimal_bounds": [
+        "recall_floor_violation",
+        "storage_budget_violation"
+      ],
+      "budget_ceiling": {
+        "storage_indexes": 3.0
+      },
+      "other_metrics_at_optimal_bounds": []
+    },
+    "bicomplex_small": {
+      "absolute_optimal_bounds": [
+        "recall_floor_violation",
+        "storage_budget_violation"
+      ],
+      "budget_ceiling": {
+        "storage_indexes": 5.0
+      },
+      "other_metrics_at_optimal_bounds": []
+    }
+  },
+  "failure_compensation_bounds": {
+    "naive_small": {
+      "failed_workload_plus_optimistically_perfect_other_workload_rank_upper_bound": -48.05097150832481,
+      "bound_is_below_reference": true
+    },
+    "bicomplex_small": {
+      "failed_workload_plus_optimistically_perfect_other_workload_rank_upper_bound": -50.69050721947777,
+      "bound_is_below_reference": true
+    }
+  },
+  "shortcut_ties": [
+    "shortcut_inflate_baseline",
+    "shortcut_storage_declaration",
+    "shortcut_rewrite_protocol"
+  ],
+  "shortcut_gains": [
+    "shortcut_seed_lottery"
+  ]
+}

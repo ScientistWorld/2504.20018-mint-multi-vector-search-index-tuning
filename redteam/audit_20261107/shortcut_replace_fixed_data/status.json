@@ -1,5 +1,5 @@
 {
-  "ok": false,
-  "seconds": 1.7342464923858643,
-  "error": "Traceback (most recent call last):\n  File \"/home/user/redteam/audit_20261107/harness.py\", line 81, in run_case\n    run_command([\"bash\", \"scripts/evaluate_train.sh\"], out / \"evaluation.log\")\n  File \"/home/user/redteam/audit_20261107/harness.py\", line 49, in run_command\n    subprocess.run(cmd, cwd=ROOT, stdout=fh, stderr=subprocess.STDOUT, check=True)\n  File \"/usr/local/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['bash', 'scripts/evaluate_train.sh']' returned non-zero exit status 1.\n"
+  "ok": true,
+  "seconds": 20.3459312915802,
+  "error": null
 }
