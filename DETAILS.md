@@ -2,59 +2,118 @@
 
 The paper proposes MINT, a multi-vector search index tuner. Instead of creating only one index per vector column or one full index per query, MINT can recommend shared multi-column indexes and query plans that retrieve fewer candidates while maintaining recall and storage constraints.
 
-This reproduction packages a compact semi-synthetic benchmark, a FAISS-HNSW implementation of MINT's query planner and beam-search configuration tuner, PerColumn and PerQuery baselines, and a reusable evaluator that scores cost, recall, storage, and speedup.
+This reproduction packages two compact semi-synthetic workloads shaped after the paper's Naive and BiComplex workloads, a FAISS-HNSW implementation of MINT's query planner and beam-search configuration tuner, the PerColumn and PerQuery baselines, and an evaluator that executes submitted per-template plans on held-out queries and scores cost, recall, storage and speedup, failing any run that breaks the recall floor or the storage budget.
 
 ---
 
 # Problem Definition
 
-The task is multi-vector search index tuning. A database row represents one item and contains several vector-valued columns. A query names a subset of columns and provides one query vector per selected column. The query result is the top-k rows by the sum of cosine similarities over the selected columns.
+The task is multi-vector search index tuning. A database row represents one item and contains several vector-valued columns. A query names a subset of columns (its *template*) and provides one query vector per named column. The query result is the top-k rows by the sum of cosine similarities over the named columns.
 
-Given a workload of such queries with probabilities, choose a set of indexes that minimizes probability-weighted query cost while satisfying two constraints:
+A workload is a set of query templates with probabilities. Given the database and the workload, choose
 
-- each query must meet a recall@k threshold against exact full-scan top-k results
-- the number of created indexes must not exceed the storage budget
+- a configuration: a set of ANN indexes, each built over the concatenation of one or more columns, and
+- a plan per query template: which of the configuration's indexes to scan and how many items (`ek`) to retrieve from each; the union of retrieved items is re-ranked with the exact score,
 
-The benchmark uses a deterministic semi-synthetic multi-vector workload shaped after the paper's Naive setting: three vector columns, four queries, recall@100, and a storage budget of three indexes.
+so that the probability-weighted query cost is minimal while
+
+- every template meets a recall@k floor (mean recall over that template's queries, measured against the exact full-scan top-k), and
+- the number of distinct indexes used by the plans does not exceed the storage budget.
+
+Plans are per template, so they must serve *unseen* queries of that template: the visible data provides a sample of training queries per template, and scoring uses held-out queries drawn from the same per-template distribution.
+
+Two deterministic semi-synthetic workloads are provided (`data/synthetic_multivector.py`):
+
+| workload | rows | columns (dims) | templates | k | recall floor | storage budget |
+|---|---:|---|---:|---:|---:|---:|
+| `naive_small` | 3,000 | 3 (32, 40, 48) | 4: {1}, {1,2}, {2,3}, {1,2,3} | 100 | 0.90 | 3 |
+| `bicomplex_small` | 3,000 | 5 (16, 20, 24, 28, 32) | 8 subsets with >= 2 columns | 100 | 0.90 | 5 |
+
+Each template has 200 visible training queries (`make_workload(name).train_queries`).
+
+Cost is a machine-independent latency proxy: for each query, the sum over scanned indexes of `index dimension x ek`, plus `query dimension x number of distinct retrieved items` (re-ranking).
 
 ---
 
 # Method
 
-MINT tunes indexes for multi-vector search workloads. It considers candidate indexes over column subsets and asks a query planner how a query would use a proposed configuration.
+MINT tunes indexes for multi-vector search workloads. It considers candidate indexes over column subsets and asks a query planner ("what-if") how each query template would use a proposed configuration.
 
-The reproduced method implements the paper's main computational steps:
+The reproduced method (`method/mint.py`) implements the paper's computational steps:
 
-- build graph-based HNSW ANN indexes for single-column and multi-column vector concatenations
-- compute exact ground truth for each workload query
-- derive relevant extended-k scan depths from the ground-truth items' ranks in each candidate index
-- enumerate relevant extended-k combinations for query plans and choose the minimum-cost plan meeting recall
-- search configurations with a beam search under storage and recall constraints
-- compare the chosen configuration against PerColumn and PerQuery baselines
+- graph-based HNSW ANN indexes (FAISS `IndexHNSWFlat`) on single-column and multi-column vector concatenations;
+- exact ground truth by full scan for the training queries of each template;
+- relevant extended-k (ek) values: the rank of every ground-truth item in each candidate index; Algorithm 1 enumerates the relevant ek of all but one index and derives the minimal last ek meeting the recall target (plans over <= 3 indexes); Algorithm 2 (dynamic programming over the power set of k' = 5 sampled ground-truth items, several samples) for larger plans;
+- the simplified cost estimator: per-index scan cost `dim * (80 + 1.25 * ek)` plus re-ranking cost `query dim * sum(ek)` (duplicates counted, as in the paper);
+- Algorithm 3 beam search over configurations under the storage and recall constraints (candidate indexes per template with at least |q| - di columns, di = 2; seeds of <= se = 2 per-template candidates plus covering seeds; beam width 5; stop when the improvement is <= im = 5%), with plan caching;
+- PerColumn and PerQuery baselines planned by the same planner.
 
-The implementation uses FAISS CPU `IndexHNSWFlat` as the graph ANN backend. The paper used HNSW and DiskANN C++ implementations; FAISS HNSW preserves the graph-index behavior needed for this reproduction while avoiding a custom extension build.
+Scaled-setup choices (not algorithm changes):
+
+- Plans are per template and must generalize to unseen queries, so planning pools the ground truth of the template's 200 training queries (the relevant-ek grid is thinned to at most 100-256 values per index, as the paper bounds it by k).
+- The recall estimator is the training-sample recall minus a fixed generalization allowance of 0.03 (plans target 0.93 on the training queries for a 0.90 floor).
+- Chosen plans are checked against the actual HNSW results on the training queries and ek of already-used indexes is raised where the measured recall falls short.
+- The paper used HNSW and DiskANN C++ libraries on 1M-row public embeddings; this reproduction uses FAISS HNSW on 3,000-row synthetic workloads.
+
+Optional flags (off for the reference): `--rerank-measured K` re-ranks the K best configurations by cost measured on the training queries; `--trim-deterministic` drops the allowance for single-index plans whose recall is identical on all training queries; `--beam-width/--seed-limit/--improvement-threshold/--max-iters/--local-search` widen the search; `--recall-margin` and `--train-seed` change the allowance and the training sample.
 
 ---
 
 # Evaluation Protocol
 
-Evaluation reads a saved result artifact from `checkpoints/` and writes `scoring/scores.json`. It does not import from `method/` or rerun the submitting system. Instead, it reconstructs the deterministic workload, executes the saved query plans, and computes cost, recall, and storage independently.
+Evaluation reads saved result artifacts (`checkpoints/*_results.json`), executes their plans and recomputes every number. It never imports `method/` and never trusts numbers, flags or declarations written in an artifact (reported costs, recalls, configuration lists, row counts, thresholds and budgets are ignored).
 
-The main experiment is `naive_small`. It compares:
+## Artifact format
 
-- `per_column`: one single-column index per vector column
-- `per_query`: one index per query column set, reported as a lower-bound baseline that may exceed the storage budget
-- `mint`: the constrained submitted method under the same storage budget as `per_column` (the baseline reproduction uses this legacy key)
+One JSON file per workload:
 
-`scoring/reference.json` and `scoring/scores.json` record the paper-reported PerColumn-normalized comparison. PerQuery is still computed by the reproduction and retained in the raw checkpoint artifact, but it is not included in standardized scores because the converted paper text reports it qualitatively as a lower bound without a stable numeric value to transcribe.
+```json
+{
+  "workload": "naive_small",
+  "results": {
+    "<method name>": {
+      "plans": {
+        "q1": {"indexes": ["x1"], "ek": [93]},
+        "q2": {"indexes": ["x1,2", "x2"], "ek": [120, 0]}
+      }
+    }
+  }
+}
+```
 
-Metrics:
+- `plans` needs an entry for every template of the workload (`q1`..`q4` for `naive_small`, `q1`..`q8` for `bicomplex_small`).
+- `"x1,3"` names an index over the concatenation of columns 1 and 3 (1-based). Every index in a plan must use only that template's columns, appear once, and have an integer `ek` in `[0, 3000]`. `ek = 0` means the index is not scanned.
+- The names `per_column` and `per_query` are reserved for the evaluator's own baselines; artifact entries with these names are ignored.
+- A method present in some artifacts but missing a workload is scored as failed on that workload.
 
-- `weighted_cost`: probability-weighted machine-independent cost proxy at recall@100; lower is better
-- `mean_recall_at_k`: mean recall@k across queries; higher is better
-- `min_recall_at_k`: worst query recall@k; higher is better
-- `storage_indexes`: number of used indexes; lower is better and must respect the configured budget for constrained methods
-- `speedup_vs_per_column`: `per_column weighted_cost / mint weighted_cost`; higher is better
+## Execution
+
+For each template, every evaluation query is executed: each listed index with `ek > 0` is searched for its top-`ek` items with a fixed FAISS `IndexHNSWFlat` engine (inner product on L2-normalized concatenated columns, M=16, efConstruction=120, efSearch=300, single-threaded), the union is formed, and recall@100 against the exact top-100 and the cost are computed. Storage is the number of distinct indexes with `ek > 0` across all template plans.
+
+## Feasibility gate
+
+A run is **failed** on a workload if any plan is invalid, any template's mean recall@100 is below 0.90, or storage exceeds the budget. A failed run gets fixed worst-case values on every metric (cost at least 100x PerColumn, speedup 0, recall 0, maximal violations and candidate counts), so it ranks below every feasible run.
+
+## Slices
+
+- `scripts/evaluate_train.sh` -> `scoring/scores_train.json`: the visible training queries (in-sample for any method that plans on them).
+- `scripts/evaluate_test.sh` -> `scoring/scores_test.json`: held-out queries of the same templates (500 per template), generated only inside the evaluator.
+- `scripts/evaluate.sh` -> `scoring/scores.json`: same as the train slice.
+
+All three score every `checkpoints/*_results.json` when called without arguments.
+
+## Comparator and metrics
+
+`per_column` (one single-column index per column, planned once on the training queries and frozen in `eval/*/baselines.json`) is the normalization baseline on the same queries. Per workload:
+
+- `weighted_cost`: probability-weighted mean query cost / PerColumn's (lower is better; primary)
+- `speedup_vs_per_column`: PerColumn cost / submission cost
+- `mean_recall_at_k`, `min_recall_at_k`: mean and worst template mean recall@100
+- `recall_floor_violation`, `storage_budget_violation`: 0 for every feasible run
+- `storage_indexes`: distinct indexes used
+- `mean_candidate_multiplier_at_k`, `max_candidate_multiplier_at_k`: mean / largest template mean distinct-candidate count divided by k
+
+The ranking combines metrics with the coefficients in `scoring/reference.json` (both workloads weigh 0.5); cost and speedup dominate, recall above the floor, storage and candidate counts act as tie-breakers. A one-index-per-template layout (`per_query`) is reported under `_raw` for reference only: it exceeds the storage budget.
 
 ---
 
@@ -288,6 +347,34 @@ Metrics:
 - **Milestone**: `core_claim` | **Status**: done
 - **Working time**: 10m | **GPU**: 0.0h
 - **Jobs**: 9 total (5 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-06-05 03:56] - method_runs
+- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
+- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
+
+### [2026-06-05 05:03] - method_runs
+- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
+- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
+
+### [2026-06-05 05:43] - core_claim
+- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
+- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
+- `python validate.py --compare` passed all scoring and structure checks.
+
+### [2026-06-05 06:09] - core_claim
+- Final verification kept the milestone at `core_claim`.
+- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
+- `python validate.py --compare` passed after the verification edits.
+
+</details>
+
+### Iteration 11: claude-opus-5-5 (hardener)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 38m | **GPU**: 0.0h
+- **Jobs**: 12 total (8 completed, 3 failed)
 
 <details>
 <summary>Progress Log</summary>
