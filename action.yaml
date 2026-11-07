@@ -1,2 +1,8 @@
-action: done
-notes: "Audit complete: 18 runs, 8 paying shortcuts, zero three-seed spread; report and evidence saved, gym restored."
+# Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends.
+action: pending
+gpus: 0
+test: false
+milestone: core_claim
+notes: ""
