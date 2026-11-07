@@ -78,8 +78,22 @@ def run_case(case):
             (out / p.name).write_bytes(p.read_bytes())
         # The submitting process is finished. Persistent workspace edits remain
         # in place; no submitting process can influence either evaluator.
-        run_command(["bash", "scripts/evaluate_train.sh"], out / "evaluation.log")
-        (out / "scores_train.json").write_bytes((ROOT / "scoring/scores_train.json").read_bytes())
+        # A shortcut may break the public training protocol while the restored
+        # hidden evaluator still accepts or rejects its persistent artifacts.
+        # A training failure must not prevent that independent test from running.
+        train_exit_code = 0
+        try:
+            run_command(["bash", "scripts/evaluate_train.sh"], out / "evaluation.log")
+        except subprocess.CalledProcessError as exc:
+            train_exit_code = exc.returncode
+        train_scores = out / "scores_train.json"
+        if train_exit_code == 0:
+            train_scores.write_bytes((ROOT / "scoring/scores_train.json").read_bytes())
+        else:
+            train_scores.unlink(missing_ok=True)
+        (out / "train_status.json").write_text(json.dumps({
+            "exit_code": train_exit_code, "scores_saved": train_exit_code == 0,
+        }, indent=2))
         run_command(["bash", "scripts/evaluate_test.sh"], out / "evaluation.log")
         (out / "scores_test.json").write_bytes((ROOT / "scoring/scores_test.json").read_bytes())
         scores = json.loads((out / "scores_test.json").read_text())
@@ -88,6 +102,7 @@ def run_case(case):
         result["metrics"] = {name: scores["experiments"][name]["results"]["mint"] for name in EXPERIMENTS}
         result["evaluator_command"] = ["bash", "scripts/evaluate_test.sh"]
         result["fresh_process"] = True
+        result["train_exit_code"] = train_exit_code
         result["protected_hashes"] = protected_hashes
         (out / "rank.json").write_text(json.dumps(result, indent=2))
         assert protected_hashes == {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in protected}

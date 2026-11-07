@@ -9,6 +9,8 @@ candidate as ordinary `method/` files, runs it to completion, and then invokes
 exactly `bash scripts/evaluate_train.sh` and `bash scripts/evaluate_test.sh`,
 both without arguments and in new processes. The submitting process terminates
 before evaluation and the Python environment and evaluator remain untouched.
+If the training evaluator rejects a shortcut, its exit code is recorded and
+the hidden test still runs independently; stale training scores are discarded.
 Each case restores all non-audit files in a finally block. Persistent file
 changes under data/ are kept through evaluation for the fixed-data shortcut.
 
