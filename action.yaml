@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: false
+action: done
 milestone: core_claim
-notes: "Final verification (CPU): scripts/run.sh reproduces the reference end to end from the final code (both workloads + train/test/scores.json); outputs should match the committed artifacts and scores."
+notes: "Hardened gym: hidden held-out query instances, evaluator-owned protocol/data/comparator, feasibility gate, bicomplex headroom experiment; better variants score higher, weaker/train-tuned lower, all paying shortcuts closed; reference reproduces byte-identically; validate.py passes. See HARDENING.md."
