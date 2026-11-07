@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_overstorage",
+  "description": "Submits the one-index-per-template (PerQuery) plans, exceeding the storage budget."
+}

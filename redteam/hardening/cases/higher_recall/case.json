@@ -1,0 +1,8 @@
+{
+  "case": "higher_recall",
+  "description": "Honest trade-off: plans to 0.98 training recall (higher recall, higher cost).",
+  "method_flags": [
+    "--recall-margin",
+    "0.08"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "case": "better_margin_0p01",
+  "description": "Better-calibrated recall allowance (0.01 instead of 0.02); same search.",
+  "method_flags": [
+    "--recall-margin",
+    "0.01"
+  ]
+}

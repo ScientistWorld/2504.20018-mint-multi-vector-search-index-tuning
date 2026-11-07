@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_low_recall",
+  "description": "Retrieves one candidate per used index."
+}

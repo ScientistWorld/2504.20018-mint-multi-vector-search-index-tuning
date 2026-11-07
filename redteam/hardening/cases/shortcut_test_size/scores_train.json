@@ -1,0 +1,348 @@
+{
+  "_slice": "train",
+  "_protocol": {
+    "naive_small": {
+      "n_rows": 3000,
+      "top_k": 100,
+      "recall_threshold": 0.9,
+      "storage_budget": 3,
+      "train_queries_per_template": 50
+    },
+    "bicomplex_small": {
+      "n_rows": 3000,
+      "top_k": 100,
+      "recall_threshold": 0.9,
+      "storage_budget": 5,
+      "train_queries_per_template": 50
+    }
+  },
+  "_ignored_artifacts": [],
+  "experiments": {
+    "bicomplex_small": {
+      "results": {
+        "per_column": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9204749999999999,
+          "min_recall_at_k": 0.9200000000000002,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 6.97835,
+          "max_candidate_multiplier_at_k": 10.5328,
+          "speedup_vs_per_column": 1.0
+        },
+        "mint": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "_raw": {
+        "per_column": {
+          "status": "ok",
+          "raw_weighted_cost": 73165.16360032756,
+          "storage": 5,
+          "per_template": {
+            "q1": {
+              "recall": 0.9201999999999998,
+              "min_instance_recall": 0.79,
+              "mean_candidates": 672.16,
+              "mean_cost": 56734.24
+            },
+            "q2": {
+              "recall": 0.9211999999999999,
+              "min_instance_recall": 0.71,
+              "mean_candidates": 743.98,
+              "mean_cost": 75250.48
+            },
+            "q3": {
+              "recall": 0.9202000000000001,
+              "min_instance_recall": 0.77,
+              "mean_candidates": 888.18,
+              "mean_cost": 109234.0
+            },
+            "q4": {
+              "recall": 0.9209999999999999,
+              "min_instance_recall": 0.73,
+              "mean_candidates": 1053.28,
+              "mean_cost": 150777.6
+            },
+            "q5": {
+              "recall": 0.9203999999999998,
+              "min_instance_recall": 0.6,
+              "mean_candidates": 444.9,
+              "mean_cost": 32323.2
+            },
+            "q6": {
+              "recall": 0.9200000000000002,
+              "min_instance_recall": 0.69,
+              "mean_candidates": 671.72,
+              "mean_cost": 76244.48
+            },
+            "q7": {
+              "recall": 0.9201999999999999,
+              "min_instance_recall": 0.73,
+              "mean_candidates": 670.0,
+              "mean_cost": 59372.0
+            },
+            "q8": {
+              "recall": 0.9206000000000002,
+              "min_instance_recall": 0.6,
+              "mean_candidates": 438.46,
+              "mean_cost": 26018.4
+            }
+          }
+        },
+        "per_query_over_budget_reference": {
+          "status": "failed",
+          "reasons": [
+            "storage: 8 indexes > budget 5"
+          ],
+          "raw_weighted_cost": 13815.8635966781,
+          "storage": 8,
+          "per_template": {
+            "q1": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 11776.0
+            },
+            "q2": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 13984.0
+            },
+            "q3": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 18400.0
+            },
+            "q4": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 22080.0
+            },
+            "q5": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 8832.0
+            },
+            "q6": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 15456.0
+            },
+            "q7": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 12512.0
+            },
+            "q8": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 7360.0
+            }
+          }
+        },
+        "mint": {
+          "status": "failed",
+          "reasons": [
+            "recall floor: q7 mean recall@100 0.0198 < 0.9"
+          ],
+          "raw_weighted_cost": 571.5649705159354,
+          "storage": 5,
+          "per_template": {
+            "q1": {
+              "recall": 0.04840000000000002,
+              "min_instance_recall": 0.02,
+              "mean_candidates": 8.0,
+              "mean_cost": 768.0
+            },
+            "q2": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 608.0
+            },
+            "q3": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 800.0
+            },
+            "q4": {
+              "recall": 0.036400000000000016,
+              "min_instance_recall": 0.01,
+              "mean_candidates": 4.0,
+              "mean_cost": 880.0
+            },
+            "q5": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 384.0
+            },
+            "q6": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 672.0
+            },
+            "q7": {
+              "recall": 0.019800000000000012,
+              "min_instance_recall": 0.0,
+              "mean_candidates": 4.0,
+              "mean_cost": 336.0
+            },
+            "q8": {
+              "recall": 0.028600000000000018,
+              "min_instance_recall": 0.0,
+              "mean_candidates": 4.0,
+              "mean_cost": 224.0
+            }
+          }
+        }
+      }
+    },
+    "naive_small": {
+      "results": {
+        "per_column": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9204500000000002,
+          "min_recall_at_k": 0.9200000000000012,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.074,
+          "max_candidate_multiplier_at_k": 6.6076,
+          "speedup_vs_per_column": 1.0
+        },
+        "mint": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "_raw": {
+        "per_column": {
+          "status": "ok",
+          "raw_weighted_cost": 30507.844112846025,
+          "storage": 3,
+          "per_template": {
+            "q1": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 5888.0
+            },
+            "q2": {
+              "recall": 0.9204000000000001,
+              "min_instance_recall": 0.67,
+              "mean_candidates": 471.24,
+              "mean_cost": 51761.28
+            },
+            "q3": {
+              "recall": 0.9209999999999999,
+              "min_instance_recall": 0.55,
+              "mean_candidates": 405.6,
+              "mean_cost": 53876.8
+            },
+            "q4": {
+              "recall": 0.9203999999999999,
+              "min_instance_recall": 0.72,
+              "mean_candidates": 660.76,
+              "mean_cost": 106547.2
+            }
+          }
+        },
+        "per_query_over_budget_reference": {
+          "status": "failed",
+          "reasons": [
+            "storage: 4 indexes > budget 3"
+          ],
+          "raw_weighted_cost": 10243.577013879112,
+          "storage": 4,
+          "per_template": {
+            "q1": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 5888.0
+            },
+            "q2": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 13248.0
+            },
+            "q3": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 16192.0
+            },
+            "q4": {
+              "recall": 0.9200000000000012,
+              "min_instance_recall": 0.92,
+              "mean_candidates": 92.0,
+              "mean_cost": 22080.0
+            }
+          }
+        },
+        "mint": {
+          "status": "failed",
+          "reasons": [
+            "recall floor: q2 mean recall@100 0.0256 < 0.9"
+          ],
+          "raw_weighted_cost": 430.82653167111107,
+          "storage": 3,
+          "per_template": {
+            "q1": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 256.0
+            },
+            "q2": {
+              "recall": 0.025600000000000015,
+              "min_instance_recall": 0.0,
+              "mean_candidates": 4.0,
+              "mean_cost": 416.0
+            },
+            "q3": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 704.0
+            },
+            "q4": {
+              "recall": 0.040000000000000015,
+              "min_instance_recall": 0.04,
+              "mean_candidates": 4.0,
+              "mean_cost": 960.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

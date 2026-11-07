@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_negative_ek",
+  "description": "Appends an extra index entry with ek=-1000000 to every plan."
+}

@@ -1,0 +1,257 @@
+{
+  "_note": "Fixed comparator plans (per query template: index names and ek). per_column = one single-column index per column; per_query = one exact index per template (exceeds the storage budget; reported for reference only). Planned once on the public training instances by the reproduced planner with the same recall allowance as the reference.",
+  "naive_small": {
+    "per_column": {
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x1",
+            "x2"
+          ],
+          "ek": [
+            221,
+            269
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            277,
+            148
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            316,
+            269,
+            133
+          ]
+        }
+      }
+    },
+    "per_query": {
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x1,2"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x2,3"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1,2,3"
+          ],
+          "ek": [
+            92
+          ]
+        }
+      }
+    }
+  },
+  "bicomplex_small": {
+    "per_column": {
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            433,
+            170,
+            121
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x2",
+            "x3",
+            "x5"
+          ],
+          "ek": [
+            353,
+            344,
+            106
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x1",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            554,
+            187,
+            130,
+            107
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            627,
+            203,
+            129,
+            105,
+            133
+          ]
+        },
+        "q5": {
+          "indexes": [
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            246,
+            216
+          ]
+        },
+        "q6": {
+          "indexes": [
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            336,
+            213,
+            181
+          ]
+        },
+        "q7": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x5"
+          ],
+          "ek": [
+            418,
+            217,
+            87
+          ]
+        },
+        "q8": {
+          "indexes": [
+            "x1",
+            "x3"
+          ],
+          "ek": [
+            302,
+            152
+          ]
+        }
+      }
+    },
+    "per_query": {
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1,2,4"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x2,3,5"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x1,3,4,5"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1,2,3,4,5"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q5": {
+          "indexes": [
+            "x2,4"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q6": {
+          "indexes": [
+            "x3,4,5"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q7": {
+          "indexes": [
+            "x1,2,5"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q8": {
+          "indexes": [
+            "x1,3"
+          ],
+          "ek": [
+            92
+          ]
+        }
+      }
+    }
+  }
+}

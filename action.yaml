@@ -1,8 +1,8 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: pending
+action: submit
 gpus: 0
 test: false
 milestone: core_claim
-notes: ""
+notes: "Hardening job (CPU): rerun MINT reference on naive_small + new bicomplex_small with held-out-instance test, freeze evaluator-owned PerColumn comparator, score train/test, then run better/weaker/seed variants and 14 shortcut artifacts through the hidden test (resumable stages)."

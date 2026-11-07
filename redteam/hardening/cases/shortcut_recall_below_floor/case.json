@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_recall_below_floor",
+  "description": "Every used ek scaled by 0.95 (the old 89%-recall shortcut): lower cost, recall below the floor."
+}

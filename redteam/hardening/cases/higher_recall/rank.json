@@ -1,0 +1,58 @@
+{
+  "train": {
+    "method": "mint",
+    "rank_delta": -0.4882200545098684,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -0.08267885965430177,
+        "mean_recall_at_k": 0.014999999999999625,
+        "min_recall_at_k": 0.014999999999999819,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.09898499999999999,
+        "max_candidate_multiplier_at_k": 0.28195999999999993,
+        "speedup_vs_per_column": -0.1889841884864828
+      },
+      "bicomplex_small": {
+        "weighted_cost": -0.082660568844208,
+        "mean_recall_at_k": 0.012443749999999781,
+        "min_recall_at_k": 0.0012999999999996625,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": -0.18898125000000002,
+        "max_candidate_multiplier_at_k": -0.08002000000000004,
+        "speedup_vs_per_column": -0.28958393752487455
+      }
+    }
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": -0.47485509094115086,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -0.08285542921258249,
+        "mean_recall_at_k": 0.014656249999999815,
+        "min_recall_at_k": 0.014999999999999764,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.09837375000000001,
+        "max_candidate_multiplier_at_k": 0.28033,
+        "speedup_vs_per_column": -0.1902747183117508
+      },
+      "bicomplex_small": {
+        "weighted_cost": -0.08229903158879995,
+        "mean_recall_at_k": 0.01289687499999978,
+        "min_recall_at_k": 0.0013249999999999373,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": -0.18869062499999995,
+        "max_candidate_multiplier_at_k": -0.06555999999999998,
+        "speedup_vs_per_column": -0.287757161828017
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "train": {
+    "method": "mint",
+    "rank_delta": 0.19255374485268414,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.004244629750109363,
+        "mean_recall_at_k": -0.0020625000000004112,
+        "min_recall_at_k": -0.0025000000000001965,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.007499999999999973,
+        "max_candidate_multiplier_at_k": 0.016999999999999994,
+        "speedup_vs_per_column": 0.012633513810059616
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.009755162512661814,
+        "mean_recall_at_k": -0.0023187500000002303,
+        "min_recall_at_k": -0.0025000000000005296,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.02478000000000007,
+        "max_candidate_multiplier_at_k": 0.07744000000000001,
+        "speedup_vs_per_column": 0.04858168877985469
+      }
+    }
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": -57.43795498063995,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.0042323732690559,
+        "mean_recall_at_k": -0.0020875000000006305,
+        "min_recall_at_k": -0.0025000000000008626,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.007499999999999973,
+        "max_candidate_multiplier_at_k": 0.016999999999999994,
+        "speedup_vs_per_column": 0.012670099057344841
+      },
+      "bicomplex_small": {
+        "weighted_cost": -49.77060616891519,
+        "mean_recall_at_k": -0.2290812500000002,
+        "min_recall_at_k": -0.226225,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -3.89122875,
+        "max_candidate_multiplier_at_k": -1.6978000000000002,
+        "speedup_vs_per_column": -1.089828784051154
+      }
+    }
+  }
+}
