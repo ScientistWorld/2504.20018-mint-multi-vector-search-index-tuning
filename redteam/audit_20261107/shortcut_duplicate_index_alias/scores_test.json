@@ -1,0 +1,268 @@
+{
+  "_slice": "test",
+  "_protocol": {
+    "naive_small": {
+      "n_rows": 3000,
+      "top_k": 100,
+      "recall_threshold": 0.9,
+      "storage_budget": 3,
+      "held_out_queries_per_template": 500
+    },
+    "bicomplex_small": {
+      "n_rows": 3000,
+      "top_k": 100,
+      "recall_threshold": 0.9,
+      "storage_budget": 5,
+      "held_out_queries_per_template": 500
+    }
+  },
+  "_ignored_artifacts": [],
+  "experiments": {
+    "bicomplex_small": {
+      "results": {
+        "per_column": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9256800000000012,
+          "min_recall_at_k": 0.9179800000000005,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 7.3964375,
+          "max_candidate_multiplier_at_k": 10.982560000000001,
+          "speedup_vs_per_column": 1.0
+        },
+        "mint": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "_raw": {
+        "per_column": {
+          "status": "ok",
+          "raw_weighted_cost": 77416.8887729199,
+          "storage": 5,
+          "per_template": {
+            "q1": {
+              "recall": 0.9241200000000019,
+              "min_instance_recall": 0.48,
+              "mean_candidates": 753.242,
+              "mean_cost": 63563.488
+            },
+            "q2": {
+              "recall": 0.9362000000000015,
+              "min_instance_recall": 0.56,
+              "mean_candidates": 754.076,
+              "mean_cost": 77029.776
+            },
+            "q3": {
+              "recall": 0.9283400000000008,
+              "min_instance_recall": 0.67,
+              "mean_candidates": 958.468,
+              "mean_cost": 118722.8
+            },
+            "q4": {
+              "recall": 0.930180000000002,
+              "min_instance_recall": 0.63,
+              "mean_candidates": 1098.256,
+              "mean_cost": 158146.72
+            },
+            "q5": {
+              "recall": 0.923900000000001,
+              "min_instance_recall": 0.55,
+              "mean_candidates": 462.734,
+              "mean_cost": 33047.232
+            },
+            "q6": {
+              "recall": 0.9179800000000005,
+              "min_instance_recall": 0.61,
+              "mean_candidates": 717.504,
+              "mean_cost": 81326.336
+            },
+            "q7": {
+              "recall": 0.9257000000000023,
+              "min_instance_recall": 0.58,
+              "mean_candidates": 712.662,
+              "mean_cost": 63541.016
+            },
+            "q8": {
+              "recall": 0.9190199999999998,
+              "min_instance_recall": 0.47,
+              "mean_candidates": 460.208,
+              "mean_cost": 27168.32
+            }
+          }
+        },
+        "per_query_over_budget_reference": {
+          "status": "failed",
+          "reasons": [
+            "storage: 8 indexes > budget 5"
+          ],
+          "raw_weighted_cost": 13966.036027076774,
+          "storage": 8,
+          "per_template": {
+            "q1": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 11904.0
+            },
+            "q2": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 14136.0
+            },
+            "q3": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 18600.0
+            },
+            "q4": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 22320.0
+            },
+            "q5": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 8928.0
+            },
+            "q6": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 15624.0
+            },
+            "q7": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 12648.0
+            },
+            "q8": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 7440.0
+            }
+          }
+        },
+        "mint": {
+          "status": "failed",
+          "reasons": [
+            "invalid plan: plan for q1 lists x01 twice"
+          ]
+        }
+      }
+    },
+    "naive_small": {
+      "results": {
+        "per_column": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9336800000000022,
+          "min_recall_at_k": 0.9252600000000012,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.466915,
+          "max_candidate_multiplier_at_k": 7.1280399999999995,
+          "speedup_vs_per_column": 1.0
+        },
+        "mint": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "_raw": {
+        "per_column": {
+          "status": "ok",
+          "raw_weighted_cost": 33145.53994708753,
+          "storage": 3,
+          "per_template": {
+            "q1": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 5952.0
+            },
+            "q2": {
+              "recall": 0.9525000000000012,
+              "min_instance_recall": 0.55,
+              "mean_candidates": 529.292,
+              "mean_cost": 57397.024
+            },
+            "q3": {
+              "recall": 0.9252600000000012,
+              "min_instance_recall": 0.44,
+              "mean_candidates": 451.67,
+              "mean_cost": 59970.96
+            },
+            "q4": {
+              "recall": 0.9269600000000007,
+              "min_instance_recall": 0.61,
+              "mean_candidates": 712.804,
+              "mean_cost": 115392.48
+            }
+          }
+        },
+        "per_query_over_budget_reference": {
+          "status": "failed",
+          "reasons": [
+            "storage: 4 indexes > budget 3"
+          ],
+          "raw_weighted_cost": 10354.920242290842,
+          "storage": 4,
+          "per_template": {
+            "q1": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 5952.0
+            },
+            "q2": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 13392.0
+            },
+            "q3": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 16368.0
+            },
+            "q4": {
+              "recall": 0.9300000000000058,
+              "min_instance_recall": 0.93,
+              "mean_candidates": 93.0,
+              "mean_cost": 22320.0
+            }
+          }
+        },
+        "mint": {
+          "status": "failed",
+          "reasons": [
+            "invalid plan: plan for q1 lists x01 twice"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+| case | test rank delta | statuses |
+|---|---:|---|
+| reference_cached | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| reference_seed_20240501 | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| reference_seed_101 | +0.074048746 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| reference_seed_202 | +0.122838659 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| better_measured_cost | +0.082245311 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| better_more_queries | +0.242762405 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| weaker_no_multicolumn | -1.466176287 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_seed_lottery | +0.122838659 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_public_answers | -52.128251787 | {'naive_small': 'ok', 'bicomplex_small': 'failed'} |
+| shortcut_forged_metrics | -1.466176287 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_inflate_baseline | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_storage_declaration | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_rewrite_protocol | +0.000000000 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_test_size | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_rank_tradeoff | -0.010303964 | {'naive_small': 'ok', 'bicomplex_small': 'ok'} |
+| shortcut_low_recall | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_below_floor | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_empty | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_constant | -104.922639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_zero | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_negative_ek | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_nan_ek | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_null_ek | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_overstorage | -104.922639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_drop_templates | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |
+| shortcut_partial_experiment | -52.234340606 | {'naive_small': 'ok', 'bicomplex_small': 'failed'} |
+| shortcut_duplicate_index_alias | -104.222639762 | {'naive_small': 'failed', 'bicomplex_small': 'failed'} |

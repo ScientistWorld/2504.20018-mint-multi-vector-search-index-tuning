@@ -1,6 +1,4 @@
-# Once you set action to 'submit' or 'done', STOP immediately.
-# Do NOT sleep, poll, or wait for jobs. The system reads this file
-# only after your turn ends.
-action: done
-milestone: core_claim
-notes: "Hardened gym: hidden held-out query instances, evaluator-owned protocol/data/comparator, feasibility gate, bicomplex headroom experiment; better variants score higher, weaker/train-tuned lower, all paying shortcuts closed; reference reproduces byte-identically; validate.py passes. See HARDENING.md."
+action: submit
+gpus: 0
+test: false
+notes: "Audit current gym: 3 fresh reference seeds, stronger measured-cost and 800-query variants, weaker baseline, and 21 shortcut checks; all hidden tests run with no arguments and saved under redteam/audit_20261107."

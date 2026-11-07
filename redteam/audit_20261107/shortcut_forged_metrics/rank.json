@@ -1,0 +1,69 @@
+{
+  "rank_delta": -1.466176286937784,
+  "terms": {
+    "naive_small": {
+      "weighted_cost": -0.21382662166847294,
+      "mean_recall_at_k": 6.874999999928466e-05,
+      "min_recall_at_k": -0.0011850000000011573,
+      "recall_floor_violation": -0.0,
+      "storage_indexes": -0.0,
+      "storage_budget_violation": -0.0,
+      "mean_candidate_multiplier_at_k": -0.011694150000000004,
+      "max_candidate_multiplier_at_k": 0.016359800000000004,
+      "speedup_vs_per_column": -0.3735962843838646
+    },
+    "bicomplex_small": {
+      "weighted_cost": -0.2712306104404222,
+      "mean_recall_at_k": -0.0008075000000005716,
+      "min_recall_at_k": 0.00038500000000013523,
+      "recall_floor_violation": -0.0,
+      "storage_indexes": -0.0,
+      "storage_budget_violation": -0.0,
+      "mean_candidate_multiplier_at_k": -0.030778725000000007,
+      "max_candidate_multiplier_at_k": 0.012932599999999992,
+      "speedup_vs_per_column": -0.5928035454450218
+    }
+  },
+  "status": {
+    "naive_small": "ok",
+    "bicomplex_small": "ok"
+  },
+  "metrics": {
+    "naive_small": {
+      "weighted_cost": 1.0,
+      "mean_recall_at_k": 0.9336800000000022,
+      "min_recall_at_k": 0.9252600000000012,
+      "recall_floor_violation": 0.0,
+      "storage_indexes": 3.0,
+      "storage_budget_violation": 0.0,
+      "mean_candidate_multiplier_at_k": 4.466915,
+      "max_candidate_multiplier_at_k": 7.1280399999999995,
+      "speedup_vs_per_column": 1.0
+    },
+    "bicomplex_small": {
+      "weighted_cost": 1.0,
+      "mean_recall_at_k": 0.9256800000000012,
+      "min_recall_at_k": 0.9179800000000005,
+      "recall_floor_violation": 0.0,
+      "storage_indexes": 5.0,
+      "storage_budget_violation": 0.0,
+      "mean_candidate_multiplier_at_k": 7.3964375,
+      "max_candidate_multiplier_at_k": 10.982560000000001,
+      "speedup_vs_per_column": 1.0
+    }
+  },
+  "evaluator_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "fresh_process": true,
+  "protected_hashes": {
+    "eval/evaluate_results.py": "04602e329240bacc242ccc0e7446f6d3ebf330f715cd9c896b3948219d7abc6d",
+    "eval/train/evaluate.py": "a22d24f85c3421a44d6b6f03434a8b775c1368d4c0c9e6923e21855cc2341845",
+    "eval/test/hidden_workload.py": "f5b1f7b29615a29f23cc71241bec5a41884e8066cd10c6a274f37bd5f15425ac",
+    "eval/test/evaluate.py": "1ba37baa6b6c1c0690550b7f2a99d919351cca3865a90988944475f8b5000e9d",
+    "eval/train/baselines.json": "032148be5c161e6d35284d72dd5fac0f673932c936038f1e9b2439e52bd15482",
+    "eval/test/baselines.json": "032148be5c161e6d35284d72dd5fac0f673932c936038f1e9b2439e52bd15482",
+    "scripts/evaluate_test.sh": "982a4c374c719a5ac3dca9af5a62ddda04f479c64c356d66cde0dbf791b8ff07"
+  }
+}
