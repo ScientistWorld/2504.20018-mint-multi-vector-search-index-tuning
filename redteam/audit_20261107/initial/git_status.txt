@@ -1,0 +1,16 @@
+D  README.md
+ M action.yaml
+D  manifest.json
+ D trajectory/session.json
+ D trajectory/turn_0001_raw.jsonl
+ D trajectory/turn_0002_raw.jsonl
+ D trajectory/turn_0003_raw.jsonl
+ D trajectory/turn_0004_raw.jsonl
+ D trajectory/turn_0005_raw.jsonl
+ D trajectory/turn_0006_raw.jsonl
+ D trajectory/turn_0007_raw.jsonl
+ D trajectory/turn_0008_raw.jsonl
+ D trajectory/turn_0009_raw.jsonl
+ D trajectory/turn_0010_raw.jsonl
+ D trajectory/turn_0011_raw.jsonl
+?? redteam/audit_20261107/

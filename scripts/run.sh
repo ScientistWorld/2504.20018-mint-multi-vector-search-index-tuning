@@ -1,11 +1,6 @@
 #!/bin/bash
-# Job entry point (CPU, no internet): reproduce the reference end to end.
-# Tunes both workloads with MINT, then scores every checkpoints/*_results.json
-# on the visible train slice, the held-out test slice and scores.json.
-# (The hardening audit itself is redteam/hardening/run_hardening.py.)
-
-set -e
-
+# Current scoring audit: all computation is bundled into this CPU job.
+set -euo pipefail
 cd /home/user
-
-bash scripts/reproduce.sh
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+python redteam/audit_20261107/harness.py all
