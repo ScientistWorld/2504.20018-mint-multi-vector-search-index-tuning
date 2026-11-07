@@ -40,6 +40,10 @@ def run(name):
         shutil.copyfile(folder / "variant.py", WORK / "method/audit_variant.py")
         subprocess.run([sys.executable, "-m", "method.audit_variant"], cwd=WORK, check=True)
         shutil.copyfile(WORK / "checkpoints/mint_results.json", folder / "artifact.json")
+        # Independently verify the full scientific objective as well as both
+        # slices. This is reporting, not a change to hidden-test scoring.
+        subprocess.run(["bash", "scripts/evaluate.sh"], cwd=WORK, check=True)
+        shutil.copyfile(WORK / "scoring/scores.json", folder / "scores_full.json")
         subprocess.run(["bash", "scripts/evaluate_train.sh"], cwd=WORK, check=True)
         shutil.copyfile(WORK / "scoring/scores_train.json", folder / "scores_train.json")
         # This subprocess starts after the submitting process has exited. No

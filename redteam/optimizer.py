@@ -10,7 +10,10 @@ from pathlib import Path
 def bits(items):
     result = 0
     for item in items:
-        result |= 1 << int(item)
+        # FAISS can return -1 padding when its search visits fewer than k
+        # vertices. The evaluator counts that sentinel as a candidate, so
+        # reserve bit zero for it and shift every real row ID by one.
+        result |= 1 << (int(item) + 1)
     return result
 
 
@@ -39,7 +42,7 @@ def improve(payload, output_folder: Path):
             # Relevant ranks are tested with actual ANN searches at their own
             # k, rather than assuming long-search prefixes always agree.
             values = {0, min(2500, payload["n_rows"])}
-            values.update(i for i, item in enumerate(labels, 1) if gt & (1 << int(item)))
+            values.update(i for i, item in enumerate(labels, 1) if gt & (1 << (int(item) + 1)))
             opts = []
             for ek in sorted(values):
                 candidates = bits(indexes[key].search(query, ek)) if ek else 0
