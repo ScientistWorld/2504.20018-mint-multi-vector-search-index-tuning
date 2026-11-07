@@ -1,18 +1,17 @@
 #!/bin/bash
-# Run the paper's proposed method.
-#
-# This script trains/runs the paper's method using code in method/.
+# Run the paper's proposed method (MINT index tuning) on one workload and score
+# the artifact on the visible slice.
 #
 # Usage:
-#   bash scripts/method.sh
+#   bash scripts/method.sh [naive_small|bicomplex_small] [output]
 
 set -e
 
 cd /home/user
 
 WORKLOAD="${1:-naive_small}"
-N_ROWS="${2:-8000}"
-OUTPUT="${3:-checkpoints/mint_results.json}"
+if [ "$WORKLOAD" = "naive_small" ]; then DEFAULT_OUT=checkpoints/mint_results.json; else DEFAULT_OUT=checkpoints/mint_bicomplex_results.json; fi
+OUTPUT="${2:-$DEFAULT_OUT}"
 
-python -m method.mint --workload "$WORKLOAD" --n-rows "$N_ROWS" --output "$OUTPUT"
+python -m method.mint --workload "$WORKLOAD" --output "$OUTPUT"
 bash scripts/evaluate.sh "$OUTPUT"

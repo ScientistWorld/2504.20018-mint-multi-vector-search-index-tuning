@@ -2,9 +2,19 @@
 
 The original paper combines public single-vector embedding datasets into
 multi-column rows. This generator creates a compact substitute with the same
-problem structure: each row has multiple vector columns, queries address column
-subsets, and relevance is defined by the sum of cosine similarities over the
-queried columns.
+problem structure: each row has multiple vector columns, a query names a subset
+of columns (a query *template*) and supplies one vector per named column, and
+relevance is the sum of cosine similarities over the named columns.
+
+A workload consists of
+
+* a fixed database (``columns``),
+* query templates with workload probabilities, a top-k, a recall@k floor and a
+  storage budget (number of indexes), and
+* a visible sample of training query instances per template.
+
+Held-out query instances of the same templates are drawn from the same
+distribution by the hidden evaluator; they are not produced by this module.
 """
 
 from __future__ import annotations
@@ -18,9 +28,16 @@ import numpy as np
 
 @dataclass(frozen=True)
 class Query:
-    name: str
+    name: str  # template name, e.g. "q2"
     columns: tuple[int, ...]
     vectors: tuple[np.ndarray, ...]
+    probability: float
+
+
+@dataclass(frozen=True)
+class Template:
+    name: str
+    columns: tuple[int, ...]
     probability: float
 
 
@@ -28,10 +45,56 @@ class Query:
 class Workload:
     name: str
     columns: tuple[np.ndarray, ...]
-    queries: tuple[Query, ...]
+    templates: tuple[Template, ...]
+    train_queries: dict  # template name -> tuple[Query, ...]
     top_k: int
     recall_threshold: float
     storage_budget: int
+
+    @property
+    def n_rows(self) -> int:
+        return int(self.columns[0].shape[0])
+
+
+# Public workload definitions. ``naive_small`` mirrors the paper's Naive case
+# study (three columns, queries on {1}, {1,2}, {2,3}, {1,2,3}, storage budget =
+# number of columns). ``bicomplex_small`` is a scaled BiComplex-style workload:
+# a fixed draw of eight distinct column subsets with at least two columns over
+# five columns (each column included with probability 0.5), storage budget =
+# number of columns.
+WORKLOAD_SPECS = {
+    "naive_small": {
+        "dims": (32, 40, 48),
+        "templates": ((0,), (0, 1), (1, 2), (0, 1, 2)),
+        "n_rows": 3000,
+        "top_k": 100,
+        "recall_threshold": 0.90,
+        "storage_budget": 3,
+        "data_seed": 7,
+    },
+    "bicomplex_small": {
+        "dims": (16, 20, 24, 28, 32),
+        "templates": (
+            (0, 1, 3),
+            (1, 2, 4),
+            (0, 2, 3, 4),
+            (0, 1, 2, 3, 4),
+            (1, 3),
+            (2, 3, 4),
+            (0, 1, 4),
+            (0, 2),
+        ),
+        "n_rows": 3000,
+        "top_k": 100,
+        "recall_threshold": 0.90,
+        "storage_budget": 5,
+        "data_seed": 11,
+    },
+}
+
+TRAIN_QUERY_SEED = 20240501
+N_TRAIN_QUERIES = 50
+SINGLE_COLUMN_QUERY_NOISE = 0.22
 
 
 def _normalize(x: np.ndarray) -> np.ndarray:
@@ -51,79 +114,108 @@ def _make_columns(rng: np.random.Generator, n_rows: int, dims: Iterable[int]) ->
         proj = rng.normal(size=(latent_dim, dim)).astype("float32")
         shared = latent @ proj
         private = rng.normal(scale=0.85, size=(n_rows, dim)).astype("float32")
-        columns.append(_normalize((shared + private).astype("float32")))
+        columns.append(_normalize((shared + private).astype("float32")).astype("float32"))
     return tuple(columns)
 
 
-def _query_for_row(
-    rng: np.random.Generator,
-    columns: tuple[np.ndarray, ...],
-    query_cols: tuple[int, ...],
-    anchor: int,
-    name: str,
-    probability: float,
-) -> Query:
-    qvecs = []
-    for c in query_cols:
-        if len(query_cols) == 1:
-            noisy = columns[c][anchor] + rng.normal(scale=0.22, size=columns[c].shape[1]).astype("float32")
-        else:
-            # Multi-column queries should not be trivially solved by each
-            # single column alone. Random directions create aggregate nearest
-            # neighbors whose individual-column ranks vary widely, preserving
-            # room for workload-aware index selection to matter.
-            noisy = rng.normal(size=columns[c].shape[1]).astype("float32")
-        qvecs.append(_normalize_one(noisy.astype("float32")))
-    return Query(name=name, columns=query_cols, vectors=tuple(qvecs), probability=probability)
+def make_database(name: str) -> tuple[np.ndarray, ...]:
+    spec = WORKLOAD_SPECS[name]
+    rng = np.random.default_rng(spec["data_seed"])
+    return _make_columns(rng, n_rows=spec["n_rows"], dims=spec["dims"])
 
 
-def make_workload(name: str = "naive_small", n_rows: int = 8000, seed: int = 7) -> Workload:
-    """Create a paper-shaped workload.
+def template_probabilities(name: str) -> np.ndarray:
+    """Workload probabilities: uniform draws normalized to sum to one."""
+    spec = WORKLOAD_SPECS[name]
+    rng = np.random.default_rng([spec["data_seed"], 1])
+    probs = rng.uniform(size=len(spec["templates"])).astype("float64")
+    return probs / probs.sum()
 
-    ``naive_small`` mirrors the paper's Naive case study with three columns and
-    four queries. ``bicomplex_small`` mirrors the larger binomial workload with
-    more columns and queries, still compact enough for CPU test jobs.
-    """
-    rng = np.random.default_rng(seed)
-    if name == "naive_small":
-        dims = (32, 40, 48)
-        query_sets = ((0,), (0, 1), (1, 2), (0, 1, 2))
-        top_k = 100
-        recall = 0.90
-        budget = 3
-    elif name == "bicomplex_small":
-        dims = (16, 20, 24, 28, 32)
-        all_sets = []
-        while len(all_sets) < 8:
-            cols = tuple(i for i in range(len(dims)) if rng.random() < 0.5)
-            if len(cols) >= 2 and cols not in all_sets:
-                all_sets.append(cols)
-        query_sets = tuple(all_sets)
-        top_k = 100
-        recall = 0.90
-        budget = len(dims)
-    else:
-        raise ValueError(f"unknown workload {name!r}")
 
-    columns = _make_columns(rng, n_rows=n_rows, dims=dims)
-    anchors = rng.choice(n_rows, size=len(query_sets), replace=False)
-    probs = rng.uniform(size=len(query_sets)).astype("float64")
-    probs = probs / probs.sum()
-    queries = tuple(
-        _query_for_row(rng, columns, tuple(qcols), int(anchor), f"q{i+1}", float(prob))
-        for i, (qcols, anchor, prob) in enumerate(zip(query_sets, anchors, probs))
+def make_templates(name: str) -> tuple[Template, ...]:
+    spec = WORKLOAD_SPECS[name]
+    probs = template_probabilities(name)
+    return tuple(
+        Template(name=f"q{i + 1}", columns=tuple(cols), probability=float(p))
+        for i, (cols, p) in enumerate(zip(spec["templates"], probs))
     )
-    return Workload(name=name, columns=columns, queries=queries, top_k=top_k, recall_threshold=recall, storage_budget=budget)
+
+
+def sample_queries(
+    columns: tuple[np.ndarray, ...],
+    template: Template,
+    n: int,
+    rng: np.random.Generator,
+) -> tuple[Query, ...]:
+    """Draw ``n`` query instances of ``template``.
+
+    Single-column templates perturb a random database row. Multi-column
+    templates use an independent random direction per column, so the aggregate
+    nearest neighbors are not trivially found from any single column.
+    """
+    out = []
+    for _ in range(n):
+        vecs = []
+        if len(template.columns) == 1:
+            c = template.columns[0]
+            anchor = int(rng.integers(columns[c].shape[0]))
+            noise = rng.normal(scale=SINGLE_COLUMN_QUERY_NOISE, size=columns[c].shape[1]).astype("float32")
+            vecs.append(_normalize_one((columns[c][anchor] + noise).astype("float32")).astype("float32"))
+        else:
+            for c in template.columns:
+                vecs.append(_normalize_one(rng.normal(size=columns[c].shape[1]).astype("float32")).astype("float32"))
+        out.append(Query(name=template.name, columns=template.columns, vectors=tuple(vecs), probability=template.probability))
+    return tuple(out)
+
+
+def make_workload(name: str = "naive_small", n_train: int = N_TRAIN_QUERIES, train_seed: int = TRAIN_QUERY_SEED) -> Workload:
+    """Build the public workload: database, templates and training queries."""
+    if name not in WORKLOAD_SPECS:
+        raise ValueError(f"unknown workload {name!r}")
+    spec = WORKLOAD_SPECS[name]
+    columns = make_database(name)
+    templates = make_templates(name)
+    train = {}
+    for i, template in enumerate(templates):
+        rng = np.random.default_rng([int(train_seed), int(spec["data_seed"]), i])
+        train[template.name] = sample_queries(columns, template, int(n_train), rng)
+    return Workload(
+        name=name,
+        columns=columns,
+        templates=templates,
+        train_queries=train,
+        top_k=int(spec["top_k"]),
+        recall_threshold=float(spec["recall_threshold"]),
+        storage_budget=int(spec["storage_budget"]),
+    )
+
+
+def exact_topk_batch(columns: tuple[np.ndarray, ...], queries: tuple[Query, ...], top_k: int) -> np.ndarray:
+    """Exact top-k row ids (N, k) for query instances sharing one template."""
+    n_rows = columns[0].shape[0]
+    scores = np.zeros((len(queries), n_rows), dtype="float32")
+    for j, c in enumerate(queries[0].columns):
+        qmat = np.stack([q.vectors[j] for q in queries]).astype("float32")
+        scores += qmat @ columns[c].T
+    k = min(int(top_k), n_rows)
+    part = np.argpartition(-scores, k - 1, axis=1)[:, :k]
+    part_scores = np.take_along_axis(scores, part, axis=1)
+    order = np.argsort(-part_scores, axis=1, kind="stable")
+    return np.take_along_axis(part, order, axis=1).astype("int64")
 
 
 def exact_topk(columns: tuple[np.ndarray, ...], query: Query, top_k: int) -> np.ndarray:
-    scores = np.zeros(columns[0].shape[0], dtype="float32")
-    for col_id, qvec in zip(query.columns, query.vectors):
-        scores += columns[col_id] @ qvec
-    if top_k >= scores.shape[0]:
-        return np.argsort(-scores).astype("int64")
-    part = np.argpartition(-scores, top_k - 1)[:top_k]
-    return part[np.argsort(-scores[part])].astype("int64")
+    return exact_topk_batch(columns, (query,), top_k)[0]
+
+
+def index_name(key: tuple[int, ...]) -> str:
+    return "x" + ",".join(str(c + 1) for c in key)
+
+
+def parse_index_name(name: str) -> tuple[int, ...]:
+    if not name.startswith("x"):
+        raise ValueError(f"invalid index name {name!r}")
+    return tuple(sorted(int(part) - 1 for part in name[1:].split(",") if part))
 
 
 def all_candidate_indexes(query_sets: Iterable[tuple[int, ...]], subset_diff: int = 2) -> set[tuple[int, ...]]:

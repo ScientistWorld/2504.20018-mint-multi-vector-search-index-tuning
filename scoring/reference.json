@@ -1,54 +1,54 @@
 {
   "experiments": {
     "naive_small": {
-      "description": "Scaled Naive-style multi-vector workload. Paper reports MINT speedups of 2.1x to 7.2x with HNSW and 2.1x to 8.3x with DiskANN over PerColumn while meeting recall and storage constraints. PerQuery is retained as an over-storage lower-bound baseline in split scoring, but no exact normalized PerQuery cost is transcribed from the paper text.",
-      "weight": 1.0,
+      "description": "Scaled Naive-style workload (3 columns, 3,000 rows, 4 query templates, recall@100 >= 0.90 per template, budget 3 indexes). Plans are scored on held-out query instances of each template. Paper-reported values are kept as transcribed earlier: 2.1x is the low end of the paper's HNSW/DiskANN speedup range (Fig. 7B/8B), i.e. normalized cost 0.48. For reference, Fig. 7 (HNSW) shows Naive latency speedup ~6.5x and normalized cost ~0.33 (Mint 0.44e7 vs PerColumn 1.34e7; PerQuery ~0.21 with 33% more storage). The scaled 3,000-row synthetic setup is not expected to match these magnitudes, only their direction.",
+      "weight": 0.5,
       "primary_metric": "weighted_cost",
       "metrics": {
         "weighted_cost": {
           "higher_is_better": false,
           "coefficient": -1.0,
-          "description": "Normalized machine-independent query cost on the evaluated query slice."
+          "description": "Probability-weighted mean query cost on held-out query instances (index-scan dim*ek plus re-rank query-dim*distinct candidates), normalized by the evaluator's fixed PerColumn plans on the same instances. Failed runs get a fixed worst value."
         },
         "mean_recall_at_k": {
           "higher_is_better": true,
           "coefficient": 0.5,
-          "description": "Average top-k recall across the evaluated queries."
+          "description": "Mean over query templates of the template's mean recall@k on held-out instances."
         },
         "min_recall_at_k": {
           "higher_is_better": true,
           "coefficient": 0.5,
-          "description": "Worst-query top-k recall, which catches methods that only optimize easy query patterns."
+          "description": "Worst template's mean recall@k on held-out instances; must be >= the 0.90 floor or the run is failed."
         },
         "recall_floor_violation": {
           "higher_is_better": false,
           "coefficient": -0.6,
-          "description": "Amount by which the worst-query recall falls below the workload recall target."
+          "description": "Amount by which the worst template's mean recall falls below the floor (failed runs: the full floor)."
         },
         "storage_indexes": {
           "higher_is_better": false,
           "coefficient": -0.3,
-          "description": "Number of distinct index configurations used by the submitted plans."
+          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration)."
         },
         "storage_budget_violation": {
           "higher_is_better": false,
           "coefficient": -0.6,
-          "description": "Amount by which the submitted plans exceed the workload index budget."
+          "description": "Indexes used beyond the storage budget; any violation fails the run."
         },
         "mean_candidate_multiplier_at_k": {
           "higher_is_better": false,
           "coefficient": -0.3,
-          "description": "Average candidate-set size divided by k, penalizing methods that maintain recall by over-retrieving."
+          "description": "Mean over templates of the mean distinct-candidate count divided by k."
         },
         "max_candidate_multiplier_at_k": {
           "higher_is_better": false,
           "coefficient": -0.2,
-          "description": "Worst-query candidate-set size divided by k, catching concentrated over-retrieval on held-out query types."
+          "description": "Largest template mean distinct-candidate count divided by k."
         },
         "speedup_vs_per_column": {
           "higher_is_better": true,
           "coefficient": 1.0,
-          "description": "Cost improvement relative to the one-index-per-column baseline on the same query slice."
+          "description": "Evaluator-fixed PerColumn cost divided by the submission's cost on the same held-out instances (0 for failed runs)."
         }
       },
       "results": {
@@ -69,6 +69,78 @@
           "min_recall_at_k": 0.9,
           "storage_indexes": 3,
           "speedup_vs_per_column": 2.1
+        }
+      }
+    },
+    "bicomplex_small": {
+      "description": "Scaled BiComplex-style workload (5 columns, 3,000 rows, 8 query templates over column subsets with >= 2 columns, recall@100 >= 0.90 per template, budget 5 indexes = number of columns). Plans are scored on held-out query instances. Paper values (HNSW, read from Fig. 7; 8 columns, 12 queries, 1M rows, budget 8): Mint cost ~0.56e7 vs PerColumn ~1.71e7 (normalized ~0.33, cost ratio ~3.05x; latency speedup ~7.3x in Fig. 7B); PerQuery ~0.40e7 (normalized ~0.23) using 12 indexes. Storage values are the paper's (budget 8); this scaled setup uses a budget of 5.",
+      "weight": 0.5,
+      "primary_metric": "weighted_cost",
+      "metrics": {
+        "weighted_cost": {
+          "higher_is_better": false,
+          "coefficient": -1.0,
+          "description": "Probability-weighted mean query cost on held-out query instances (index-scan dim*ek plus re-rank query-dim*distinct candidates), normalized by the evaluator's fixed PerColumn plans on the same instances. Failed runs get a fixed worst value."
+        },
+        "mean_recall_at_k": {
+          "higher_is_better": true,
+          "coefficient": 0.5,
+          "description": "Mean over query templates of the template's mean recall@k on held-out instances."
+        },
+        "min_recall_at_k": {
+          "higher_is_better": true,
+          "coefficient": 0.5,
+          "description": "Worst template's mean recall@k on held-out instances; must be >= the 0.90 floor or the run is failed."
+        },
+        "recall_floor_violation": {
+          "higher_is_better": false,
+          "coefficient": -0.6,
+          "description": "Amount by which the worst template's mean recall falls below the floor (failed runs: the full floor)."
+        },
+        "storage_indexes": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration)."
+        },
+        "storage_budget_violation": {
+          "higher_is_better": false,
+          "coefficient": -0.6,
+          "description": "Indexes used beyond the storage budget; any violation fails the run."
+        },
+        "mean_candidate_multiplier_at_k": {
+          "higher_is_better": false,
+          "coefficient": -0.3,
+          "description": "Mean over templates of the mean distinct-candidate count divided by k."
+        },
+        "max_candidate_multiplier_at_k": {
+          "higher_is_better": false,
+          "coefficient": -0.2,
+          "description": "Largest template mean distinct-candidate count divided by k."
+        },
+        "speedup_vs_per_column": {
+          "higher_is_better": true,
+          "coefficient": 1.0,
+          "description": "Evaluator-fixed PerColumn cost divided by the submission's cost on the same held-out instances (0 for failed runs)."
+        }
+      },
+      "results": {
+        "per_column": {
+          "type": "baseline",
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9,
+          "min_recall_at_k": 0.9,
+          "storage_indexes": 8
+        },
+        "per_query": {
+          "type": "baseline"
+        },
+        "mint": {
+          "type": "proposed",
+          "weighted_cost": 0.33,
+          "mean_recall_at_k": 0.9,
+          "min_recall_at_k": 0.9,
+          "storage_indexes": 8,
+          "speedup_vs_per_column": 3.05
         }
       }
     }

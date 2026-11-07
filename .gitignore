@@ -2,6 +2,7 @@
 checkpoints/*
 !checkpoints/.gitkeep
 !checkpoints/mint_results.json
+!checkpoints/mint_bicomplex_results.json
 *.pt
 *.pth
 *.ckpt

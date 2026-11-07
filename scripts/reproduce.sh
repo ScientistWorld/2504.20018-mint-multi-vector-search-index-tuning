@@ -1,24 +1,17 @@
 #!/bin/bash
-# Reproduce the paper's results end-to-end.
+# Reproduce the reference end to end (CPU): tune both workloads with MINT and
+# score them on the visible train slice and the held-out test slice.
 #
-# This script runs inside the compute container and should call
-# scripts/baseline.sh and scripts/method.sh to run baselines and
-# the paper's method, each of which calls scripts/evaluate.sh.
-#
-# Assumes:
-#   - Container is built (environment/container.sif)
-#   - Data and models are downloaded (via scripts/download.sh)
-#   - Working directory is /home/user
-#
-# This is the "gold standard" reproduction — 
-# You do not need to run this, but keep this in good shape
-# so other agents can easily run a full loop of reproduction and get the paper's numbers.
+# Assumes the container from environment/ and runs from /home/user.
 
 set -e
 
 cd /home/user
 
-echo "[reproduce] running naive_small MINT experiment"
-python -m method.mint --workload naive_small --n-rows 3000 --output checkpoints/mint_results.json
-echo "[reproduce] evaluating naive_small"
-bash scripts/evaluate.sh checkpoints/mint_results.json
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+
+python -m method.mint --workload naive_small --output checkpoints/mint_results.json
+python -m method.mint --workload bicomplex_small --output checkpoints/mint_bicomplex_results.json
+bash scripts/evaluate_train.sh
+bash scripts/evaluate_test.sh
+bash scripts/evaluate.sh

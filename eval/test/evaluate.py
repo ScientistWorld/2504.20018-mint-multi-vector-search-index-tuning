@@ -1,278 +1,320 @@
+"""Held-out test scoring for multi-vector index tuning submissions.
+
+Reads submitted result artifacts (``checkpoints/*_results.json``), executes the
+submitted per-template query plans on held-out query instances with a fixed
+HNSW engine, and recomputes every metric. Nothing the submission reports
+(costs, recalls, configuration, dataset size, thresholds, baselines) is
+trusted: the protocol, database, held-out queries, ground truth, ANN engine and
+the PerColumn comparator are all fixed here.
+
+A run that violates a constraint (worst template's mean recall@k below the
+floor, more distinct indexes than the budget) or submits an invalid plan is
+scored as failed: every metric is set to a value at least as bad as the worst
+value any feasible run can obtain.
+"""
+
 from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
+from eval.test import hidden_workload as hw
 
 SLICE_NAME = "test"
-SLICE_QUERIES = ("q2", "q3")
-
-EXPECTED_PROTOCOL = {
-    "naive_small": {
-        "top_k": 100,
-        "recall_threshold": 0.90,
-        "storage_budget": 3,
-    }
-}
-
-
-def ratio(num: float, den: float) -> float:
-    return float(num / den) if den else 0.0
-
-
-def validate_protocol(payload: dict, result_path: Path) -> None:
-    experiment = payload.get("workload")
-    expected = EXPECTED_PROTOCOL.get(experiment)
-    if expected is None:
-        return
-    for key, expected_value in expected.items():
-        observed = payload.get(key)
-        if isinstance(expected_value, float):
-            ok = abs(float(observed) - expected_value) < 1e-9
-        else:
-            ok = observed == expected_value
-        if not ok:
-            raise ValueError(
-                f"{result_path} is not a valid {experiment} artifact: "
-                f"expected {key}={expected_value!r}, found {observed!r}"
-            )
+RESERVED_BASELINES = ("per_column", "per_query")
+BASELINES_PATH = Path(__file__).with_name("baselines.json")
+HNSW_M = 16
+HNSW_EF_CONSTRUCTION = 120
+HNSW_EF_SEARCH = 300
+FAIL_COST_FLOOR = 100.0
+METRICS = (
+    "weighted_cost",
+    "mean_recall_at_k",
+    "min_recall_at_k",
+    "recall_floor_violation",
+    "storage_indexes",
+    "storage_budget_violation",
+    "mean_candidate_multiplier_at_k",
+    "max_candidate_multiplier_at_k",
+    "speedup_vs_per_column",
+)
 
 
-def _normalize(x):
-    import numpy as np
-
-    return x / np.maximum(np.linalg.norm(x, axis=1, keepdims=True), 1e-12)
+class PlanError(ValueError):
+    pass
 
 
-def _parse_index_name(name: str) -> tuple[int, ...]:
-    if not name.startswith("x"):
-        raise ValueError(f"invalid index name {name!r}")
-    return tuple(int(part) - 1 for part in name[1:].split(",") if part)
+def _faiss():
+    import faiss
+
+    faiss.omp_set_num_threads(1)
+    return faiss
 
 
 class EvalHnswIndex:
-    def __init__(self, columns, col_ids: tuple[int, ...], ef: int = 300):
-        import faiss
+    def __init__(self, columns, key: tuple[int, ...]):
         import numpy as np
 
-        self.col_ids = tuple(col_ids)
-        self.dim = int(sum(columns[c].shape[1] for c in self.col_ids))
-        self.matrix = _normalize(np.concatenate([columns[c] for c in self.col_ids], axis=1).astype("float32"))
-        self.index = faiss.IndexHNSWFlat(self.dim, 16, faiss.METRIC_INNER_PRODUCT)
-        self.index.hnsw.efConstruction = 120
-        self.index.hnsw.efSearch = ef
-        self.index.add(self.matrix)
+        faiss = _faiss()
+        self.key = tuple(key)
+        self.dim = int(sum(columns[c].shape[1] for c in self.key))
+        m = np.concatenate([columns[c] for c in self.key], axis=1).astype("float32")
+        m /= np.maximum(np.linalg.norm(m, axis=1, keepdims=True), 1e-12)
+        self.n_rows = int(m.shape[0])
+        self.index = faiss.IndexHNSWFlat(self.dim, HNSW_M, faiss.METRIC_INNER_PRODUCT)
+        self.index.hnsw.efConstruction = HNSW_EF_CONSTRUCTION
+        self.index.hnsw.efSearch = HNSW_EF_SEARCH
+        self.index.add(np.ascontiguousarray(m, dtype="float32"))
 
-    def query_vector(self, query):
+    def query_matrix(self, queries):
         import numpy as np
 
-        parts = [query.vectors[query.columns.index(c)] for c in self.col_ids]
-        q = np.concatenate(parts).astype("float32")
-        return q / max(float(np.linalg.norm(q)), 1e-12)
+        cols = queries[0].columns
+        parts = [np.stack([q.vectors[cols.index(c)] for q in queries]) for c in self.key]
+        qm = np.concatenate(parts, axis=1).astype("float32")
+        qm /= np.maximum(np.linalg.norm(qm, axis=1, keepdims=True), 1e-12)
+        return np.ascontiguousarray(qm, dtype="float32")
 
-    def search(self, query, k: int):
-        _, labels = self.index.search(self.query_vector(query)[None, :], min(k, self.matrix.shape[0]))
-        return labels[0].astype("int64")
-
-
-def _collect_plan_indexes(method_payloads: dict[str, dict]) -> set[tuple[int, ...]]:
-    keys: set[tuple[int, ...]] = set()
-    for method_payload in method_payloads.values():
-        for plan in method_payload.get("plans", {}).values():
-            keys.update(_parse_index_name(name) for name in plan["indexes"])
-    if not keys:
-        raise ValueError("artifacts contain no executable query plans")
-    return keys
+    def search(self, qvec, k: int) -> list[int]:
+        k = int(min(k, self.n_rows))
+        if k <= 0:
+            return []
+        _, labels = self.index.search(qvec[None, :], k)
+        return [int(x) for x in labels[0] if x >= 0]
 
 
-def _slice_queries(workload) -> tuple:
-    wanted = set(SLICE_QUERIES)
-    queries = tuple(query for query in workload.queries if query.name in wanted)
-    found = {query.name for query in queries}
-    missing = wanted - found
-    if missing:
-        raise ValueError(f"{workload.name} is missing {SLICE_NAME} queries: {sorted(missing)}")
-    return queries
+class Experiment:
+    def __init__(self, name: str):
+        spec = hw.SPECS[name]
+        self.name = name
+        self.n_rows = int(spec["n_rows"])
+        self.k = int(spec["top_k"])
+        self.theta = float(spec["recall_threshold"])
+        self.budget = int(spec["storage_budget"])
+        self.columns = hw.database(name)
+        self.n_cols = len(self.columns)
+        self.templates = hw.templates(name)
+        self.queries = hw.held_out_queries(name, self.columns)
+        self.gt = {t.name: hw.exact_topk(self.columns, self.queries[t.name], self.k) for t in self.templates}
+        self.qdim = {t.name: int(sum(self.columns[c].shape[1] for c in t.columns)) for t in self.templates}
+        self._indexes: dict[tuple[int, ...], EvalHnswIndex] = {}
+        self._qmats: dict = {}
+
+    def index(self, key):
+        if key not in self._indexes:
+            self._indexes[key] = EvalHnswIndex(self.columns, key)
+        return self._indexes[key]
+
+    def qmat(self, tname, key):
+        if (tname, key) not in self._qmats:
+            self._qmats[(tname, key)] = self.index(key).query_matrix(self.queries[tname])
+        return self._qmats[(tname, key)]
+
+    def max_feasible_raw_cost(self) -> float:
+        # Any valid plan uses distinct indexes over subsets of the template's
+        # columns with ek <= n_rows, so its per-query cost is at most
+        # (sum of dims over all non-empty subsets + query dim) * n_rows.
+        return float(
+            sum(t.probability * (2 ** (len(t.columns) - 1) + 1) * self.qdim[t.name] * self.n_rows for t in self.templates)
+        )
 
 
-def _score_method(
-    method_payload: dict,
-    workload,
-    slice_queries: tuple,
-    indexes: dict[tuple[int, ...], EvalHnswIndex],
-    gt_by_query: dict[str, object],
-) -> dict[str, float]:
-    plans = method_payload.get("plans")
+def _parse_index_name(name, n_cols: int) -> tuple[int, ...]:
+    if not isinstance(name, str) or not name.startswith("x"):
+        raise PlanError(f"invalid index name {name!r}")
+    try:
+        cols = [int(p) for p in name[1:].split(",")]
+    except ValueError as exc:
+        raise PlanError(f"invalid index name {name!r}") from exc
+    if not cols or len(set(cols)) != len(cols) or any(c < 1 or c > n_cols for c in cols):
+        raise PlanError(f"invalid index name {name!r}")
+    return tuple(sorted(c - 1 for c in cols))
+
+
+def parse_plans(method_payload, exp: Experiment) -> dict:
+    plans = method_payload.get("plans") if isinstance(method_payload, dict) else None
     if not isinstance(plans, dict):
-        raise ValueError("method artifact is missing query plans")
-
-    probability_mass = sum(float(query.probability) for query in slice_queries)
-    if probability_mass <= 0:
-        raise ValueError(f"{SLICE_NAME} query probabilities must have positive mass")
-
-    recalls = []
-    candidate_counts = []
-    weighted_cost = 0.0
-    for query in slice_queries:
-        if query.name not in plans:
-            raise ValueError(f"method artifact is missing plan for {query.name}")
-        plan = plans[query.name]
-        index_keys = tuple(_parse_index_name(name) for name in plan["indexes"])
-        eks = tuple(int(ek) for ek in plan["ek"])
-        if len(index_keys) != len(eks):
-            raise ValueError(f"plan for {query.name} has mismatched indexes and ek values")
-
-        candidates: set[int] = set()
-        for key, ek in zip(index_keys, eks):
-            if ek <= 0:
-                continue
-            if not set(key).issubset(query.columns):
-                raise ValueError(f"plan for {query.name} uses index {key} outside query columns {query.columns}")
-            candidates.update(int(item) for item in indexes[key].search(query, ek))
-
-        gt = set(int(item) for item in gt_by_query[query.name])
-        recall = len(gt & candidates) / len(gt)
-        candidate_counts.append(len(candidates))
-        query_dim = int(sum(workload.columns[c].shape[1] for c in query.columns))
-        query_cost = sum(indexes[key].dim * ek for key, ek in zip(index_keys, eks)) + query_dim * len(candidates)
-        weighted_cost += (float(query.probability) / probability_mass) * float(query_cost)
-        recalls.append(recall)
-
-    mean_recall = float(sum(recalls) / len(recalls))
-    min_recall = float(min(recalls))
-    configuration = method_payload.get("configuration")
-    if isinstance(configuration, list):
-        storage_indexes = float(len({_parse_index_name(str(name)) for name in configuration}))
-    else:
-        storage_indexes = float(
-            len(
-                {
-                    key
-                    for plan in plans.values()
-                    for key in (_parse_index_name(name) for name in plan["indexes"])
-                }
-            )
-        )
-    mean_candidates = float(sum(candidate_counts) / len(candidate_counts))
-    return {
-        "weighted_cost": float(weighted_cost),
-        "mean_recall_at_k": mean_recall,
-        "min_recall_at_k": min_recall,
-        "recall_floor_violation": float(max(0.0, workload.recall_threshold - min_recall)),
-        "storage_indexes": storage_indexes,
-        "storage_budget_violation": float(max(0.0, storage_indexes - workload.storage_budget)),
-        "mean_candidate_multiplier_at_k": float(mean_candidates / workload.top_k),
-        "max_candidate_multiplier_at_k": float(max(candidate_counts) / workload.top_k),
-    }
+        raise PlanError("missing 'plans' mapping")
+    parsed = {}
+    for t in exp.templates:
+        plan = plans.get(t.name)
+        if not isinstance(plan, dict):
+            raise PlanError(f"missing plan for {t.name}")
+        names, eks = plan.get("indexes"), plan.get("ek")
+        if not isinstance(names, list) or not isinstance(eks, list) or not names or len(names) != len(eks):
+            raise PlanError(f"plan for {t.name} needs equal-length non-empty 'indexes' and 'ek' lists")
+        keys, vals = [], []
+        for name, ek in zip(names, eks):
+            key = _parse_index_name(name, exp.n_cols)
+            if not set(key) <= set(t.columns):
+                raise PlanError(f"plan for {t.name} uses {name} outside template columns")
+            if key in keys:
+                raise PlanError(f"plan for {t.name} lists {name} twice")
+            if isinstance(ek, bool) or not isinstance(ek, int):
+                raise PlanError(f"plan for {t.name} has non-integer ek {ek!r}")
+            if ek < 0 or ek > exp.n_rows:
+                raise PlanError(f"plan for {t.name} has ek {ek} outside [0, {exp.n_rows}]")
+            keys.append(key)
+            vals.append(int(ek))
+        parsed[t.name] = (tuple(keys), tuple(vals))
+    return parsed
 
 
-def _load_payloads(result_paths: list[Path]) -> dict[str, dict]:
-    grouped: dict[str, dict] = {}
-    for path in result_paths:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        validate_protocol(payload, path)
-        workload_name = payload["workload"]
-        group = grouped.setdefault(
-            workload_name,
-            {
-                "metadata": {
-                    "workload": payload["workload"],
-                    "n_rows": int(payload["n_rows"]),
-                    "top_k": int(payload["top_k"]),
-                },
-                "methods": {},
-            },
-        )
-        metadata = group["metadata"]
-        if metadata["n_rows"] != int(payload["n_rows"]) or metadata["top_k"] != int(payload["top_k"]):
-            raise ValueError(f"{path} does not match the {workload_name} evaluation metadata")
-        for method_name, method_payload in payload.get("results", {}).items():
-            target_name = method_name
-            existing = group["methods"].get(target_name)
-            if existing == method_payload:
-                continue
-            if existing is not None:
-                target_name = f"{method_name}__{path.stem}"
-                if target_name in group["methods"]:
-                    raise ValueError(f"duplicate method name after disambiguation: {target_name}")
-            group["methods"][target_name] = method_payload
-    return grouped
-
-
-def build_experiment_scores(workload_name: str, group: dict) -> dict:
-    from data.synthetic_multivector import exact_topk, make_workload
-
-    metadata = group["metadata"]
-    workload = make_workload(workload_name, n_rows=int(metadata["n_rows"]))
-    if workload.top_k != metadata["top_k"]:
-        raise ValueError(f"{workload_name} top_k does not match generated workload")
-
-    methods = group["methods"]
-    if "per_column" not in methods:
-        raise ValueError(f"{workload_name} artifacts must include a per_column baseline for normalized cost")
-
-    slice_queries = _slice_queries(workload)
-    gt_by_query = {q.name: exact_topk(workload.columns, q, workload.top_k) for q in slice_queries}
-    index_keys = _collect_plan_indexes(methods)
-    indexes = {key: EvalHnswIndex(workload.columns, key) for key in sorted(index_keys, key=lambda x: (len(x), x))}
-
-    raw = {
-        name: _score_method(method, workload, slice_queries, indexes, gt_by_query)
-        for name, method in sorted(methods.items())
-    }
-    per_column_cost = raw["per_column"]["weighted_cost"]
-    results = {}
-    for name, metrics in raw.items():
-        normalized = {
-            "weighted_cost": ratio(metrics["weighted_cost"], per_column_cost),
-            "mean_recall_at_k": metrics["mean_recall_at_k"],
-            "min_recall_at_k": metrics["min_recall_at_k"],
-            "recall_floor_violation": metrics["recall_floor_violation"],
-            "storage_indexes": metrics["storage_indexes"],
-            "storage_budget_violation": metrics["storage_budget_violation"],
-            "mean_candidate_multiplier_at_k": metrics["mean_candidate_multiplier_at_k"],
-            "max_candidate_multiplier_at_k": metrics["max_candidate_multiplier_at_k"],
-            "speedup_vs_per_column": ratio(per_column_cost, metrics["weighted_cost"]),
+def execute(parsed: dict, exp: Experiment) -> dict:
+    per_template = {}
+    used: set = set()
+    raw_cost = 0.0
+    for t in exp.templates:
+        keys, eks = parsed[t.name]
+        active = [(k, e) for k, e in zip(keys, eks) if e > 0]
+        used.update(k for k, _ in active)
+        scan = sum(exp.index(k).dim * e for k, e in active)
+        recalls, costs, ncands = [], [], []
+        gt = exp.gt[t.name]
+        for n in range(len(exp.queries[t.name])):
+            cand: set[int] = set()
+            for k, e in active:
+                cand.update(exp.index(k).search(exp.qmat(t.name, k)[n], e))
+            hits = sum(1 for x in gt[n].tolist() if x in cand)
+            recalls.append(hits / gt.shape[1])
+            ncands.append(len(cand))
+            costs.append(scan + exp.qdim[t.name] * len(cand))
+        per_template[t.name] = {
+            "recall": sum(recalls) / len(recalls),
+            "min_instance_recall": min(recalls),
+            "mean_candidates": sum(ncands) / len(ncands),
+            "mean_cost": sum(costs) / len(costs),
         }
-        results[name] = normalized
-    return {"results": results}
+        raw_cost += t.probability * per_template[t.name]["mean_cost"]
+    return {"per_template": per_template, "raw_cost": raw_cost, "storage": len(used)}
+
+
+def failed_metrics(exp: Experiment, fail_cost: float, storage: int | None) -> dict:
+    s = float(max(storage or 0, exp.budget))
+    worst_mult = exp.n_rows / exp.k
+    return {
+        "weighted_cost": fail_cost,
+        "mean_recall_at_k": 0.0,
+        "min_recall_at_k": 0.0,
+        "recall_floor_violation": exp.theta,
+        "storage_indexes": s,
+        "storage_budget_violation": float(max(s - exp.budget, 1.0)),
+        "mean_candidate_multiplier_at_k": worst_mult,
+        "max_candidate_multiplier_at_k": worst_mult,
+        "speedup_vs_per_column": 0.0,
+    }
+
+
+def score_method(method_payload, exp: Experiment, pc_raw: float, fail_cost: float) -> tuple[dict, dict]:
+    try:
+        parsed = parse_plans(method_payload, exp)
+    except PlanError as exc:
+        return failed_metrics(exp, fail_cost, None), {"status": "failed", "reasons": [f"invalid plan: {exc}"]}
+    run = execute(parsed, exp)
+    pt = run["per_template"]
+    recalls = [pt[t.name]["recall"] for t in exp.templates]
+    mults = [pt[t.name]["mean_candidates"] / exp.k for t in exp.templates]
+    raw = {
+        "raw_weighted_cost": run["raw_cost"],
+        "storage": run["storage"],
+        "per_template": pt,
+    }
+    reasons = []
+    if min(recalls) < exp.theta - 1e-9:
+        worst = min(exp.templates, key=lambda t: pt[t.name]["recall"])
+        reasons.append(f"recall floor: {worst.name} mean recall@{exp.k} {pt[worst.name]['recall']:.4f} < {exp.theta}")
+    if run["storage"] > exp.budget:
+        reasons.append(f"storage: {run['storage']} indexes > budget {exp.budget}")
+    if not (run["raw_cost"] > 0 and math.isfinite(run["raw_cost"])):
+        reasons.append("non-positive or non-finite cost")
+    if reasons:
+        return failed_metrics(exp, fail_cost, run["storage"]), {"status": "failed", "reasons": reasons, **raw}
+    metrics = {
+        "weighted_cost": run["raw_cost"] / pc_raw,
+        "mean_recall_at_k": sum(recalls) / len(recalls),
+        "min_recall_at_k": min(recalls),
+        "recall_floor_violation": max(0.0, exp.theta - min(recalls)),
+        "storage_indexes": float(run["storage"]),
+        "storage_budget_violation": float(max(0, run["storage"] - exp.budget)),
+        "mean_candidate_multiplier_at_k": sum(mults) / len(mults),
+        "max_candidate_multiplier_at_k": max(mults),
+        "speedup_vs_per_column": pc_raw / run["raw_cost"],
+    }
+    return metrics, {"status": "ok", **raw}
+
+
+def _load_baselines() -> dict:
+    if not BASELINES_PATH.is_file():
+        raise SystemExit(f"missing fixed baseline plans: {BASELINES_PATH}")
+    return json.loads(BASELINES_PATH.read_text(encoding="utf-8"))
+
+
+def _load_artifacts(result_paths: list[Path]) -> tuple[dict, list]:
+    grouped: dict[str, dict[str, object]] = {name: {} for name in hw.SPECS}
+    ignored = []
+    for path in result_paths:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            ignored.append(f"{path}: unreadable ({exc})")
+            continue
+        workload = payload.get("workload") if isinstance(payload, dict) else None
+        results = payload.get("results") if isinstance(payload, dict) else None
+        if workload not in hw.SPECS or not isinstance(results, dict):
+            ignored.append(f"{path}: unknown workload {workload!r} or missing results")
+            continue
+        methods = grouped[workload]
+        for method_name, method_payload in results.items():
+            if method_name in RESERVED_BASELINES:
+                continue  # baselines are fixed by the evaluator
+            target = str(method_name)
+            if target in methods:
+                if methods[target] == method_payload:
+                    continue
+                target = f"{method_name}__{path.stem}"
+                if target in methods:
+                    raise ValueError(f"duplicate method name after disambiguation: {target}")
+            methods[target] = method_payload
+    return grouped, ignored
 
 
 def build_scores(result_paths: list[Path]) -> dict:
-    grouped = _load_payloads(result_paths)
-    experiments = {
-        workload_name: build_experiment_scores(workload_name, group)
-        for workload_name, group in sorted(grouped.items())
-    }
+    grouped, ignored = _load_artifacts(result_paths)
+    baselines = _load_baselines()
+    all_methods = sorted({m for methods in grouped.values() for m in methods})
+    if not all_methods:
+        raise SystemExit("no submitted methods found in the result artifacts")
+    experiments = {}
+    for name in sorted(hw.SPECS):
+        exp = Experiment(name)
+        fixed = baselines[name]
+        pc_parsed = parse_plans(fixed["per_column"], exp)
+        pc_run = execute(pc_parsed, exp)
+        pc_raw = pc_run["raw_cost"]
+        fail_cost = max(FAIL_COST_FLOOR, 2.0 * exp.max_feasible_raw_cost() / pc_raw)
+        results, raw = {}, {}
+        results["per_column"], raw["per_column"] = score_method(fixed["per_column"], exp, pc_raw, fail_cost)
+        _, raw["per_query_over_budget_reference"] = score_method(fixed["per_query"], exp, pc_raw, fail_cost)
+        for method in all_methods:
+            payload = grouped[name].get(method)
+            if payload is None:
+                results[method] = failed_metrics(exp, fail_cost, None)
+                raw[method] = {"status": "failed", "reasons": [f"no {name} artifact for this method"]}
+            else:
+                results[method], raw[method] = score_method(payload, exp, pc_raw, fail_cost)
+        experiments[name] = {"results": results, "_raw": raw}
     return {
         "_slice": SLICE_NAME,
-        "_split_queries": list(SLICE_QUERIES),
+        "_protocol": {
+            name: {k: v for k, v in spec.items() if k in ("n_rows", "top_k", "recall_threshold", "storage_budget")}
+            | {"held_out_queries_per_template": hw.N_HELD_OUT}
+            for name, spec in hw.SPECS.items()
+        },
+        "_ignored_artifacts": ignored,
         "experiments": experiments,
     }
-
-
-def _result_keys(scores: dict) -> dict[str, set[str]]:
-    experiments = scores.get("experiments", scores)
-    return {
-        experiment_name: set(experiment_payload.get("results", {}).keys())
-        for experiment_name, experiment_payload in experiments.items()
-        if not experiment_name.startswith("_")
-    }
-
-
-def validate_against_train(scores: dict, train_path: Path = Path("scoring/scores_train.json")) -> None:
-    if not train_path.exists():
-        return
-    train_scores = json.loads(train_path.read_text(encoding="utf-8"))
-    train_keys = _result_keys(train_scores)
-    test_keys = _result_keys(scores)
-    if train_keys != test_keys:
-        raise ValueError(
-            "test slice must score the same experiment/method keys as scoring/scores_train.json: "
-            f"train={ {k: sorted(v) for k, v in train_keys.items()} }, "
-            f"test={ {k: sorted(v) for k, v in test_keys.items()} }"
-        )
 
 
 def main() -> None:
@@ -283,7 +325,6 @@ def main() -> None:
     if not args.result_paths:
         raise SystemExit("no result artifacts supplied")
     scores = build_scores([Path(p) for p in args.result_paths])
-    validate_against_train(scores)
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(scores, indent=2), encoding="utf-8")
