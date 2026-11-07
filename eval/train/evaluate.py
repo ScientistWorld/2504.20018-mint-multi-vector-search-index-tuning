@@ -11,6 +11,13 @@ A run that violates a constraint (worst template's mean recall@k below the
 floor, more distinct indexes than the budget) or submits an invalid plan is
 scored as failed: every metric is set to a value at least as bad as the worst
 value any feasible run can obtain.
+
+An artifact must also be self-consistent. Declared protocol fields (n_rows,
+top_k, recall_threshold, storage_budget) must equal the fixed protocol, any
+entry under a reserved baseline name must be a valid plan set, and a declared
+``configuration`` must contain every index the plans scan. Otherwise every
+method in the artifact fails on that workload. Storage counts the declared
+configuration together with the indexes the plans use.
 """
 
 from __future__ import annotations
@@ -27,7 +34,10 @@ PROTOCOL = {
     "naive_small": {"n_rows": 3000, "top_k": 100, "recall_threshold": 0.90, "storage_budget": 3},
     "bicomplex_small": {"n_rows": 3000, "top_k": 100, "recall_threshold": 0.90, "storage_budget": 5},
 }
+TRAIN_QUERIES_PER_TEMPLATE = 1000
+TRAIN_QUERY_SEED = 20240501
 RESERVED_BASELINES = ("per_column", "per_query")
+PROTOCOL_KEYS = ("n_rows", "top_k", "recall_threshold", "storage_budget")
 BASELINES_PATH = Path(__file__).with_name("baselines.json")
 HNSW_M = 16
 HNSW_EF_CONSTRUCTION = 120
@@ -92,7 +102,7 @@ class EvalHnswIndex:
 class Experiment:
     def __init__(self, name: str):
         spec = PROTOCOL[name]
-        workload = public.make_workload(name)
+        workload = public.make_workload(name, n_train=TRAIN_QUERIES_PER_TEMPLATE, train_seed=TRAIN_QUERY_SEED)
         observed = {
             "n_rows": workload.n_rows,
             "top_k": workload.top_k,
@@ -203,7 +213,50 @@ def execute(parsed: dict, exp: Experiment) -> dict:
             "mean_cost": sum(costs) / len(costs),
         }
         raw_cost += t.probability * per_template[t.name]["mean_cost"]
-    return {"per_template": per_template, "raw_cost": raw_cost, "storage": len(used)}
+    return {"per_template": per_template, "raw_cost": raw_cost, "used": used}
+
+
+def _index_label(key: tuple[int, ...]) -> str:
+    return "x" + ",".join(str(c + 1) for c in key)
+
+
+def declared_configuration(method_payload, exp: Experiment) -> set | None:
+    """Index set a method declares it builds (None when not declared)."""
+    if not isinstance(method_payload, dict) or "configuration" not in method_payload:
+        return None
+    conf = method_payload["configuration"]
+    if not isinstance(conf, list):
+        raise PlanError("'configuration' must be a list of index names")
+    keys: set = set()
+    for name in conf:
+        key = _parse_index_name(name, exp.n_cols)
+        if key in keys:
+            raise PlanError(f"configuration lists {name} twice")
+        keys.add(key)
+    return keys
+
+
+def _artifact_context(payload: dict, results: dict) -> dict:
+    """Parts of an artifact that bind every method in it."""
+    return {
+        "declared": {k: payload[k] for k in PROTOCOL_KEYS if k in payload},
+        "reserved": {r: results[r] for r in RESERVED_BASELINES if r in results},
+    }
+
+
+def artifact_problems(context: dict, exp: Experiment) -> list[str]:
+    fixed = {"n_rows": exp.n_rows, "top_k": exp.k, "recall_threshold": exp.theta, "storage_budget": exp.budget}
+    problems = []
+    for key, value in context["declared"].items():
+        numeric = isinstance(value, (int, float)) and not isinstance(value, bool)
+        if not (numeric and math.isfinite(float(value)) and float(value) == float(fixed[key])):
+            problems.append(f"artifact declares {key}={value!r}; the protocol fixes {fixed[key]!r}")
+    for name, entry in context["reserved"].items():
+        try:
+            parse_plans(entry, exp)
+        except PlanError as exc:
+            problems.append(f"artifact's {name} entry is not a valid plan set ({exc})")
+    return problems
 
 
 def failed_metrics(exp: Experiment, fail_cost: float, storage: int | None) -> dict:
@@ -222,37 +275,47 @@ def failed_metrics(exp: Experiment, fail_cost: float, storage: int | None) -> di
     }
 
 
-def score_method(method_payload, exp: Experiment, pc_raw: float, fail_cost: float) -> tuple[dict, dict]:
+def score_method(
+    method_payload, exp: Experiment, pc_raw: float, fail_cost: float, problems=()
+) -> tuple[dict, dict]:
+    if problems:
+        return failed_metrics(exp, fail_cost, None), {"status": "failed", "reasons": list(problems)}
     try:
         parsed = parse_plans(method_payload, exp)
+        declared = declared_configuration(method_payload, exp)
     except PlanError as exc:
         return failed_metrics(exp, fail_cost, None), {"status": "failed", "reasons": [f"invalid plan: {exc}"]}
     run = execute(parsed, exp)
+    used = run["used"]
+    storage = len(used | declared) if declared is not None else len(used)
     pt = run["per_template"]
     recalls = [pt[t.name]["recall"] for t in exp.templates]
     mults = [pt[t.name]["mean_candidates"] / exp.k for t in exp.templates]
     raw = {
         "raw_weighted_cost": run["raw_cost"],
-        "storage": run["storage"],
+        "storage": storage,
         "per_template": pt,
     }
     reasons = []
+    if declared is not None and not used <= declared:
+        missing = sorted(_index_label(k) for k in used - declared)
+        reasons.append(f"plans scan indexes missing from the declared configuration: {missing}")
     if min(recalls) < exp.theta - 1e-9:
         worst = min(exp.templates, key=lambda t: pt[t.name]["recall"])
         reasons.append(f"recall floor: {worst.name} mean recall@{exp.k} {pt[worst.name]['recall']:.4f} < {exp.theta}")
-    if run["storage"] > exp.budget:
-        reasons.append(f"storage: {run['storage']} indexes > budget {exp.budget}")
+    if storage > exp.budget:
+        reasons.append(f"storage: {storage} indexes > budget {exp.budget}")
     if not (run["raw_cost"] > 0 and math.isfinite(run["raw_cost"])):
         reasons.append("non-positive or non-finite cost")
     if reasons:
-        return failed_metrics(exp, fail_cost, run["storage"]), {"status": "failed", "reasons": reasons, **raw}
+        return failed_metrics(exp, fail_cost, storage), {"status": "failed", "reasons": reasons, **raw}
     metrics = {
         "weighted_cost": run["raw_cost"] / pc_raw,
         "mean_recall_at_k": sum(recalls) / len(recalls),
         "min_recall_at_k": min(recalls),
         "recall_floor_violation": max(0.0, exp.theta - min(recalls)),
-        "storage_indexes": float(run["storage"]),
-        "storage_budget_violation": float(max(0, run["storage"] - exp.budget)),
+        "storage_indexes": float(storage),
+        "storage_budget_violation": float(max(0, storage - exp.budget)),
         "mean_candidate_multiplier_at_k": sum(mults) / len(mults),
         "max_candidate_multiplier_at_k": max(mults),
         "speedup_vs_per_column": pc_raw / run["raw_cost"],
@@ -281,17 +344,19 @@ def _load_artifacts(result_paths: list[Path]) -> tuple[dict, list]:
             ignored.append(f"{path}: unknown workload {workload!r} or missing results")
             continue
         methods = grouped[workload]
+        context = _artifact_context(payload, results)
         for method_name, method_payload in results.items():
             if method_name in RESERVED_BASELINES:
-                continue  # baselines are fixed by the evaluator
+                continue  # baselines are fixed by the evaluator (entries are only validated)
+            entry = {"payload": method_payload, "context": context}
             target = str(method_name)
             if target in methods:
-                if methods[target] == method_payload:
+                if methods[target] == entry:
                     continue
                 target = f"{method_name}__{path.stem}"
                 if target in methods:
                     raise ValueError(f"duplicate method name after disambiguation: {target}")
-            methods[target] = method_payload
+            methods[target] = entry
     return grouped, ignored
 
 
@@ -313,17 +378,18 @@ def build_scores(result_paths: list[Path]) -> dict:
         results["per_column"], raw["per_column"] = score_method(fixed["per_column"], exp, pc_raw, fail_cost)
         _, raw["per_query_over_budget_reference"] = score_method(fixed["per_query"], exp, pc_raw, fail_cost)
         for method in all_methods:
-            payload = grouped[name].get(method)
-            if payload is None:
+            entry = grouped[name].get(method)
+            if entry is None:
                 results[method] = failed_metrics(exp, fail_cost, None)
                 raw[method] = {"status": "failed", "reasons": [f"no {name} artifact for this method"]}
             else:
-                results[method], raw[method] = score_method(payload, exp, pc_raw, fail_cost)
+                problems = artifact_problems(entry["context"], exp)
+                results[method], raw[method] = score_method(entry["payload"], exp, pc_raw, fail_cost, problems)
         experiments[name] = {"results": results, "_raw": raw}
     return {
         "_slice": SLICE_NAME,
         "_protocol": {
-            name: dict(spec) | {"train_queries_per_template": public.N_TRAIN_QUERIES}
+            name: dict(spec) | {"train_queries_per_template": TRAIN_QUERIES_PER_TEMPLATE}
             for name, spec in PROTOCOL.items()
         },
         "_ignored_artifacts": ignored,
