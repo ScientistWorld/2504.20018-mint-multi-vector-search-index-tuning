@@ -1,0 +1,49 @@
+{
+  "reference_full_workload_raw_cost": 29939.276922321853,
+  "better_full_workload_raw_cost": 29939.276922321853,
+  "full_workload_cost_reduction_fraction": 0.0,
+  "configuration": [
+    "x1",
+    "x1,2",
+    "x2,3"
+  ],
+  "plans": {
+    "q1": {
+      "indexes": [
+        "x1"
+      ],
+      "ek": [
+        90
+      ]
+    },
+    "q2": {
+      "indexes": [
+        "x1,2"
+      ],
+      "ek": [
+        90
+      ]
+    },
+    "q3": {
+      "indexes": [
+        "x2,3"
+      ],
+      "ek": [
+        90
+      ]
+    },
+    "q4": {
+      "indexes": [
+        "x1",
+        "x1,2",
+        "x2,3"
+      ],
+      "ek": [
+        14,
+        48,
+        225
+      ]
+    }
+  },
+  "scope": "All four queries, unchanged data, actual ANN, recall >= 0.9, <= 3 indexes"
+}
