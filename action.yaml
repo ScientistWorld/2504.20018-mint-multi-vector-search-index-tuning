@@ -1,4 +1,2 @@
-action: submit
-gpus: 0
-test: false
-notes: "Resume audit: score the fixed-data replacement shortcut despite its expected public-train rejection, skip 27 completed comparisons, and calculate final scientific-ordering and failure-compensation bounds."
+action: done
+notes: "Audit committed as 550c663: stronger +0.242762 exceeds seed spread 0.122839; weaker -1.466176; 21 shortcuts tested, one gain within seed variation and three ignored-field ties. Scientific files restored."
