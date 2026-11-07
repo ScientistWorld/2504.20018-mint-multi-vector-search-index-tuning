@@ -5,4 +5,4 @@ action: submit
 gpus: 0
 test: false
 milestone: core_claim
-notes: "Hardening pass 2 (CPU): 200 train / 500 held-out instances per template, 0.03 recall allowance; rerun reference on both workloads, re-freeze evaluator PerColumn comparator, score train/test; rerun shortcuts, weaker/overfit/higher-recall, seed reruns, and measured-rerank / variance-aware better variants through the hidden test."
+notes: "Final verification (CPU): scripts/run.sh reproduces the reference end to end from the final code (both workloads + train/test/scores.json); outputs should match the committed artifacts and scores."
