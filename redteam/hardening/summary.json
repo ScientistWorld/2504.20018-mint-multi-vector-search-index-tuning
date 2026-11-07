@@ -1,0 +1,1370 @@
+{
+  "reference": {
+    "per_column_train_rank": -1.5037051294298802,
+    "reference_train_metrics": {
+      "bicomplex_small": {
+        "weighted_cost": 0.45776872694152726,
+        "mean_recall_at_k": 0.9297750000000022,
+        "min_recall_at_k": 0.9192999999999995,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.31228125,
+        "max_candidate_multiplier_at_k": 13.50925,
+        "speedup_vs_per_column": 2.1845092098826013
+      },
+      "naive_small": {
+        "weighted_cost": 0.572652642988853,
+        "mean_recall_at_k": 0.9300500000000032,
+        "min_recall_at_k": 0.9300000000000044,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 3.2975,
+        "max_candidate_multiplier_at_k": 10.4,
+        "speedup_vs_per_column": 1.746259293907538
+      }
+    },
+    "per_column_test_rank": -1.504240936937784,
+    "reference_test_metrics": {
+      "bicomplex_small": {
+        "weighted_cost": 0.45753877911915564,
+        "mean_recall_at_k": 0.9289100000000035,
+        "min_recall_at_k": 0.9164399999999999,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.3185649999999995,
+        "max_candidate_multiplier_at_k": 13.56908,
+        "speedup_vs_per_column": 2.1856070908900436
+      },
+      "naive_small": {
+        "weighted_cost": 0.5723467566630541,
+        "mean_recall_at_k": 0.933405000000005,
+        "min_recall_at_k": 0.9300000000000058,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 3.2975,
+        "max_candidate_multiplier_at_k": 10.4,
+        "speedup_vs_per_column": 1.7471925687677292
+      }
+    }
+  },
+  "cases": {
+    "better_combined": {
+      "description": "Better: measured re-rank plus variance-aware allowance.",
+      "train_rank": 0.835081570594474,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45524596517544463,
+          "mean_recall_at_k": 0.9197749999999987,
+          "min_recall_at_k": 0.9099999999999973,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.30228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.196614745645501
+        },
+        "naive_small": {
+          "weighted_cost": 0.5492031987824495,
+          "mean_recall_at_k": 0.9156999999999978,
+          "min_recall_at_k": 0.9099999999999973,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 1.8490000000000002,
+          "max_candidate_multiplier_at_k": 4.666,
+          "speedup_vs_per_column": 1.8208196933611094
+        }
+      },
+      "test_rank": 0.838195495212862,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.4550189418759297,
+          "mean_recall_at_k": 0.9189100000000051,
+          "min_recall_at_k": 0.9100000000000094,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.308565,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.197710706014236
+        },
+        "naive_small": {
+          "weighted_cost": 0.54823718695643,
+          "mean_recall_at_k": 0.9149250000000072,
+          "min_recall_at_k": 0.9100000000000094,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 1.845425,
+          "max_candidate_multiplier_at_k": 4.6517,
+          "speedup_vs_per_column": 1.8240280371194026
+        }
+      }
+    },
+    "better_measured_rerank": {
+      "description": "Better: picks among the 40 best configurations by cost measured on the training instances (distinct candidates, actual HNSW results) instead of the duplicate-counting cost estimate.",
+      "train_rank": 0.8272203721962109,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45776872694152726,
+          "mean_recall_at_k": 0.9297750000000022,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.31228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.1845092098826013
+        },
+        "naive_small": {
+          "weighted_cost": 0.5540426861477288,
+          "mean_recall_at_k": 0.9307000000000033,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 1.864,
+          "max_candidate_multiplier_at_k": 4.666,
+          "speedup_vs_per_column": 1.8049150814588357
+        }
+      },
+      "test_rank": 0.8295243110234458,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45753877911915564,
+          "mean_recall_at_k": 0.9289100000000035,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.3185649999999995,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.1856070908900436
+        },
+        "naive_small": {
+          "weighted_cost": 0.5530740892764343,
+          "mean_recall_at_k": 0.9299250000000046,
+          "min_recall_at_k": 0.9297000000000009,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 1.860425,
+          "max_candidate_multiplier_at_k": 4.6517,
+          "speedup_vs_per_column": 1.8080760234280036
+        }
+      }
+    },
+    "better_trim_deterministic": {
+      "description": "Better: variance-aware recall allowance; single-index plans whose recall is identical on every training instance drop the allowance (ek 93 -> 91).",
+      "train_rank": 0.009593700248223924,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45524596517544463,
+          "mean_recall_at_k": 0.9197749999999987,
+          "min_recall_at_k": 0.9099999999999973,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.30228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.196614745645501
+        },
+        "naive_small": {
+          "weighted_cost": 0.5667209855446621,
+          "mean_recall_at_k": 0.9150499999999979,
+          "min_recall_at_k": 0.9099999999999973,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2825,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7645367394308218
+        }
+      },
+      "test_rank": 0.010309577569906386,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.4550189418759297,
+          "mean_recall_at_k": 0.9189100000000051,
+          "min_recall_at_k": 0.9100000000000094,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.308565,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.197710706014236
+        },
+        "naive_small": {
+          "weighted_cost": 0.5664182676542554,
+          "mean_recall_at_k": 0.9184050000000077,
+          "min_recall_at_k": 0.9100000000000094,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2825,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7654797825313167
+        }
+      }
+    },
+    "better_wide_search": {
+      "description": "Stronger configuration search under the same estimated cost: wider beam, no early stop, plus swap local search.",
+      "train_rank": 0.0,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45776872694152726,
+          "mean_recall_at_k": 0.9297750000000022,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.31228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.1845092098826013
+        },
+        "naive_small": {
+          "weighted_cost": 0.572652642988853,
+          "mean_recall_at_k": 0.9300500000000032,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.746259293907538
+        }
+      },
+      "test_rank": 0.0,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45753877911915564,
+          "mean_recall_at_k": 0.9289100000000035,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.3185649999999995,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.1856070908900436
+        },
+        "naive_small": {
+          "weighted_cost": 0.5723467566630541,
+          "mean_recall_at_k": 0.933405000000005,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7471925687677292
+        }
+      }
+    },
+    "higher_recall": {
+      "description": "Honest trade-off: plans to 0.98 training recall (higher recall, higher cost).",
+      "train_rank": -0.05496858609813571,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.6000090370270403,
+          "mean_recall_at_k": 0.9707374999999987,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 5.39668125,
+          "max_candidate_multiplier_at_k": 13.7775,
+          "speedup_vs_per_column": 1.666641564191863
+        },
+        "naive_small": {
+          "weighted_cost": 0.6647162897140703,
+          "mean_recall_at_k": 0.9800874999999979,
+          "min_recall_at_k": 0.9799999999999973,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 2.240625,
+          "max_candidate_multiplier_at_k": 6.0225,
+          "speedup_vs_per_column": 1.5044012242127434
+        }
+      },
+      "test_rank": -0.018640425658491944,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.5973720022614609,
+          "mean_recall_at_k": 0.9698000000000039,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 5.37438,
+          "max_candidate_multiplier_at_k": 13.58508,
+          "speedup_vs_per_column": 1.673998774991659
+        },
+        "naive_small": {
+          "weighted_cost": 0.6632445319238062,
+          "mean_recall_at_k": 0.9786450000000049,
+          "min_recall_at_k": 0.9746000000000005,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 2.23469,
+          "max_candidate_multiplier_at_k": 5.99876,
+          "speedup_vs_per_column": 1.50773953175219
+        }
+      }
+    },
+    "overfit_no_margin": {
+      "description": "Train-tuned: plans exactly to the 0.90 floor on the visible training instances (no recall allowance).",
+      "train_rank": 0.7792409594131844,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.40078845917691824,
+          "mean_recall_at_k": 0.9017937500000013,
+          "min_recall_at_k": 0.9000000000000032,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.7316812500000003,
+          "max_candidate_multiplier_at_k": 11.28155,
+          "speedup_vs_per_column": 2.4950818245955895
+        },
+        "naive_small": {
+          "weighted_cost": 0.5223701251726374,
+          "mean_recall_at_k": 0.9020000000000021,
+          "min_recall_at_k": 0.9000000000000032,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 2.9125,
+          "max_candidate_multiplier_at_k": 8.95,
+          "speedup_vs_per_column": 1.9143514374400938
+        }
+      },
+      "test_rank": -57.09294008680927,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 0.5220910975976275,
+          "mean_recall_at_k": 0.9064849999999948,
+          "min_recall_at_k": 0.8999999999999925,
+          "recall_floor_violation": 7.549516567451064e-15,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 2.9125,
+          "max_candidate_multiplier_at_k": 8.95,
+          "speedup_vs_per_column": 1.915374547854662
+        }
+      }
+    },
+    "reference_seed_101": {
+      "description": "Reference procedure on a different visible training-instance sample (seed 101).",
+      "train_rank": 0.17359376347592037,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.4490466880270852,
+          "mean_recall_at_k": 0.928856250000002,
+          "min_recall_at_k": 0.9191999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.2414,
+          "max_candidate_multiplier_at_k": 13.4992,
+          "speedup_vs_per_column": 2.226939929996061
+        },
+        "naive_small": {
+          "weighted_cost": 0.5523882481809567,
+          "mean_recall_at_k": 0.9274875000000031,
+          "min_recall_at_k": 0.9199499999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.1199999999999997,
+          "max_candidate_multiplier_at_k": 9.69,
+          "speedup_vs_per_column": 1.810320917023583
+        }
+      },
+      "test_rank": 0.1776501964839707,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.4485711204441308,
+          "mean_recall_at_k": 0.9285075000000034,
+          "min_recall_at_k": 0.9164,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.2457525,
+          "max_candidate_multiplier_at_k": 13.55742,
+          "speedup_vs_per_column": 2.2293008943819186
+        },
+        "naive_small": {
+          "weighted_cost": 0.5520931862202388,
+          "mean_recall_at_k": 0.9315750000000048,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.1199999999999997,
+          "max_candidate_multiplier_at_k": 9.69,
+          "speedup_vs_per_column": 1.8112884291259557
+        }
+      }
+    },
+    "reference_seed_202": {
+      "description": "Reference procedure on a different visible training-instance sample (seed 202).",
+      "train_rank": 0.28183574838529235,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.44216132209576875,
+          "mean_recall_at_k": 0.9273812500000019,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.177181249999999,
+          "max_candidate_multiplier_at_k": 13.5169,
+          "speedup_vs_per_column": 2.261617988792352
+        },
+        "naive_small": {
+          "weighted_cost": 0.540686273714425,
+          "mean_recall_at_k": 0.9259875000000031,
+          "min_recall_at_k": 0.9139499999999994,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.0174999999999996,
+          "max_candidate_multiplier_at_k": 9.28,
+          "speedup_vs_per_column": 1.8495013626481878
+        }
+      },
+      "test_rank": 0.28677290856306076,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.4417958835177343,
+          "mean_recall_at_k": 0.9267550000000034,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.1824625,
+          "max_candidate_multiplier_at_k": 13.576659999999999,
+          "speedup_vs_per_column": 2.263488722524185
+        },
+        "naive_small": {
+          "weighted_cost": 0.5403974624434018,
+          "mean_recall_at_k": 0.9302800000000049,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.0174999999999996,
+          "max_candidate_multiplier_at_k": 9.28,
+          "speedup_vs_per_column": 1.8504898144386352
+        }
+      }
+    },
+    "shortcut_drop_templates": {
+      "description": "Keeps plans only for q2/q3 (the old public test slice) and drops the others.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_empty": {
+      "description": "Empty configuration and no query plans.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_float_ek": {
+      "description": "Fractional retrieval depths (ek - 0.5).",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_forged_metrics": {
+      "description": "PerColumn plans submitted with fabricated cost/recall/storage/speedup fields and an empty configuration.",
+      "train_rank": -1.5037051294298802,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9313937499999998,
+          "min_recall_at_k": 0.9300999999999996,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 7.388568749999999,
+          "max_candidate_multiplier_at_k": 10.97675,
+          "speedup_vs_per_column": 1.0
+        },
+        "naive_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9302625000000009,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.465875,
+          "max_candidate_multiplier_at_k": 7.1324000000000005,
+          "speedup_vs_per_column": 1.0
+        }
+      },
+      "test_rank": -1.504240936937784,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9256800000000012,
+          "min_recall_at_k": 0.9179800000000005,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 7.3964375,
+          "max_candidate_multiplier_at_k": 10.982560000000001,
+          "speedup_vs_per_column": 1.0
+        },
+        "naive_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9336800000000022,
+          "min_recall_at_k": 0.9252600000000012,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.466915,
+          "max_candidate_multiplier_at_k": 7.1280399999999995,
+          "speedup_vs_per_column": 1.0
+        }
+      }
+    },
+    "shortcut_inflate_baseline": {
+      "description": "Artifact's own per_column/per_query plans inflated to ek=30000; method plans unchanged.",
+      "train_rank": 0.0,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45776872694152726,
+          "mean_recall_at_k": 0.9297750000000022,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.31228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.1845092098826013
+        },
+        "naive_small": {
+          "weighted_cost": 0.572652642988853,
+          "mean_recall_at_k": 0.9300500000000032,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.746259293907538
+        }
+      },
+      "test_rank": 0.0,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45753877911915564,
+          "mean_recall_at_k": 0.9289100000000035,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.3185649999999995,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.1856070908900436
+        },
+        "naive_small": {
+          "weighted_cost": 0.5723467566630541,
+          "mean_recall_at_k": 0.933405000000005,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7471925687677292
+        }
+      }
+    },
+    "shortcut_low_recall": {
+      "description": "Retrieves one candidate per used index.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_negative_ek": {
+      "description": "Appends an extra index entry with ek=-1000000 to every plan.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_overstorage": {
+      "description": "Submits the one-index-per-template (PerQuery) plans, exceeding the storage budget.",
+      "train_rank": -116.1850626294299,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 8.0,
+          "storage_budget_violation": 3.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 4.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -116.17932806193778,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 8.0,
+          "storage_budget_violation": 3.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 4.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_partial_experiment": {
+      "description": "Submits only the naive_small artifact; no bicomplex_small plans.",
+      "train_rank": -57.397871803970546,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 0.572652642988853,
+          "mean_recall_at_k": 0.9300500000000032,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.746259293907538
+        }
+      },
+      "test_rank": -57.390678905885444,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 0.5723467566630541,
+          "mean_recall_at_k": 0.933405000000005,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7471925687677292
+        }
+      }
+    },
+    "shortcut_recall_below_floor": {
+      "description": "Every used ek scaled by 0.95 (the old 89%-recall shortcut): lower cost, recall below the floor.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_replace_fixed_data": {
+      "description": "Edits the public data generator so every workload has 4 rows, and submits ek=4 plans.",
+      "train_rank": null,
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "shortcut_storage_declaration": {
+      "description": "Declares an empty configuration and storage_budget=99; executable plans unchanged.",
+      "train_rank": 0.0,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45776872694152726,
+          "mean_recall_at_k": 0.9297750000000022,
+          "min_recall_at_k": 0.9192999999999995,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.31228125,
+          "max_candidate_multiplier_at_k": 13.50925,
+          "speedup_vs_per_column": 2.1845092098826013
+        },
+        "naive_small": {
+          "weighted_cost": 0.572652642988853,
+          "mean_recall_at_k": 0.9300500000000032,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.746259293907538
+        }
+      },
+      "test_rank": 0.0,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 0.45753877911915564,
+          "mean_recall_at_k": 0.9289100000000035,
+          "min_recall_at_k": 0.9164399999999999,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.3185649999999995,
+          "max_candidate_multiplier_at_k": 13.56908,
+          "speedup_vs_per_column": 2.1856070908900436
+        },
+        "naive_small": {
+          "weighted_cost": 0.5723467566630541,
+          "mean_recall_at_k": 0.933405000000005,
+          "min_recall_at_k": 0.9300000000000058,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 3.2975,
+          "max_candidate_multiplier_at_k": 10.4,
+          "speedup_vs_per_column": 1.7471925687677292
+        }
+      }
+    },
+    "shortcut_test_size": {
+      "description": "Declares n_rows=4 and retrieves 4 candidates per used index.",
+      "train_rank": -114.98506262942989,
+      "train_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      },
+      "test_rank": -114.97932806193779,
+      "test_status": {
+        "bicomplex_small": "failed",
+        "naive_small": "failed"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        },
+        "naive_small": {
+          "weighted_cost": 100.0,
+          "mean_recall_at_k": 0.0,
+          "min_recall_at_k": 0.0,
+          "recall_floor_violation": 0.9,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 1.0,
+          "mean_candidate_multiplier_at_k": 30.0,
+          "max_candidate_multiplier_at_k": 30.0,
+          "speedup_vs_per_column": 0.0
+        }
+      }
+    },
+    "weaker_no_multicolumn": {
+      "description": "Weaker: the submitted method uses only single-column indexes (the paper's PerColumn approach) with the same planner.",
+      "train_rank": -1.5037051294298802,
+      "train_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "train_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9313937499999998,
+          "min_recall_at_k": 0.9300999999999996,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 7.388568749999999,
+          "max_candidate_multiplier_at_k": 10.97675,
+          "speedup_vs_per_column": 1.0
+        },
+        "naive_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9302625000000009,
+          "min_recall_at_k": 0.9300000000000044,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.465875,
+          "max_candidate_multiplier_at_k": 7.1324000000000005,
+          "speedup_vs_per_column": 1.0
+        }
+      },
+      "test_rank": -1.504240936937784,
+      "test_status": {
+        "bicomplex_small": "ok",
+        "naive_small": "ok"
+      },
+      "test_metrics": {
+        "bicomplex_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9256800000000012,
+          "min_recall_at_k": 0.9179800000000005,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 5.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 7.3964375,
+          "max_candidate_multiplier_at_k": 10.982560000000001,
+          "speedup_vs_per_column": 1.0
+        },
+        "naive_small": {
+          "weighted_cost": 1.0,
+          "mean_recall_at_k": 0.9336800000000022,
+          "min_recall_at_k": 0.9252600000000012,
+          "recall_floor_violation": 0.0,
+          "storage_indexes": 3.0,
+          "storage_budget_violation": 0.0,
+          "mean_candidate_multiplier_at_k": 4.466915,
+          "max_candidate_multiplier_at_k": 7.1280399999999995,
+          "speedup_vs_per_column": 1.0
+        }
+      }
+    }
+  }
+}

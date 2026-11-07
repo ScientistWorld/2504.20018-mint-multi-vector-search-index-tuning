@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_partial_experiment",
+  "description": "Submits only the naive_small artifact; no bicomplex_small plans."
+}

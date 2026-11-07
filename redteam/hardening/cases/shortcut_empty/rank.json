@@ -1,0 +1,58 @@
+{
+  "train": {
+    "method": "mint",
+    "rank_delta": -114.98506262942989,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -49.71367367850557,
+        "mean_recall_at_k": -0.2325125000000008,
+        "min_recall_at_k": -0.2325000000000011,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -4.005375,
+        "max_candidate_multiplier_at_k": -1.9600000000000002,
+        "speedup_vs_per_column": -0.873129646953769
+      },
+      "bicomplex_small": {
+        "weighted_cost": -49.77111563652924,
+        "mean_recall_at_k": -0.23244375000000056,
+        "min_recall_at_k": -0.22982499999999986,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -3.8531578125,
+        "max_candidate_multiplier_at_k": -1.6490749999999998,
+        "speedup_vs_per_column": -1.0922546049413007
+      }
+    }
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": -114.97932806193779,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -49.713826621668474,
+        "mean_recall_at_k": -0.23335125000000126,
+        "min_recall_at_k": -0.23250000000000146,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -4.005375,
+        "max_candidate_multiplier_at_k": -1.9600000000000002,
+        "speedup_vs_per_column": -0.8735962843838646
+      },
+      "bicomplex_small": {
+        "weighted_cost": -49.77123061044042,
+        "mean_recall_at_k": -0.23222750000000086,
+        "min_recall_at_k": -0.22910999999999998,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -3.85221525,
+        "max_candidate_multiplier_at_k": -1.6430920000000002,
+        "speedup_vs_per_column": -1.0928035454450218
+      }
+    }
+  }
+}

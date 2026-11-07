@@ -1,0 +1,8 @@
+{
+  "case": "better_measured_rerank",
+  "description": "Better: picks among the 40 best configurations by cost measured on the training instances (distinct candidates, actual HNSW results) instead of the duplicate-counting cost estimate.",
+  "method_flags": [
+    "--rerank-measured",
+    "40"
+  ]
+}

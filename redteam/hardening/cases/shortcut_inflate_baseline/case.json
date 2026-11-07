@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_inflate_baseline",
+  "description": "Artifact's own per_column/per_query plans inflated to ek=30000; method plans unchanged."
+}

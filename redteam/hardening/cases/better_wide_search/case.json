@@ -1,0 +1,13 @@
+{
+  "case": "better_wide_search",
+  "description": "Stronger configuration search under the same estimated cost: wider beam, no early stop, plus swap local search.",
+  "method_flags": [
+    "--beam-width",
+    "10",
+    "--improvement-threshold",
+    "0",
+    "--max-iters",
+    "8",
+    "--local-search"
+  ]
+}

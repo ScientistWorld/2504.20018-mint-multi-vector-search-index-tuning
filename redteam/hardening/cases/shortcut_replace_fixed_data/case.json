@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_replace_fixed_data",
+  "description": "Edits the public data generator so every workload has 4 rows, and submits ek=4 plans."
+}

@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_forged_metrics",
+  "description": "PerColumn plans submitted with fabricated cost/recall/storage/speedup fields and an empty configuration."
+}

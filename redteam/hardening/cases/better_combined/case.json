@@ -1,0 +1,9 @@
+{
+  "case": "better_combined",
+  "description": "Better: measured re-rank plus variance-aware allowance.",
+  "method_flags": [
+    "--rerank-measured",
+    "40",
+    "--trim-deterministic"
+  ]
+}

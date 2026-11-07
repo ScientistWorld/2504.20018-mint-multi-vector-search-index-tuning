@@ -1,0 +1,7 @@
+{
+  "case": "better_trim_deterministic",
+  "description": "Better: variance-aware recall allowance; single-index plans whose recall is identical on every training instance drop the allowance (ek 93 -> 91).",
+  "method_flags": [
+    "--trim-deterministic"
+  ]
+}

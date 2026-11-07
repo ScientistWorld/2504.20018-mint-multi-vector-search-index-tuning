@@ -1,0 +1,58 @@
+{
+  "train": {
+    "method": "mint",
+    "rank_delta": 0.7792409594131844,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.02514125890810781,
+        "mean_recall_at_k": -0.007012500000000255,
+        "min_recall_at_k": -0.007500000000000284,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.05774999999999997,
+        "max_candidate_multiplier_at_k": 0.1450000000000001,
+        "speedup_vs_per_column": 0.08404607176627787
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.028490133882304508,
+        "mean_recall_at_k": -0.006995312500000239,
+        "min_recall_at_k": -0.004824999999999052,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.08708999999999993,
+        "max_candidate_multiplier_at_k": 0.22277000000000005,
+        "speedup_vs_per_column": 0.15528630735649407
+      }
+    }
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": -57.09294008680927,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.02512782953271331,
+        "mean_recall_at_k": -0.006730000000002567,
+        "min_recall_at_k": -0.007500000000003337,
+        "recall_floor_violation": -2.264854970235319e-15,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.05774999999999997,
+        "max_candidate_multiplier_at_k": 0.1450000000000001,
+        "speedup_vs_per_column": 0.08409098954346639
+      },
+      "bicomplex_small": {
+        "weighted_cost": -49.77123061044042,
+        "mean_recall_at_k": -0.23222750000000086,
+        "min_recall_at_k": -0.22910999999999998,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -3.85221525,
+        "max_candidate_multiplier_at_k": -1.6430920000000002,
+        "speedup_vs_per_column": -1.0928035454450218
+      }
+    }
+  }
+}

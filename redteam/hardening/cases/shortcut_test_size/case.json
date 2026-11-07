@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_test_size",
+  "description": "Declares n_rows=4 and retrieves 4 candidates per used index."
+}

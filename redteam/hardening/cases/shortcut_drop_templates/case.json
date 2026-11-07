@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_drop_templates",
+  "description": "Keeps plans only for q2/q3 (the old public test slice) and drops the others."
+}

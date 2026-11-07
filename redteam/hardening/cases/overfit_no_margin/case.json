@@ -1,0 +1,8 @@
+{
+  "case": "overfit_no_margin",
+  "description": "Train-tuned: plans exactly to the 0.90 floor on the visible training instances (no recall allowance).",
+  "method_flags": [
+    "--recall-margin",
+    "0.0"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "case": "reference_seed_202",
+  "description": "Reference procedure on a different visible training-instance sample (seed 202).",
+  "method_flags": [
+    "--train-seed",
+    "202"
+  ]
+}

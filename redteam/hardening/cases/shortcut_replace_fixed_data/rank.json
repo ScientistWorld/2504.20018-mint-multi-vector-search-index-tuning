@@ -1,0 +1,33 @@
+{
+  "train": {
+    "error": "train evaluator exited 1"
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": -114.97932806193779,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -49.713826621668474,
+        "mean_recall_at_k": -0.23335125000000126,
+        "min_recall_at_k": -0.23250000000000146,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -4.005375,
+        "max_candidate_multiplier_at_k": -1.9600000000000002,
+        "speedup_vs_per_column": -0.8735962843838646
+      },
+      "bicomplex_small": {
+        "weighted_cost": -49.77123061044042,
+        "mean_recall_at_k": -0.23222750000000086,
+        "min_recall_at_k": -0.22910999999999998,
+        "recall_floor_violation": -0.27,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.3,
+        "mean_candidate_multiplier_at_k": -3.85221525,
+        "max_candidate_multiplier_at_k": -1.6430920000000002,
+        "speedup_vs_per_column": -1.0928035454450218
+      }
+    }
+  }
+}

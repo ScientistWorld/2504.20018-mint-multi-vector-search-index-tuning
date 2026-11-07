@@ -1,0 +1,419 @@
+{
+  "workload": "bicomplex_small",
+  "n_rows": 3000,
+  "top_k": 100,
+  "recall_threshold": 0.9,
+  "storage_budget": 5,
+  "train_seed": 20240501,
+  "train_queries_per_template": 200,
+  "planning_recall_target": 0.93,
+  "search": {
+    "beam_width": 5,
+    "seed_limit": 2,
+    "improvement_threshold": 0.05,
+    "max_iters": 8,
+    "local_search": false,
+    "rerank_measured": 0,
+    "trim_deterministic": false,
+    "plans_computed": 252
+  },
+  "runtime_seconds": 319.55948203708977,
+  "results": {
+    "per_column": {
+      "configuration": [
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            491,
+            186,
+            135
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x2",
+            "x3",
+            "x5"
+          ],
+          "ek": [
+            366,
+            286,
+            173
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x1",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            543,
+            275,
+            159,
+            98
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            627,
+            158,
+            204,
+            205,
+            79
+          ]
+        },
+        "q5": {
+          "indexes": [
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            322,
+            157
+          ]
+        },
+        "q6": {
+          "indexes": [
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            364,
+            248,
+            168
+          ]
+        },
+        "q7": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x5"
+          ],
+          "ek": [
+            377,
+            294,
+            99
+          ]
+        },
+        "q8": {
+          "indexes": [
+            "x1",
+            "x3"
+          ],
+          "ek": [
+            333,
+            143
+          ]
+        }
+      },
+      "train_diagnostics": {
+        "q1": {
+          "estimated_cost": 76283.0,
+          "train_recall": 0.9301,
+          "train_min_instance_recall": 0.65,
+          "train_mean_candidates": 754.36
+        },
+        "q2": {
+          "estimated_cost": 93430.0,
+          "train_recall": 0.93035,
+          "train_min_instance_recall": 0.64,
+          "train_mean_candidates": 753.75
+        },
+        "q3": {
+          "estimated_cost": 144095.0,
+          "train_recall": 0.936,
+          "train_min_instance_recall": 0.68,
+          "train_mean_candidates": 957.17
+        },
+        "q4": {
+          "estimated_cost": 195305.0,
+          "train_recall": 0.93325,
+          "train_min_instance_recall": 0.68,
+          "train_mean_candidates": 1097.675
+        },
+        "q5": {
+          "estimated_cost": 40377.0,
+          "train_recall": 0.9301,
+          "train_min_instance_recall": 0.64,
+          "train_mean_candidates": 462.125
+        },
+        "q6": {
+          "estimated_cost": 98560.0,
+          "train_recall": 0.93095,
+          "train_min_instance_recall": 0.59,
+          "train_mean_candidates": 714.03
+        },
+        "q7": {
+          "estimated_cost": 76650.0,
+          "train_recall": 0.93025,
+          "train_min_instance_recall": 0.66,
+          "train_mean_candidates": 712.35
+        },
+        "q8": {
+          "estimated_cost": 33190.0,
+          "train_recall": 0.93015,
+          "train_min_instance_recall": 0.53,
+          "train_mean_candidates": 459.395
+        }
+      }
+    },
+    "per_query": {
+      "configuration": [
+        "x1,3",
+        "x2,4",
+        "x1,2,4",
+        "x1,2,5",
+        "x2,3,5",
+        "x3,4,5",
+        "x1,3,4,5",
+        "x1,2,3,4,5"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1,2,4"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x2,3,5"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x1,3,4,5"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1,2,3,4,5"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q5": {
+          "indexes": [
+            "x2,4"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q6": {
+          "indexes": [
+            "x3,4,5"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q7": {
+          "indexes": [
+            "x1,2,5"
+          ],
+          "ek": [
+            93
+          ]
+        },
+        "q8": {
+          "indexes": [
+            "x1,3"
+          ],
+          "ek": [
+            93
+          ]
+        }
+      },
+      "train_diagnostics": {
+        "q1": {
+          "estimated_cost": 18512.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q2": {
+          "estimated_cost": 21983.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q3": {
+          "estimated_cost": 28925.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q4": {
+          "estimated_cost": 34710.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q5": {
+          "estimated_cost": 13884.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q6": {
+          "estimated_cost": 24297.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q7": {
+          "estimated_cost": 19669.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        },
+        "q8": {
+          "estimated_cost": 11570.0,
+          "train_recall": 0.93,
+          "train_min_instance_recall": 0.93,
+          "train_mean_candidates": 93.0
+        }
+      }
+    },
+    "mint": {
+      "configuration": [
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            491,
+            186,
+            135
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x2",
+            "x3",
+            "x5"
+          ],
+          "ek": [
+            366,
+            286,
+            173
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x1",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            543,
+            275,
+            159,
+            98
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            627,
+            158,
+            204,
+            205,
+            79
+          ]
+        },
+        "q5": {
+          "indexes": [
+            "x2",
+            "x4"
+          ],
+          "ek": [
+            322,
+            157
+          ]
+        },
+        "q6": {
+          "indexes": [
+            "x3",
+            "x4",
+            "x5"
+          ],
+          "ek": [
+            364,
+            248,
+            168
+          ]
+        },
+        "q7": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x5"
+          ],
+          "ek": [
+            377,
+            294,
+            99
+          ]
+        },
+        "q8": {
+          "indexes": [
+            "x1",
+            "x3"
+          ],
+          "ek": [
+            333,
+            143
+          ]
+        }
+      }
+    }
+  }
+}

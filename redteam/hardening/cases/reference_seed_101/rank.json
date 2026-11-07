@@ -1,0 +1,58 @@
+{
+  "train": {
+    "method": "mint",
+    "rank_delta": 0.17359376347592037,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.010132197403948162,
+        "mean_recall_at_k": -0.0006406250000000058,
+        "min_recall_at_k": -0.002512500000001111,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.02662500000000003,
+        "max_candidate_multiplier_at_k": 0.07100000000000009,
+        "speedup_vs_per_column": 0.032030811558022454
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.004361019457221033,
+        "mean_recall_at_k": -0.00022968750000004756,
+        "min_recall_at_k": -2.4999999999997247e-05,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.010632187500000034,
+        "max_candidate_multiplier_at_k": 0.001004999999999967,
+        "speedup_vs_per_column": 0.02121536005672975
+      }
+    }
+  },
+  "test": {
+    "method": "mint",
+    "rank_delta": 0.1776501964839707,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": 0.010126785221407641,
+        "mean_recall_at_k": -0.0004575000000000551,
+        "min_recall_at_k": 0.0,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.02662500000000003,
+        "max_candidate_multiplier_at_k": 0.07100000000000009,
+        "speedup_vs_per_column": 0.032047930179113227
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.004483829337512429,
+        "mean_recall_at_k": -0.00010062500000002084,
+        "min_recall_at_k": -9.999999999982245e-06,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": 0.010921874999999925,
+        "max_candidate_multiplier_at_k": 0.0011659999999999117,
+        "speedup_vs_per_column": 0.021846901745937508
+      }
+    }
+  }
+}

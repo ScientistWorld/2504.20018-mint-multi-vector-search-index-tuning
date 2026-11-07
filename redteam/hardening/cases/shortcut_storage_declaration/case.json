@@ -1,0 +1,4 @@
+{
+  "case": "shortcut_storage_declaration",
+  "description": "Declares an empty configuration and storage_budget=99; executable plans unchanged."
+}
