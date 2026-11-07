@@ -1,0 +1,191 @@
+{
+  "workload": "naive_small",
+  "n_rows": 3000,
+  "top_k": 100,
+  "recall_threshold": 0.9,
+  "storage_budget": 3,
+  "runtime_seconds": 2337.1932595970575,
+  "results": {
+    "per_column": {
+      "weighted_cost": 53788.53923184405,
+      "mean_recall_at_k": 0.9,
+      "min_recall_at_k": 0.9,
+      "mean_extracted": 307.5,
+      "storage_indexes": 3.0,
+      "estimated_cost": 66549.55421167267,
+      "configuration": [
+        "x1",
+        "x2",
+        "x3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q2": {
+          "indexes": [
+            "x1",
+            "x2"
+          ],
+          "ek": [
+            65,
+            267
+          ],
+          "estimated_recall": 0.9
+        },
+        "q3": {
+          "indexes": [
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            145,
+            156
+          ],
+          "estimated_recall": 0.9
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            126,
+            262,
+            152
+          ],
+          "estimated_recall": 0.9
+        }
+      }
+    },
+    "per_query": {
+      "weighted_cost": 16819.943337632598,
+      "mean_recall_at_k": 0.9,
+      "min_recall_at_k": 0.9,
+      "mean_extracted": 90.0,
+      "storage_indexes": 4.0,
+      "estimated_cost": 21535.147102898994,
+      "configuration": [
+        "x1",
+        "x1,2",
+        "x1,2,3",
+        "x2,3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q2": {
+          "indexes": [
+            "x1",
+            "x1,2"
+          ],
+          "ek": [
+            0,
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q3": {
+          "indexes": [
+            "x2,3"
+          ],
+          "ek": [
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x1,2",
+            "x1,2,3",
+            "x2,3"
+          ],
+          "ek": [
+            0,
+            0,
+            90,
+            0
+          ],
+          "estimated_recall": 0.9
+        }
+      }
+    },
+    "mint": {
+      "weighted_cost": 16819.943337632598,
+      "mean_recall_at_k": 0.9,
+      "min_recall_at_k": 0.9,
+      "mean_extracted": 90.0,
+      "storage_indexes": 4.0,
+      "estimated_cost": 21535.147102898994,
+      "configuration": [
+        "x1",
+        "x1,2",
+        "x1,2,3",
+        "x2,3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q2": {
+          "indexes": [
+            "x1",
+            "x1,2"
+          ],
+          "ek": [
+            0,
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q3": {
+          "indexes": [
+            "x2,3"
+          ],
+          "ek": [
+            90
+          ],
+          "estimated_recall": 0.9
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x1,2",
+            "x1,2,3",
+            "x2,3"
+          ],
+          "ek": [
+            0,
+            0,
+            90,
+            0
+          ],
+          "estimated_recall": 0.9
+        }
+      }
+    }
+  },
+  "paper_method": "MINT beam-search configuration tuning with relevant-ek query planning over HNSW multi-column indexes",
+  "deviation": "Scaled semi-synthetic workload generated locally instead of million-row public embeddings."
+}

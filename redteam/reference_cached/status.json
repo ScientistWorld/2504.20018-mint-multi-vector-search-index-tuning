@@ -1,0 +1,9 @@
+{
+  "case": "reference_cached",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 5.620550810941495
+}

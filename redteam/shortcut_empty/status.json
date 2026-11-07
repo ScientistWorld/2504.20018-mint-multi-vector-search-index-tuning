@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_empty",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 4.003109359997325
+}

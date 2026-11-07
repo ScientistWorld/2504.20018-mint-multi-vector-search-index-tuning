@@ -1,0 +1,9 @@
+{
+  "case": "reference_seed_19",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 3584.4561534869717
+}

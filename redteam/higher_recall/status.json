@@ -1,0 +1,9 @@
+{
+  "case": "higher_recall",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 4.035511340945959
+}

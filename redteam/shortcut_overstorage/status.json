@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_overstorage",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 3.991164159029722
+}

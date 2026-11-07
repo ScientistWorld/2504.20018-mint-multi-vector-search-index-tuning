@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_forged_metrics",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 3.9896029389929026
+}

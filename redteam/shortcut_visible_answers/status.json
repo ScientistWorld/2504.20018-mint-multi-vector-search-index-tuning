@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_visible_answers",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 4.999453130993061
+}

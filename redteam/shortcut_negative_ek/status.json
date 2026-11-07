@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_negative_ek",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 4.05557503097225
+}

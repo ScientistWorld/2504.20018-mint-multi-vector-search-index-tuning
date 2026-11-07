@@ -1,0 +1,45 @@
+{
+  "method": "mint",
+  "rank_delta": 230.26763881036447,
+  "terms": {
+    "naive_small": {
+      "weighted_cost": 0.38122258652104446,
+      "mean_recall_at_k": -0.445,
+      "min_recall_at_k": -0.445,
+      "recall_floor_violation": -0.534,
+      "storage_indexes": -0.0,
+      "storage_budget_violation": -0.0,
+      "mean_candidate_multiplier_at_k": 0.267,
+      "max_candidate_multiplier_at_k": 0.17800000000000002,
+      "speedup_vs_per_column": 230.86541622384343
+    }
+  },
+  "metrics": {
+    "weighted_cost": 0.004283399848551062,
+    "mean_recall_at_k": 0.01,
+    "min_recall_at_k": 0.01,
+    "recall_floor_violation": 0.89,
+    "storage_indexes": 3.0,
+    "storage_budget_violation": 0.0,
+    "mean_candidate_multiplier_at_k": 0.01,
+    "max_candidate_multiplier_at_k": 0.01,
+    "speedup_vs_per_column": 233.45940966456078
+  },
+  "per_column": {
+    "method": "per_column",
+    "rank_delta": -3.3494874543477464,
+    "terms": {
+      "naive_small": {
+        "weighted_cost": -0.6144940136304045,
+        "mean_recall_at_k": 0.0,
+        "min_recall_at_k": 0.0,
+        "recall_floor_violation": -0.0,
+        "storage_indexes": -0.0,
+        "storage_budget_violation": -0.0,
+        "mean_candidate_multiplier_at_k": -0.6689999999999999,
+        "max_candidate_multiplier_at_k": -0.472,
+        "speedup_vs_per_column": -1.593993440717342
+      }
+    }
+  }
+}

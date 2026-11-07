@@ -1,0 +1,9 @@
+{
+  "case": "weaker_no_multicolumn",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 4.036635981989093
+}

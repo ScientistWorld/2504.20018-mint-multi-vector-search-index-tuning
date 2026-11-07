@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_replace_fixed_data",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 1.727626847103238
+}

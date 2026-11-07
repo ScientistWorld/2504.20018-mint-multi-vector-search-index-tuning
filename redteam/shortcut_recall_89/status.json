@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_recall_89",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 3.9904809549916536
+}

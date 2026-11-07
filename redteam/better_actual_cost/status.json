@@ -1,0 +1,10 @@
+{
+  "case": "better_actual_cost",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": false,
+  "error": "CalledProcessError(1, ['/usr/local/bin/python', '-m', 'method.audit_variant'])",
+  "runtime_seconds": 2.095028218929656
+}

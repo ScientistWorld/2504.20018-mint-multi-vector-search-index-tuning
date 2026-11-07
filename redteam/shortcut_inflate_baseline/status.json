@@ -1,0 +1,9 @@
+{
+  "case": "shortcut_inflate_baseline",
+  "test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "ok": true,
+  "runtime_seconds": 3.9427417089464143
+}
