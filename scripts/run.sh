@@ -13,8 +13,4 @@ set -e
 
 cd /home/user
 
-echo "[run] score visible train slice"
-bash scripts/evaluate_train.sh
-
-echo "[run] score held-out test slice"
-bash scripts/evaluate_test.sh
+bash redteam/run_all.sh
