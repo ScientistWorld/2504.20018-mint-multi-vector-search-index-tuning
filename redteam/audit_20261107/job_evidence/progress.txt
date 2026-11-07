@@ -1,0 +1,272 @@
+
+$ bash /home/user/redteam/audit_20261107/reference_cached/run.sh
+reference_cached: +0.000000000; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_20240501/run.sh
+reference_seed_20240501: +0.000000000; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_101/run.sh
+reference_seed_101: +0.074048746; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_202/run.sh
+reference_seed_202: +0.122838659; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/better_measured_cost/run.sh
+better_measured_cost: +0.082245311; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/better_more_queries/run.sh
+better_more_queries: +0.242762405; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/weaker_no_multicolumn/run.sh
+weaker_no_multicolumn: -1.466176287; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_seed_lottery/run.sh
+Skip completed reference_seed_20240501
+Skip completed reference_seed_101
+Skip completed reference_seed_202
+shortcut_seed_lottery: +0.122838659; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_public_answers/run.sh
+shortcut_public_answers: -52.128251787; {'naive_small': 'ok', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_forged_metrics/run.sh
+shortcut_forged_metrics: -1.466176287; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_inflate_baseline/run.sh
+shortcut_inflate_baseline: +0.000000000; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_storage_declaration/run.sh
+shortcut_storage_declaration: +0.000000000; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_rewrite_protocol/run.sh
+shortcut_rewrite_protocol: +0.000000000; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_test_size/run.sh
+shortcut_test_size: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_replace_fixed_data/run.sh
+Traceback (most recent call last):
+  File "/home/user/redteam/audit_20261107/harness.py", line 81, in run_case
+    run_command(["bash", "scripts/evaluate_train.sh"], out / "evaluation.log")
+  File "/home/user/redteam/audit_20261107/harness.py", line 49, in run_command
+    subprocess.run(cmd, cwd=ROOT, stdout=fh, stderr=subprocess.STDOUT, check=True)
+  File "/usr/local/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['bash', 'scripts/evaluate_train.sh']' returned non-zero exit status 1.
+
+Traceback (most recent call last):
+  File "/home/user/redteam/audit_20261107/harness.py", line 138, in <module>
+    run_case(sys.argv[1])
+  File "/home/user/redteam/audit_20261107/harness.py", line 108, in run_case
+    raise RuntimeError(f"case failed: {case}")
+RuntimeError: case failed: shortcut_replace_fixed_data
+
+$ bash /home/user/redteam/audit_20261107/shortcut_rank_tradeoff/run.sh
+shortcut_rank_tradeoff: -0.010303964; {'naive_small': 'ok', 'bicomplex_small': 'ok'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_low_recall/run.sh
+shortcut_low_recall: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_below_floor/run.sh
+shortcut_below_floor: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_empty/run.sh
+shortcut_empty: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_constant/run.sh
+shortcut_constant: -104.922639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_zero/run.sh
+shortcut_zero: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_negative_ek/run.sh
+shortcut_negative_ek: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_nan_ek/run.sh
+shortcut_nan_ek: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_null_ek/run.sh
+shortcut_null_ek: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_overstorage/run.sh
+shortcut_overstorage: -104.922639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_drop_templates/run.sh
+shortcut_drop_templates: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_partial_experiment/run.sh
+shortcut_partial_experiment: -52.234340606; {'naive_small': 'ok', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_duplicate_index_alias/run.sh
+shortcut_duplicate_index_alias: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/reference_cached/run.sh
+Skip completed reference_cached
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_20240501/run.sh
+Skip completed reference_seed_20240501
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_101/run.sh
+Skip completed reference_seed_101
+
+$ bash /home/user/redteam/audit_20261107/reference_seed_202/run.sh
+Skip completed reference_seed_202
+
+$ bash /home/user/redteam/audit_20261107/better_measured_cost/run.sh
+Skip completed better_measured_cost
+
+$ bash /home/user/redteam/audit_20261107/better_more_queries/run.sh
+Skip completed better_more_queries
+
+$ bash /home/user/redteam/audit_20261107/weaker_no_multicolumn/run.sh
+Skip completed weaker_no_multicolumn
+
+$ bash /home/user/redteam/audit_20261107/shortcut_seed_lottery/run.sh
+Skip completed reference_seed_20240501
+Skip completed reference_seed_101
+Skip completed reference_seed_202
+Skip completed shortcut_seed_lottery
+
+$ bash /home/user/redteam/audit_20261107/shortcut_public_answers/run.sh
+Skip completed shortcut_public_answers
+
+$ bash /home/user/redteam/audit_20261107/shortcut_forged_metrics/run.sh
+Skip completed shortcut_forged_metrics
+
+$ bash /home/user/redteam/audit_20261107/shortcut_inflate_baseline/run.sh
+Skip completed shortcut_inflate_baseline
+
+$ bash /home/user/redteam/audit_20261107/shortcut_storage_declaration/run.sh
+Skip completed shortcut_storage_declaration
+
+$ bash /home/user/redteam/audit_20261107/shortcut_rewrite_protocol/run.sh
+Skip completed shortcut_rewrite_protocol
+
+$ bash /home/user/redteam/audit_20261107/shortcut_test_size/run.sh
+Skip completed shortcut_test_size
+
+$ bash /home/user/redteam/audit_20261107/shortcut_replace_fixed_data/run.sh
+shortcut_replace_fixed_data: -104.222639762; {'naive_small': 'failed', 'bicomplex_small': 'failed'}
+
+$ bash /home/user/redteam/audit_20261107/shortcut_rank_tradeoff/run.sh
+Skip completed shortcut_rank_tradeoff
+
+$ bash /home/user/redteam/audit_20261107/shortcut_low_recall/run.sh
+Skip completed shortcut_low_recall
+
+$ bash /home/user/redteam/audit_20261107/shortcut_below_floor/run.sh
+Skip completed shortcut_below_floor
+
+$ bash /home/user/redteam/audit_20261107/shortcut_empty/run.sh
+Skip completed shortcut_empty
+
+$ bash /home/user/redteam/audit_20261107/shortcut_constant/run.sh
+Skip completed shortcut_constant
+
+$ bash /home/user/redteam/audit_20261107/shortcut_zero/run.sh
+Skip completed shortcut_zero
+
+$ bash /home/user/redteam/audit_20261107/shortcut_negative_ek/run.sh
+Skip completed shortcut_negative_ek
+
+$ bash /home/user/redteam/audit_20261107/shortcut_nan_ek/run.sh
+Skip completed shortcut_nan_ek
+
+$ bash /home/user/redteam/audit_20261107/shortcut_null_ek/run.sh
+Skip completed shortcut_null_ek
+
+$ bash /home/user/redteam/audit_20261107/shortcut_overstorage/run.sh
+Skip completed shortcut_overstorage
+
+$ bash /home/user/redteam/audit_20261107/shortcut_drop_templates/run.sh
+Skip completed shortcut_drop_templates
+
+$ bash /home/user/redteam/audit_20261107/shortcut_partial_experiment/run.sh
+Skip completed shortcut_partial_experiment
+
+$ bash /home/user/redteam/audit_20261107/shortcut_duplicate_index_alias/run.sh
+Skip completed shortcut_duplicate_index_alias
+
+$ /usr/local/bin/python /home/user/redteam/audit_20261107/analyze.py
+{
+  "reference_seed_ranks": {
+    "20240501": 0.0,
+    "101": 0.07404874648397075,
+    "202": 0.12283865856306056
+  },
+  "seed_spread": 0.12283865856306056,
+  "better_variants": {
+    "better_measured_cost": {
+      "rank_delta": 0.08224531102344572,
+      "exceeds_seed_spread": false,
+      "all_feasible": true
+    },
+    "better_more_queries": {
+      "rank_delta": 0.2427624047969602,
+      "exceeds_seed_spread": true,
+      "all_feasible": true
+    }
+  },
+  "weaker_delta": -1.466176286937784,
+  "weaker_exceeds_seed_spread": true,
+  "reference_cost_speedup": {
+    "naive_small": {
+      "cost": 0.5723467566630541,
+      "speedup": 1.7471925687677292,
+      "beats_per_column": true,
+      "recall_floor_met": true,
+      "storage_budget_met": true,
+      "loose_feasible_cost_lower_bound": 0.2413910239516292,
+      "optimistic_maximum_rank_contribution": 1.5438333864076712
+    },
+    "bicomplex_small": {
+      "cost": 0.45753877911915564,
+      "speedup": 2.1856070908900436,
+      "beats_per_column": true,
+      "recall_floor_met": true,
+      "storage_budget_met": true,
+      "loose_feasible_cost_lower_bound": 0.10882387061299448,
+      "optimistic_maximum_rank_contribution": 3.9373276477275274
+    }
+  },
+  "reference_metrics_at_bounds": {
+    "naive_small": {
+      "absolute_optimal_bounds": [
+        "recall_floor_violation",
+        "storage_budget_violation"
+      ],
+      "budget_ceiling": {
+        "storage_indexes": 3.0
+      },
+      "other_metrics_at_optimal_bounds": []
+    },
+    "bicomplex_small": {
+      "absolute_optimal_bounds": [
+        "recall_floor_violation",
+        "storage_budget_violation"
+      ],
+      "budget_ceiling": {
+        "storage_indexes": 5.0
+      },
+      "other_metrics_at_optimal_bounds": []
+    }
+  },
+  "failure_compensation_bounds": {
+    "naive_small": {
+      "failed_workload_plus_optimistically_perfect_other_workload_rank_upper_bound": -48.05097150832481,
+      "bound_is_below_reference": true
+    },
+    "bicomplex_small": {
+      "failed_workload_plus_optimistically_perfect_other_workload_rank_upper_bound": -50.69050721947777,
+      "bound_is_below_reference": true
+    }
+  },
+  "shortcut_ties": [
+    "shortcut_inflate_baseline",
+    "shortcut_storage_declaration",
+    "shortcut_rewrite_protocol"
+  ],
+  "shortcut_gains": [
+    "shortcut_seed_lottery"
+  ]
+}

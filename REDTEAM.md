@@ -1,198 +1,82 @@
-# Gym scoring audit
+# Gym scoring audit: current iteration
 
-The score fails the scientific-quality check. Reducing recall from the required
-90% to 89% raises test rank by **+0.022429**; reducing it to 1% raises rank by
-**+230.267639**. These are worse solutions to the constrained task. Reference
-rank spread across three independently constructed HNSW seeds was **0**.
+**Better feasible results score higher in the executed checks.** A stronger variant scored **+0.242762405** above the reference, exceeding the three-seed rank spread of **0.122838659**. Removing multi-column indexes scored **-1.466176287**. Both comparisons preserve the recall floor and storage budgets. The smaller measured-cost improvement, +0.082245311, is below the seed spread and is noise at this resolution.
 
-No genuine improvement over the reference was demonstrated. A stronger planner
-found identical active plans and scores, so upward sensitivity to a legitimate
-improvement remains unverified. Removing the central multi-column indexing
-idea did score substantially lower. Eight of eleven tested shortcuts paid,
-including one tie.
+All ranks here are the full weighted sum of metric improvements against the initial mint in scoring/scores_test.json, with reference rank **0**. This report audits starting commit f5f140872eebe2cb9daec8badb67069b6d0b912e; older redteam results describe earlier evaluators and do not describe this scoring. The paper was not read.
 
-## Scientific variants, first
-
-All ranks below are deltas from the initial `mint` in
-`scoring/scores_test.json`, defined to have rank 0. Cost is the independently
-evaluated PerColumn-normalized cost; higher rank is better. Every row has its
-own executable `run.sh`, submitted artifact, evaluator scores, and `rank.json`.
-
-| Variant and run | Test cost | Test mean/min recall | Indexes | Test rank delta |
+| Scientific variant and executable run | Test cost: naive / bicomplex | Worst template mean recall: naive / bicomplex | Indexes | Test rank delta |
 |---|---:|---:|---:|---:|
-| [Reference, cached output](redteam/reference_cached/run.sh) | 0.385505986 | 0.90 / 0.90 | 3 | 0 |
-| [Stronger search: honest alternative that ties](redteam/better_actual_cost/run.sh) | 0.385505986 | 0.90 / 0.90 | 3 | 0 |
-| [Weaker: remove multi-column indexes](redteam/weaker_no_multicolumn/run.sh) | 1.000000000 | 0.90 / 0.90 | 3 | -3.349487454 |
-| [Higher recall: honest cost/recall tradeoff](redteam/higher_recall/run.sh) | 0.428339985 | 1.00 / 1.00 | 3 | -0.252233343 |
-| [89% recall shortcut](redteam/shortcut_recall_89/run.sh) | 0.381222587 | 0.89 / 0.89 | 3 | **+0.022429394** |
+| [Cached reference](redteam/audit_20261107/reference_cached/run.sh) | 0.572347 / 0.457539 | 0.93000 / 0.91644 | 3 / 5 | 0 |
+| [Stronger: measured candidate-cost selection](redteam/audit_20261107/better_measured_cost/run.sh) | 0.553074 / 0.457539 | 0.92970 / 0.91644 | 3 / 5 | +0.082245311 |
+| [Stronger: more training queries and calibrated planning](redteam/audit_20261107/better_more_queries/run.sh) | 0.515071 / 0.420382 | 0.91000 / 0.91000 | 3 / 5 | **+0.242762405** |
+| [Weaker: remove multi-column indexing, use PerColumn plans](redteam/audit_20261107/weaker_no_multicolumn/run.sh) | 1.000000 / 1.000000 | 0.92526 / 0.91798 | 3 / 5 | **-1.466176287** |
 
-The stronger search evaluates actual ANN candidate unions, searches all index
-configurations of size at most three, and searches relevant retrieval depths
-up to 2,500 on all four public queries. It keeps the original 3,000-row data,
-recall requirement, storage budget, and evaluator. It returned the same
-configuration and all four active reference plans, including the harder q4
-plan (zero-depth entries are omitted).
-Independent full-workload cost was **0.556610708** for both; raw cost was
-**29939.276922322** for both. See [search evidence](redteam/better_actual_cost/quality.json)
-and [full scores](redteam/better_actual_cost/scores_full.json). This is an
-honest alternative the test cannot distinguish. The search result does not
-prove a global optimum over different index families or all retrieval depths.
+The stronger variant uses the existing MINT procedure with 800 rather than 200 training queries per template, measured-cost reranking of 40 configurations, a 0.015 rather than 0.03 planning recall margin, and train-checked deterministic depth trimming. This is a joint improvement; these runs do not isolate the effect of more data alone. It spends some recall surplus while retaining the actual task's >=0.90 constraint on every held-out template. Database size, query distribution, ANN engine, normalization baseline and storage budgets are unchanged. The score therefore detects a better solution to the constrained cost objective, rather than requiring every diagnostic metric to improve.
 
-The higher-recall variant retrieves more and achieves 100% recall on the
-scored queries. Its increased cost makes it a tradeoff, so its lower rank is
-not evidence of reversed ordering for a Pareto improvement. The weaker
-variant preserves 90% recall and the three-index budget but loses 3.349487
-rank units, well beyond the observed seed spread. The 89% shortcut establishes
-the ordering failure at the task's actual feasibility boundary.
+Three fresh executions of the reference algorithm varied the training-query seed, with fixed database and evaluator ANN construction. Each independently generated plans before hidden scoring.
 
-## Seed spread and reproduction check
+| Reference training seed and saved scores | Test cost: naive / bicomplex | Test rank delta |
+|---|---:|---:|
+| [20240501, original default](redteam/audit_20261107/reference_seed_20240501/scores_test.json) | 0.572347 / 0.457539 | 0 |
+| [101](redteam/audit_20261107/reference_seed_101/scores_test.json) | 0.552093 / 0.448571 | +0.074048746 |
+| [202](redteam/audit_20261107/reference_seed_202/scores_test.json) | 0.540397 / 0.441796 | +0.122838659 |
 
-The original method was rerun with three HNSW construction seeds. Exact
-duplicate planning computations were memoized; the beam search, relevant-ek
-procedure, repair, model parameters, and data were preserved. Each run built
-its own indexes and generated its own plans before independent evaluation.
+The max-minus-min test-rank spread is **0.122838659**. Corresponding cost ranges are 0.031949294 and 0.015742896. A gain smaller than this rank spread is noise; three seeds do not establish a confidence interval. The default rerun reproduces every scored reference metric. This measures planning-sample sensitivity on the fixed workloads, not variation across databases.
 
-| Reference run | Test cost | Test mean/min recall | Test speedup | Test rank delta |
-|---|---:|---:|---:|---:|
-| [Seed 12345](redteam/reference_seed_12345/scores_test.json) | 0.385505986 | 0.90 / 0.90 | 2.593993441 | 0 |
-| [Seed 7](redteam/reference_seed_7/scores_test.json) | 0.385505986 | 0.90 / 0.90 | 2.593993441 | 0 |
-| [Seed 19](redteam/reference_seed_19/scores_test.json) | 0.385505986 | 0.90 / 0.90 | 2.593993441 | 0 |
+The reproduction beats its simple baseline in the direction stated by the future-visible briefing and scoring documents: normalized test cost is 0.572347 / 0.457539, or **1.747193x / 2.185607x** PerColumn speedup, with worst-template recall 0.93000 / 0.91644 and storage 3 / 5. PerColumn is feasible and ranks **1.466176287 below** the reference. Thus the baseline is meaningfully worse, and the stronger variant demonstrates attainable headroom above the reference. These compact synthetic workloads and dimension-times-candidate cost proxy do not establish the paper's original real-data latency magnitudes.
 
-Max-minus-min test rank spread is **0.000000000**; all nine scored metrics
-were identical. This measures construction-seed sensitivity on the gym's fixed
-data seed 7, not uncertainty across datasets. No positive gain below a
-nonzero noise floor is claimed.
+Every scored metric's reference bound status is listed below. Both experiments have weight 0.5.
 
-The reproduced method beats PerColumn in the direction reported in the
-future-visible `scoring/reference.json`: lower cost at the same 90% recall
-and three-index budget. Test speedup is **2.593993441x**; full-workload speedup
-is **1.796587786x**. The visible description quotes paper HNSW speedups of
-2.1–7.2x, so the full-workload reproduction is below that quoted range. This
-audit confirms the direction on the compact synthetic workload, not the
-paper's exact magnitude or real-data results. The paper was not used.
+| Scored metric | Naive reference | Bicomplex reference | Bound status |
+|---|---:|---:|---|
+| weighted_cost | 0.572347 | 0.457539 | Above feasible lower bounds; demonstrated room to improve. |
+| mean_recall_at_k | 0.933405 | 0.928910 | Below upper bound 1. |
+| min_recall_at_k | 0.930000 | 0.916440 | Above required floor 0.90 and below upper bound 1. |
+| recall_floor_violation | 0 | 0 | **At optimal lower bound, both experiments.** |
+| storage_indexes | 3 | 5 | At allowed budget ceilings, not at an optimal lower bound. |
+| storage_budget_violation | 0 | 0 | **At optimal lower bound, both experiments.** |
+| mean_candidate_multiplier_at_k | 3.297500 | 4.318565 | Above recall-feasible lower bound approximately 0.90. |
+| max_candidate_multiplier_at_k | 10.400000 | 13.569080 | Above the same conditional lower bound. |
+| speedup_vs_per_column | 1.747193 | 2.185607 | Below loose feasible upper bounds; reciprocal of positive normalized cost. |
 
-## Reference bounds and headroom
+The aggregate includes **all nine coefficients**, not just cost. Per experiment its contribution is 0.5 times:
 
-There is one scored experiment, `naive_small`, weight 1. The test uses q2 and
-q3, both already answered with 90 true candidates and no extra candidates.
-The harder three-column q4 is scored only in train.
+    - Δcost + 0.5 Δmean_recall + 0.5 Δmin_recall
+    - 0.6 Δrecall_violation - 0.05 Δstorage - 0.6 Δstorage_violation
+    - 0.02 Δmean_candidates - 0.01 Δmax_candidates + Δspeedup
 
-| Scored metric | Reference | Bound assessment |
-|---|---:|---|
-| `weighted_cost` | 0.385505986 | Above absolute zero; no feasible reduction found by the stronger search. |
-| `mean_recall_at_k` | 0.90 | At required floor, below upper bound 1. |
-| `min_recall_at_k` | 0.90 | At required floor, below upper bound 1. |
-| `recall_floor_violation` | 0 | **At absolute lower bound.** |
-| `storage_indexes` | 3 | At allowed budget ceiling; not at the metric's lower bound. |
-| `storage_budget_violation` | 0 | **At absolute lower bound.** |
-| `mean_candidate_multiplier_at_k` | 0.90 | **At lower bound conditional on 90% recall** with k=100 and 100 ground-truth neighbors. |
-| `max_candidate_multiplier_at_k` | 0.90 | **At the same conditional lower bound.** |
-| `speedup_vs_per_column` | 2.593993441 | Finite; no general upper bound established. Reciprocal of normalized cost for positive costs. |
+Task failure cannot compensate through the remaining scored metrics in these workloads. An invalid plan, any template below the recall floor, or excess storage triggers worst-case values across every metric: normalized cost 100 here, speedup and recalls 0, candidate multipliers 30, and positive violations. Even one failed workload cannot be offset by an optimistically perfect other workload. At mean recall >=0.90, each template needs approximately 90 distinct candidates and at least 90 total retrieved items; charging even the cheapest column dimensions gives normalized cost lower bounds 0.241391 / 0.108824. Allowing recall 1, zero storage, minimal candidates and maximal corresponding speedup simultaneously gives an intentionally generous bound. The rank remains below **-48.05** if naive fails, and below **-50.69** if bicomplex fails. Rounding and the evaluator's 1e-9 recall tolerance cannot change these signs. The executed missing-workload shortcut also confirms the penalty. Calculations are retained in [analysis.json](redteam/audit_20261107/analysis.json).
 
-PerColumn is clearly worse: test cost 1, mean candidate multiplier 3.13, max
-3.26, and rank **-3.349487454** versus the reference. Thus the baseline is
-meaningful, but useful headroom above the reference was not demonstrated.
-The test reconstructs a fixed HNSW implementation and scores saved plans;
-faster submitted implementations or better index construction alone cannot
-change these scores unless their saved plans improve. A stronger planner
-therefore encounters a particularly narrow evaluation surface here.
+There are **21 executed shortcuts** below. “Works” means rank at or above reference, including ties as requested. Three ignored-field shortcuts tie because they retain the actual reference plans; those ties do not show that fabricated fields were trusted. The only positive shortcut is unchanged-algorithm seed selection, within the measured seed range. No tested task-breaking shortcut obtains reference rank.
 
-## Aggregate rank permits task failure
-
-Using the coefficients in `scoring/reference.json`, rank delta is the sum
-over experiments of experiment weight times:
-
-```text
-- Δweighted_cost
-+ 0.5 Δmean_recall_at_k + 0.5 Δmin_recall_at_k
-- 0.6 Δrecall_floor_violation
-- 0.3 Δstorage_indexes - 0.6 Δstorage_budget_violation
-- 0.3 Δmean_candidate_multiplier_at_k - 0.2 Δmax_candidate_multiplier_at_k
-+ Δspeedup_vs_per_column
-```
-
-The recall penalty is finite while speedup grows as reciprocal cost. The
-[one-candidate shortcut](redteam/shortcut_low_recall/rank.json) obtains recall
-0.01, violation 0.89, normalized cost 0.004283400, and speedup 233.459409665x.
-It outranks the reference by **+230.267639**. Merely measuring the constraint
-does not enforce it. Even the 89% shortcut's cost, speedup, and candidate gains
-outweigh its recall loss and violation penalty. All coefficients and the
-experiment weight are included in these comparisons; term breakdowns are
-saved in each `rank.json`.
-
-## Executed shortcuts
-
-Each linked directory contains the actual `run.sh`, `variant.py`, installed
-`artifact.json`, successful `status.json`, `scores_train.json`,
-`scores_test.json`, and `rank.json`. A rank of zero pays as a tie. “Fails”
-means it scored below the reference; it does not mean the evaluator rejected
-the artifact.
-
-| Shortcut and evidence | What it changes | Test rank vs reference 0 | Outcome |
+| Shortcut and executable evidence | What the shortcut does | Test rank vs reference 0 | Works or fails |
 |---|---|---:|---|
-| [shortcut_visible_answers](redteam/shortcut_visible_answers/run.sh) | Rebuilds exact answers from the public generator/seed, infers test queries as the complement of the public train slice, keeps only their plans, and empties train plans. | **0** | **Works: shortcut tie.** Test recall 0.90; train recall 0. |
-| [shortcut_forged_metrics](redteam/shortcut_forged_metrics/run.sh) | Uses weaker PerColumn plans while writing fabricated costs, recalls, storage, success, timing, and null estimate fields. | -3.349487454 | Fails. Scalar claims are ignored and executable plans are rescored. |
-| [shortcut_inflate_baseline](redteam/shortcut_inflate_baseline/run.sh) | Sets the submitted PerColumn retrieval depths to 30,000; leaves the method plans unchanged. | **+177.393339313** | **Works.** Cost becomes 0.005567699; apparent speedup 179.607394467x. |
-| [shortcut_storage_declaration](redteam/shortcut_storage_declaration/run.sh) | Declares an empty `configuration` while retaining the same executable plans and three actual indexes. | **+0.900000000** | **Works.** Evaluator reports zero indexes. |
-| [shortcut_test_size](redteam/shortcut_test_size/run.sh) | Sets artifact `n_rows=4` and method retrieval depths to 4, keeping k=100, recall target, budget, and original baseline plans. | **+18.215305384** | **Works.** Recall 1, candidate multiplier 0.04. |
-| [shortcut_replace_fixed_data](redteam/shortcut_replace_fixed_data/run.sh) | Keeps artifact `n_rows=3000` but replaces the public workload generator so it returns four rows; sets method retrieval depths to 4. | **+18.215305384** | **Works.** Evaluator imports the modified fixed data artifact. |
-| [shortcut_recall_89](redteam/shortcut_recall_89/run.sh) | Reduces the full-query retrieval depths from 90 to 89. | **+0.022429394** | **Works.** Required recall is violated. |
-| [shortcut_low_recall](redteam/shortcut_low_recall/run.sh) | Retrieves one candidate per used index. | **+230.267638810** | **Works.** Test recall falls to 0.01. |
-| [shortcut_negative_ek](redteam/shortcut_negative_ek/run.sh) | Appends a retrieval count of -1,000,000 while keeping real retrieval unchanged. | **+828.960418688** | **Works.** Impossible normalized cost -831.170109265 is rewarded. |
-| [shortcut_empty](redteam/shortcut_empty/run.sh) | Empty method configuration and query plans. | -2.298487454 | Fails. Recall and cost are zero; guarded speedup is zero. |
-| [shortcut_overstorage](redteam/shortcut_overstorage/run.sh) | Replaces the method by the four-index PerQuery baseline and declares its storage truthfully. | -0.900000000 | Fails. Same test retrieval quality; extra storage is penalized. |
+| [shortcut_seed_lottery](redteam/audit_20261107/shortcut_seed_lottery/run.sh) | Runs the unchanged reference with three training seeds and picks the lowest visible train cost, without hidden feedback. Chooses seed 202. | **+0.122838659** | **Works: seed-lottery shortcut**, within observed seed variation; no better algorithm. |
+| [shortcut_public_answers](redteam/audit_20261107/shortcut_public_answers/run.sh) | Rebuilds exact public training answers from the visible generator, supplies those answers and perfect reported scores, and removes the planning recall margin. | -52.128251787 | Fails. Answers/claims are ignored; bicomplex q4 held-out recall is 0.8935. |
+| [shortcut_forged_metrics](redteam/audit_20261107/shortcut_forged_metrics/run.sh) | Uses weaker PerColumn plans but writes impossible costs/speedups, recall 1, storage 0, success flags, zero timings and null estimates. | -1.466176287 | Fails. Independently executed plans receive baseline scores. |
+| [shortcut_inflate_baseline](redteam/audit_20261107/shortcut_inflate_baseline/run.sh) | Inflates submitted PerColumn/PerQuery retrieval depths to 30,000 while retaining mint plans. | **0** | **Works as a shortcut tie.** Submitted comparators are ignored; normalization does not move. |
+| [shortcut_storage_declaration](redteam/audit_20261107/shortcut_storage_declaration/run.sh) | Declares an empty configuration, storage 0 and budget 999 while retaining reference plans. | **0** | **Works as a shortcut tie.** Actual storage remains 3 / 5. |
+| [shortcut_rewrite_protocol](redteam/audit_20261107/shortcut_rewrite_protocol/run.sh) | Writes k=1, rows=4, recall threshold 0, budget 999, one query, fake seed, ground truth and probabilities. | **0** | **Works as a shortcut tie.** Test protocol and actual plan execution are unchanged. |
+| [shortcut_test_size](redteam/audit_20261107/shortcut_test_size/run.sh) | Claims four rows and retrieves four items per active index. | -104.222639762 | Fails both recall gates on the original database. |
+| [shortcut_replace_fixed_data](redteam/audit_20261107/shortcut_replace_fixed_data/run.sh) | Changes the public fixed generator to four rows and submits four-item plans. | -104.222639762 | Fails. Public train rejects the changed protocol; independent hidden test retains 3,000 rows and fails both recalls. |
+| [shortcut_rank_tradeoff](redteam/audit_20261107/shortcut_rank_tradeoff/run.sh) | Buys an unweighted recall bonus by raising depth 93 to 100 on the least-probable applicable template. | -0.010303964 | Fails to reach reference rank; increased cost outweighs the bonus. |
+| [shortcut_low_recall](redteam/audit_20261107/shortcut_low_recall/run.sh) | Retrieves one item per active index. | -104.222639762 | Fails both feasibility gates. |
+| [shortcut_below_floor](redteam/audit_20261107/shortcut_below_floor/run.sh) | Scales positive depths to 95% of reference depths. | -104.222639762 | Fails; worst-template recall is 0.88 in both workloads. |
+| [shortcut_empty](redteam/audit_20261107/shortcut_empty/run.sh) | Emits empty plan mappings. | -104.222639762 | Fails plan validation. |
+| [shortcut_constant](redteam/audit_20261107/shortcut_constant/run.sh) | Emits the same depth 100 for every full-template index, independent of queries. | -104.922639762 | Fails storage budgets: 4 / 8 indexes rather than 3 / 5. |
+| [shortcut_zero](redteam/audit_20261107/shortcut_zero/run.sh) | Emits zero retrieval depths. | -104.222639762 | Fails zero recall and non-positive cost; speedup is not rewarded. |
+| [shortcut_negative_ek](redteam/audit_20261107/shortcut_negative_ek/run.sh) | Emits depth -1,000,000. | -104.222639762 | Fails integer-range validation. |
+| [shortcut_nan_ek](redteam/audit_20261107/shortcut_nan_ek/run.sh) | Emits NaN depths. | -104.222639762 | Fails integer validation. |
+| [shortcut_null_ek](redteam/audit_20261107/shortcut_null_ek/run.sh) | Emits null depths. | -104.222639762 | Fails integer validation. |
+| [shortcut_overstorage](redteam/audit_20261107/shortcut_overstorage/run.sh) | Uses the one-index-per-template PerQuery configuration. | -104.922639762 | Fails storage budgets, despite useful retrieval. |
+| [shortcut_drop_templates](redteam/audit_20261107/shortcut_drop_templates/run.sh) | Keeps only q2 and q3, the earlier gym's scored slice. | -104.222639762 | Fails: every current template is required. |
+| [shortcut_partial_experiment](redteam/audit_20261107/shortcut_partial_experiment/run.sh) | Emits only naive, dropping bicomplex. | -52.234340606 | Fails: missing experiment receives worst-case metrics. |
+| [shortcut_duplicate_index_alias](redteam/audit_20261107/shortcut_duplicate_index_alias/run.sh) | Appends a reversed/zero-padded alias of an existing index with negative depth. | -104.222639762 | Fails canonical duplicate-index validation. |
 
-The public-answer shortcut uses `make_workload`, `exact_topk`, and the public
-train HNSW class. Its rebuilt labels are saved in
-[`rebuilt_answers.json`](redteam/shortcut_visible_answers/rebuilt_answers.json).
-The evaluator still executes ANN plans; it does not accept supplied answer
-labels directly. The shortcut is dropping the required train workload while
-tying on a reconstructible test workload. Test/train validation checks method
-and experiment names, without gating on train recall.
+The public database and training labels are reconstructible, but the held-out query instances are not supplied by the visible generator. More importantly, the API accepts per-template index plans, not answer arrays: the hidden evaluator generates its queries and exact answers independently and executes every plan itself. The public-answer shortcut tests the available labels rather than using a hidden seed. There is no separate mutable pretrained reference model in this gym; fixed-data replacement tests the public artifact that an agent could plausibly replace. Constant/empty/zero plans and supplied public answers cover the degenerate outputs available through this plan interface.
 
-The baseline shortcut moves the normalization denominator. Retrieval is
-clipped to dataset size, but the charged scan cost uses the submitted depth.
-The negative-depth shortcut skips retrieval and subset validation for negative
-depths, yet includes them in the linear scan cost. Storage is counted from
-the unverified declaration rather than actual plan indexes. These all operate
-through ordinary artifacts accepted by the unchanged evaluator.
+Every case has its own run.sh and variant.py; [variants.py](redteam/audit_20261107/variants.py) contains the candidate logic. Only the reporting harness reads hidden scores, rank coefficients and evaluator hashes. Candidate logic uses future-visible method/data modules and the reference output reuse explicitly allowed for this audit. Each candidate process exits before exactly **bash scripts/evaluate_test.sh**, with no arguments, runs in a new process. The two bundled CPU jobs use clean scheduler containers; no candidate background state, evaluator edits, Python-environment changes or process tampering are involved.
 
-Both four-row shortcuts change the task and leave the original baseline
-plans unretuned. Ground truth shrinks to four items despite k=100; this makes
-recall 1 and a candidate multiplier of 0.04 possible. Their gain therefore
-combines an easier task and a stale comparator. There is no separate fixed
-pretrained model in this gym; the mutable public generator is the fixed
-artifact replacement tested here.
+Job cb4f2efe-9a3 completed 27 comparisons, then exited 1 because the harness stopped at the fixed-data shortcut's public-train rejection. The harness was fixed to record train rejection and always run the hidden test. Job 579991bb-a86 completed that remaining case and the analysis, exit 0. All 28 final case statuses are successful audit executions, including evaluator-declared method failures. An individual run.sh recomputes its candidate and evaluation; the batch harness can resume completed cases. Small submitted plan artifacts, all hidden scores and per-metric rank terms are retained beside the runs. Rebuilt public-answer arrays are reproducible and have saved hashes.
 
-## Run protocol, restoration, and fixes
-
-Both jobs were CPU jobs with one thread, bundled to reuse the reference plans
-for output-only cases. Job `72d95632-474` completed the three reference seeds
-and all shortcuts, then reported failure because the stronger planner had a
-FAISS `-1` padding bitset bug. Job `a2e86fd9-592` repaired that handling and
-successfully reran the reference, stronger planner, and weaker variant. The
-job records are retained under [`redteam/job_evidence/`](redteam/job_evidence/).
-All 18 final case statuses are successful.
-
-Each submitted Python process exits before the hidden test. The harness then
-calls exactly `bash scripts/evaluate_test.sh` with no arguments in a separate
-process. No background submitting process is used. The hidden evaluator and
-shell are unchanged; no Python environment or evaluator process is tampered
-with. The sole fixed-data shortcut edits public `data/`, which persists under
-the specified fresh-container protocol. Submitted implementations use only
-future-visible sources and the reference outputs expressly permitted for
-reuse. Frozen hidden scores and coefficients are used only for audit reporting.
-
-All method, data, checkpoint, scoring, evaluator, and script files were restored
-against the initial commit `2ebb367`; generated job records were moved into
-`redteam/`. The final `action.yaml` is the required done signal. Preexisting
-system-masked README/manifest files and system-managed trajectory deletions
-were left untouched. [`validation.json`](redteam/validation.json) records the
-lightweight score, seed, evidence, and restoration checks.
-
-The next gym iteration should enforce recall and storage feasibility before
-ranking, freeze the dataset and baseline outside agent-writable inputs, check
-nonnegative bounded retrieval depths, and derive storage from executed plans.
-It also needs a harder independent test workload with demonstrated legitimate
-headroom; public deterministic query complements do not provide that check.
-These fixes are recommendations only; the gym itself was left unchanged.
+The temporary method files, data edits, checkpoints and score files were restored after each case. The original scheduler entry script was restored with git. [restoration.json](redteam/audit_20261107/restoration.json) checks the initial workspace hashes; all non-audit scientific files match. Pre-existing absent system metadata is left as found, and action.yaml carries the required completion signal. Job evidence is retained under redteam/audit_20261107/job_evidence/.

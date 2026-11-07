@@ -1,0 +1,12 @@
+{
+  "audit_naive_small_results.json": {
+    "sha256": "796ff03c04cb02d984ceab0feac9d785cdb1d6b619cb31fbb3c666daf31058c9",
+    "bytes": 1434825,
+    "regenerate_with": "bash redteam/audit_20261107/shortcut_public_answers/run.sh"
+  },
+  "audit_bicomplex_small_results.json": {
+    "sha256": "503b43567837e20acc83f5594df253e0fab69231304177a07bde68b5112e2906",
+    "bytes": 2869103,
+    "regenerate_with": "bash redteam/audit_20261107/shortcut_public_answers/run.sh"
+  }
+}

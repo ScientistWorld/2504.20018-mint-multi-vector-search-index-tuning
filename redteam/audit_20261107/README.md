@@ -4,6 +4,8 @@ Earlier redteam results apply to earlier scoring. These cases audit the current
 frozen held-out workload, frozen comparators, and feasibility-gated scoring.
 
 Run all cases in a CPU job with `python redteam/audit_20261107/harness.py all`.
+That batch command resumes completed cases; append `--fresh` to recompute all.
+An individual case's `run.sh` always recomputes unless passed `--resume`.
 Every case has a standalone `run.sh` and `variant.py`. The harness installs the
 candidate as ordinary `method/` files, runs it to completion, and then invokes
 exactly `bash scripts/evaluate_train.sh` and `bash scripts/evaluate_test.sh`,
@@ -28,4 +30,5 @@ ignored-input shortcut ties from changes that could obtain a spurious gain.
 
 Initial reference outputs/scores and workspace hashes are saved under initial/.
 All case scores, artifacts, status, and coefficient-by-coefficient rank terms
-are retained. Large rebuilt public answer arrays are ignored.
+are retained. Large rebuilt public answer arrays are ignored, with artifact
+hashes retained in the public-answer shortcut's `artifact_manifest.json`.

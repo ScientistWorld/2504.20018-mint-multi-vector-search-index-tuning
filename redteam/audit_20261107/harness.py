@@ -49,12 +49,12 @@ def run_command(cmd, log):
         subprocess.run(cmd, cwd=ROOT, stdout=fh, stderr=subprocess.STDOUT, check=True)
 
 
-def run_case(case):
+def run_case(case, resume=False):
     if case not in CASES:
         raise ValueError(case)
     out = HERE / case
     out.mkdir(exist_ok=True)
-    if (out / "status.json").is_file() and json.loads((out / "status.json").read_text()).get("ok"):
+    if resume and (out / "status.json").is_file() and json.loads((out / "status.json").read_text()).get("ok"):
         print(f"Skip completed {case}", flush=True)
         return
     saved = {p: p.read_bytes() for p in (ROOT / "checkpoints").glob("*_results.json")}
@@ -142,7 +142,8 @@ if __name__ == "__main__":
         failures = []
         for case in CASES:
             try:
-                run_command(["bash", str(HERE / case / "run.sh")], HERE / "job.log")
+                args = [] if "--fresh" in sys.argv[2:] else ["--resume"]
+                run_command(["bash", str(HERE / case / "run.sh"), *args], HERE / "job.log")
             except Exception:
                 failures.append(case)
             summarize()
@@ -150,5 +151,5 @@ if __name__ == "__main__":
             raise RuntimeError(f"failed audit cases: {failures}")
         run_command([sys.executable, str(HERE / "analyze.py")], HERE / "job.log")
     else:
-        run_case(sys.argv[1])
+        run_case(sys.argv[1], resume="--resume" in sys.argv[2:])
         summarize()

@@ -1,0 +1,237 @@
+{
+  "workload": "naive_small",
+  "n_rows": 3000,
+  "top_k": 100,
+  "recall_threshold": 0.9,
+  "storage_budget": 3,
+  "train_seed": 20240501,
+  "train_queries_per_template": 800,
+  "planning_recall_target": 0.915,
+  "search": {
+    "beam_width": 5,
+    "seed_limit": 2,
+    "improvement_threshold": 0.05,
+    "max_iters": 8,
+    "local_search": false,
+    "rerank_measured": 40,
+    "trim_deterministic": true,
+    "plans_computed": 37
+  },
+  "runtime_seconds": 190.01922718598507,
+  "results": {
+    "per_column": {
+      "configuration": [
+        "x1",
+        "x2",
+        "x3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x1",
+            "x2"
+          ],
+          "ek": [
+            287,
+            177
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            280,
+            172
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2",
+            "x3"
+          ],
+          "ek": [
+            317,
+            253,
+            180
+          ]
+        }
+      },
+      "train_diagnostics": {
+        "q1": {
+          "estimated_cost": 9184.0,
+          "train_recall": 0.92,
+          "train_min_instance_recall": 0.92,
+          "train_mean_candidates": 92.0
+        },
+        "q2": {
+          "estimated_cost": 59498.0,
+          "train_recall": 0.91585,
+          "train_min_instance_recall": 0.32,
+          "train_mean_candidates": 447.2575
+        },
+        "q3": {
+          "estimated_cost": 71136.0,
+          "train_recall": 0.915625,
+          "train_min_instance_recall": 0.46,
+          "train_mean_candidates": 434.44625
+        },
+        "q4": {
+          "estimated_cost": 135730.0,
+          "train_recall": 0.9155125,
+          "train_min_instance_recall": 0.61,
+          "train_mean_candidates": 690.0675
+        }
+      }
+    },
+    "per_query": {
+      "configuration": [
+        "x1",
+        "x1,2",
+        "x2,3",
+        "x1,2,3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x1,2"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x2,3"
+          ],
+          "ek": [
+            92
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1,2,3"
+          ],
+          "ek": [
+            92
+          ]
+        }
+      },
+      "train_diagnostics": {
+        "q1": {
+          "estimated_cost": 9184.0,
+          "train_recall": 0.92,
+          "train_min_instance_recall": 0.92,
+          "train_mean_candidates": 92.0
+        },
+        "q2": {
+          "estimated_cost": 20664.0,
+          "train_recall": 0.92,
+          "train_min_instance_recall": 0.92,
+          "train_mean_candidates": 92.0
+        },
+        "q3": {
+          "estimated_cost": 25256.0,
+          "train_recall": 0.92,
+          "train_min_instance_recall": 0.92,
+          "train_mean_candidates": 92.0
+        },
+        "q4": {
+          "estimated_cost": 34440.0,
+          "train_recall": 0.92,
+          "train_min_instance_recall": 0.92,
+          "train_mean_candidates": 92.0
+        }
+      }
+    },
+    "mint": {
+      "configuration": [
+        "x1",
+        "x2,3",
+        "x1,2,3"
+      ],
+      "plans": {
+        "q1": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            91
+          ]
+        },
+        "q2": {
+          "indexes": [
+            "x1"
+          ],
+          "ek": [
+            860
+          ]
+        },
+        "q3": {
+          "indexes": [
+            "x2,3"
+          ],
+          "ek": [
+            91
+          ]
+        },
+        "q4": {
+          "indexes": [
+            "x1",
+            "x2,3",
+            "x1,2,3"
+          ],
+          "ek": [
+            0,
+            0,
+            91
+          ]
+        }
+      },
+      "train_diagnostics": {
+        "q1": {
+          "estimated_cost": 9112.0,
+          "train_recall": 0.91,
+          "train_min_instance_recall": 0.91,
+          "train_mean_candidates": 91.0
+        },
+        "q2": {
+          "estimated_cost": 98880.0,
+          "train_recall": 0.91595,
+          "train_min_instance_recall": 0.41,
+          "train_mean_candidates": 860.0
+        },
+        "q3": {
+          "estimated_cost": 25058.0,
+          "train_recall": 0.91,
+          "train_min_instance_recall": 0.91,
+          "train_mean_candidates": 91.0
+        },
+        "q4": {
+          "estimated_cost": 34170.0,
+          "train_recall": 0.91,
+          "train_min_instance_recall": 0.91,
+          "train_mean_candidates": 91.0
+        }
+      }
+    }
+  }
+}
