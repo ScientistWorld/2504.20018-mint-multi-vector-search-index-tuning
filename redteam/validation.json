@@ -1,0 +1,140 @@
+{
+  "ok": true,
+  "initial_commit": "2ebb367",
+  "completed_cases": 18,
+  "shortcut_cases": 11,
+  "paying_shortcuts_including_ties": 8,
+  "seed_rank_spread": 0.0,
+  "seed_metric_spreads": {
+    "weighted_cost": 0.0,
+    "mean_recall_at_k": 0.0,
+    "min_recall_at_k": 0.0,
+    "recall_floor_violation": 0.0,
+    "storage_indexes": 0.0,
+    "storage_budget_violation": 0.0,
+    "mean_candidate_multiplier_at_k": 0.0,
+    "max_candidate_multiplier_at_k": 0.0,
+    "speedup_vs_per_column": 0.0
+  },
+  "quality_search_active_plans_and_full_scores_equal_reference": true,
+  "hidden_test_command": [
+    "bash",
+    "scripts/evaluate_test.sh"
+  ],
+  "cases": {
+    "reference_cached": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "reference_seed_12345": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "reference_seed_7": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "reference_seed_19": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "better_actual_cost": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "weaker_no_multicolumn": {
+      "ok": true,
+      "rank_delta": -3.3494874543477464
+    },
+    "higher_recall": {
+      "ok": true,
+      "rank_delta": -0.25223334255724505
+    },
+    "shortcut_recall_89": {
+      "ok": true,
+      "rank_delta": 0.02242939356447632
+    },
+    "shortcut_low_recall": {
+      "ok": true,
+      "rank_delta": 230.26763881036447
+    },
+    "shortcut_empty": {
+      "ok": true,
+      "rank_delta": -2.2984874543477463
+    },
+    "shortcut_forged_metrics": {
+      "ok": true,
+      "rank_delta": -3.3494874543477464
+    },
+    "shortcut_storage_declaration": {
+      "ok": true,
+      "rank_delta": 0.8999999999999999
+    },
+    "shortcut_overstorage": {
+      "ok": true,
+      "rank_delta": -0.8999999999999999
+    },
+    "shortcut_inflate_baseline": {
+      "ok": true,
+      "rank_delta": 177.39333931319126
+    },
+    "shortcut_negative_ek": {
+      "ok": true,
+      "rank_delta": 828.9604186879474
+    },
+    "shortcut_visible_answers": {
+      "ok": true,
+      "rank_delta": 0.0
+    },
+    "shortcut_test_size": {
+      "ok": true,
+      "rank_delta": 18.215305383812996
+    },
+    "shortcut_replace_fixed_data": {
+      "ok": true,
+      "rank_delta": 18.215305383812996
+    }
+  },
+  "restored_files_sha256": {
+    "baseline/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "baseline/run_baselines.py": "89c46c7dbb4d578ca900a89c084d87f7935d826a3e9d06b5d840f894fcd18fa0",
+    "checkpoints/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "checkpoints/mint_results.json": "87480bc12c18e62ff5cc78bdf45c26cd1eb2b7baf26ecac9edcf974b79d38835",
+    "data/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/synthetic_multivector.py": "936fdbd2119973356a18d5d6f18c36b1b3f6a15ac8110bdd08362429538b5d8d",
+    "environment/container.def": "b0fc5f238ac5f61bbec3987ea0331df139ee34d5c47a609efaae789b389e9334",
+    "environment/setup.sh": "111538fbf944f35ecb607dc7231b840b5fae93d5c93f02cb3c84398aed41f56d",
+    "eval/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "eval/evaluate_results.py": "71a391fb14942ff700764b04226bb8c67e21191a5a8d6bdb16b780868c09748f",
+    "eval/test/evaluate.py": "e77e246c73c8cb43302c0d0467a058db979789abbe5c3f4dfc2b38f1bf6d50f2",
+    "eval/train/evaluate.py": "dc44370265d65853c60ec6816f72b3998e7ae6a0c7bd1ecaeca6c029510fdfb5",
+    "method/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "method/mint.py": "b85db1b10745cd7961de2a0832905950dabc292e40361031126a775936fbdc32",
+    "scoring/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "scoring/CONSTRAINTS.md": "dbdc5258c5a30509f1ea9a99853945a7b2af34acc3f262e2dada37be664f929e",
+    "scoring/DIRECTION.md": "aaedeff8c87d0bf132149cde61481c9ef528c02479415b6c9e12547542185f25",
+    "scoring/EXPERIMENTS.md": "216dd31b7f75dc1f9369bfe9070adb65af27f687e0bf31de6f222e8049618c31",
+    "scoring/TARGETS.md": "2d5d7a4b1e0cf9edb3fb8fd239409ab45789b957fe9c103558107b0c80e359ca",
+    "scoring/reference.example.json": "e60339bbc876e56b95a0d32f6411bb0f36ae8b114172c7be2827204603a7ed5b",
+    "scoring/reference.json": "ad3b71a0e72fedf57aab762bc85d86b07516cc6013f74e35509ce2d7c0332109",
+    "scoring/scores.example.json": "93678268e7c429abd571b61b541c789f6c54addde42da1c3363f6c53f998b67a",
+    "scoring/scores.json": "45473c27fa3c726f93fbc81e6d0f9b6aba98a582c7336b12346e7163c3021bf3",
+    "scoring/scores_test.json": "89bbb2ba24765b6b452f3bc27b24278d813133c19eb3469ba4eaf940cce61597",
+    "scoring/scores_train.json": "197695bbf8e021056ecd5dc9fe6ad9aad80a21227780c9c3a4e4890b11e690dd",
+    "scripts/baseline.sh": "b7480358e2b74cdd8078d6c99f3b73553edd4f5060586f6b3397c8eb4a7fef1f",
+    "scripts/download.sh": "a036259038b8d182084c671d98320342625a6e0685c89831ad4105955e2db7f5",
+    "scripts/evaluate.sh": "7a33095a55dfeee38be1c8c7af83916b114d646dd684b1aa6f032674f85e843d",
+    "scripts/evaluate_test.sh": "982a4c374c719a5ac3dca9af5a62ddda04f479c64c356d66cde0dbf791b8ff07",
+    "scripts/evaluate_train.sh": "ef422324ed96bf3942b10663d9b5cfd183fa8cdb4de705c14775df8b7466c3ab",
+    "scripts/method.sh": "cbe040647fe9b88541005b7cbb37aaf15aa31f2cbe8fda1c342e11e47267610a",
+    "scripts/reproduce.sh": "2b00c6aeef6a0c21ae8940b2763f8cc05aec568d25a8870b43d3ceed467c563d",
+    "scripts/run.sh": "b089653402b82f7817e9af0e8697c39fc67f8035b90944f2026071c0e87b7dce"
+  },
+  "other_tracked_differences_excluding_protocol_and_system_files": [],
+  "excluded_protocol_path": "action.yaml",
+  "excluded_system_paths": [
+    "README.md",
+    "manifest.json",
+    "trajectory/"
+  ]
+}

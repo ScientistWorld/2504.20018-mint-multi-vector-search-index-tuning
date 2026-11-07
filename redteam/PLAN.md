@@ -12,8 +12,10 @@
   size, per-column normalization plans, and configuration lists from artifacts.
 - Rank is computed against initial `scoring/scores_test.json`, with metric
   coefficients and experiment weights from `scoring/reference.json`.
-- Genuine quality check: exhaustive three-index configuration search and
-  measured-union planning on all four queries. The harder q4 is only in train.
+- Intended quality improvement: exhaustive three-index configuration search
+  and measured-union planning on all four queries. It ultimately tied the
+  reference, so the result is an honest alternative rather than a verified
+  improvement. The harder q4 is only in train.
 - Weak check: replace the submitted method by PerColumn. Additional honest
   quality tradeoff: more retrieval and higher recall, with unchanged indexes.
 - Seed check: original procedure with HNSW seeds 12345 (FAISS default), 7, 19.
@@ -29,5 +31,6 @@
 Initial unrelated workspace differences were already present: README.md and
 manifest.json are system-masked character devices and trajectory logs are
 absent. These are recorded in `original/initial_status.txt` and left untouched.
-The temporary job entry point and action file will be restored at completion,
-with the final done signal as required by the protocol.
+The temporary job entry point and generated job records will be restored at
+completion. The action file carries the final done signal required by the
+protocol.

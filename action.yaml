@@ -1,4 +1,2 @@
-action: submit
-gpus: 0
-test: false
-notes: "Repair stronger planner sentinel handling; compare full-workload and hidden-test scores against cached reference and weaker variant. Completed seeds and shortcuts retained."
+action: done
+notes: "Audit complete: 18 runs, 8 paying shortcuts, zero three-seed spread; report and evidence saved, gym restored."
