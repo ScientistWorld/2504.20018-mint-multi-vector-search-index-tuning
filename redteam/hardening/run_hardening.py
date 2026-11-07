@@ -296,10 +296,12 @@ def run_method_case(case: str, flags: list[str], description: str) -> None:
 
 METHOD_CASES = [
     ("overfit_no_margin", ["--recall-margin", "0.0"], "Train-tuned: plans exactly to the 0.90 floor on the visible training instances (no recall allowance)."),
-    ("better_margin_0p01", ["--recall-margin", "0.01"], "Better-calibrated recall allowance (0.01 instead of 0.02); same search."),
+    ("better_measured_rerank", ["--rerank-measured", "40"], "Better: picks among the 40 best configurations by cost measured on the training instances (distinct candidates, actual HNSW results) instead of the duplicate-counting cost estimate."),
+    ("better_trim_deterministic", ["--trim-deterministic"], "Better: variance-aware recall allowance; single-index plans whose recall is identical on every training instance drop the allowance (ek 93 -> 91)."),
+    ("better_combined", ["--rerank-measured", "40", "--trim-deterministic"], "Better: measured re-rank plus variance-aware allowance."),
     ("reference_seed_101", ["--train-seed", "101"], "Reference procedure on a different visible training-instance sample (seed 101)."),
     ("reference_seed_202", ["--train-seed", "202"], "Reference procedure on a different visible training-instance sample (seed 202)."),
-    ("better_wide_search", ["--beam-width", "10", "--improvement-threshold", "0", "--max-iters", "8", "--local-search"], "Stronger configuration search: wider beam, no early stop, plus swap local search."),
+    ("better_wide_search", ["--beam-width", "10", "--improvement-threshold", "0", "--max-iters", "8", "--local-search"], "Stronger configuration search under the same estimated cost: wider beam, no early stop, plus swap local search."),
     ("higher_recall", ["--recall-margin", "0.08"], "Honest trade-off: plans to 0.98 training recall (higher recall, higher cost)."),
 ]
 
@@ -351,7 +353,7 @@ def main() -> None:
     ok = (
         stage("ref_naive_small", lambda: run_reference("naive_small"))
         and stage("ref_bicomplex_small", lambda: run_reference("bicomplex_small"))
-        and stage("freeze_baselines", freeze_main)
+        and stage("freeze_baselines", lambda: freeze_main(force=True))
         and stage("score_reference", score_reference)
     )
     if not ok:

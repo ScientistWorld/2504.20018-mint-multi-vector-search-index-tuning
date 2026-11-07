@@ -22,7 +22,8 @@ whose plan (indexes, ek) must serve unseen instances of that template, so the
 planner works on the pooled ground truth of the template's training instances
 (the "relevant ek" grid is thinned to at most a few hundred values, as the
 paper bounds it by k per index). The recall estimator subtracts a fixed
-generalization allowance ``recall_margin`` from the training-sample recall;
+generalization allowance ``recall_margin`` (0.03) from the training-sample
+recall;
 after search, chosen plans are checked against the actual HNSW results on the
 training instances and ek is increased where the measured recall falls short.
 """
@@ -140,7 +141,7 @@ def _min_last(cov: np.ndarray, order: np.ndarray, last_sorted: np.ndarray, requi
     """
     need = required - cov.sum(axis=1)
     unc = ~cov[:, order]
-    cs = np.cumsum(unc, axis=1, dtype=np.int64)
+    cs = np.cumsum(unc, axis=1, dtype=np.int32)
     ok = cs[:, -1] >= need
     pos = np.argmax(cs >= np.maximum(need, 1)[:, None], axis=1)
     e_last = np.where(need > 0, last_sorted[pos], 0)
@@ -193,7 +194,7 @@ class Planner:
         gt: dict[str, np.ndarray],
         recall_target: float,
         *,
-        grid2: int = 512,
+        grid2: int = 256,
         grid3: int = 100,
         alg1_max_indexes: int = 3,
         dp_k: int = 5,
@@ -213,6 +214,7 @@ class Planner:
         self.qdim = {t.name: int(sum(workload.columns[c].shape[1] for c in t.columns)) for t in workload.templates}
         self._ranks: dict = {}
         self._plans: dict = {}
+        self._repairs: dict = {}
         self.n_planned = 0
 
     # -- estimators -------------------------------------------------------
@@ -372,6 +374,40 @@ class Planner:
         return pos.reshape(-1)
 
     def repair(self, tname: str, plan: Plan) -> tuple[Plan, dict]:
+        memo = (tname, plan.indexes, plan.eks)
+        if memo not in self._repairs:
+            self._repairs[memo] = self._repair(tname, plan)
+        return self._repairs[memo]
+
+    def measured_cost(self, tname: str, plan: Plan) -> tuple[Plan, float]:
+        """Repair a plan on the training instances and return its measured cost."""
+        repaired, diag = self.repair(tname, plan)
+        scan = sum(self.indexes[k].dim * e for k, e in zip(repaired.indexes, repaired.eks) if e > 0)
+        return repaired, float(scan + self.qdim[tname] * diag["train_mean_candidates"])
+
+    def trim_deterministic(self, tname: str, plan: Plan, floor: float) -> Plan:
+        """Variance-aware allowance: a single-index plan whose recall is identical on
+        every training instance needs no generalization allowance; shrink its ek to
+        the smallest value keeping every training instance at or above ``floor``."""
+        active = [i for i, e in enumerate(plan.eks) if e > 0]
+        if len(active) != 1:
+            return plan
+        covered, _ = self.measure(tname, plan.indexes, plan.eks)
+        per = covered.mean(axis=1)
+        if float(per.max() - per.min()) > 1e-12:
+            return plan
+        i = active[0]
+        k = self.gt[tname].shape[1]
+        for e in range(int(math.ceil(floor * k - 1e-9)), plan.eks[i]):
+            eks = list(plan.eks)
+            eks[i] = e
+            cov, _ = self.measure(tname, plan.indexes, eks)
+            if float(cov.mean(axis=1).min()) >= floor - 1e-12:
+                dims = [self.indexes[kk].dim for kk in plan.indexes]
+                return Plan(plan.indexes, tuple(eks), estimated_plan_cost(dims, self.qdim[tname], eks), float(cov.mean()))
+        return plan
+
+    def _repair(self, tname: str, plan: Plan) -> tuple[Plan, dict]:
         keys = plan.indexes
         dims = [self.indexes[k].dim for k in keys]
         qdim = self.qdim[tname]
@@ -384,14 +420,21 @@ class Planner:
             if count >= req:
                 break
             if guide is None:
-                guide = np.stack([self.hnsw_positions(tname, k) for k in keys])
+                # only already-used indexes may be raised (never add storage)
+                guide = np.stack(
+                    [
+                        self.hnsw_positions(tname, k) if e > 0 else np.full(m, MISSING_RANK, dtype=np.int64)
+                        for k, e in zip(keys, eks)
+                    ]
+                )
             guide_count = int((guide <= eks[:, None]).any(axis=0).sum())
             target = min(m, guide_count + (req - count))
             new, _ = greedy_cover(guide, eks, target, (dims, qdim), cap=self.w.n_rows)
             if np.array_equal(new, eks):
                 break
             eks = new
-        covered, ncand = self.measure(tname, keys, eks)
+        else:
+            covered, ncand = self.measure(tname, keys, eks)
         repaired = Plan(keys, tuple(int(e) for e in eks), estimated_plan_cost(dims, qdim, eks), float(covered.mean()))
         diag = {
             "train_recall": float(covered.mean()),
@@ -439,9 +482,15 @@ def beam_search_configuration(
     improvement_threshold: float = 0.05,
     max_iters: int = 8,
     local_search: bool = False,
+    rerank_measured: int = 0,
     log=print,
 ):
-    """Algorithm 3: beam search over configurations (sets of indexes)."""
+    """Algorithm 3: beam search over configurations (sets of indexes).
+
+    ``rerank_measured`` (not part of the paper; off for the reference) re-ranks
+    the best configurations seen by their cost measured on the training
+    instances instead of the estimated cost.
+    """
     templates = workload.templates
     names = [t.name for t in templates]
     cand_t = {t.name: frozenset(all_candidate_indexes([t.columns], subset_diff)) for t in templates}
@@ -483,13 +532,15 @@ def beam_search_configuration(
     seeds.update(_coverage_seeds(candidates, cand_t, names, budget))
 
     scored: dict[frozenset, tuple[float, dict]] = {}
+    seen: dict[frozenset, tuple[float, dict]] = {}
 
     def consider(res, pool):
         if res is None:
             return
         cost, used, plans = res
-        if used not in pool or cost < pool[used][0]:
-            pool[used] = (cost, plans)
+        for target in (pool, seen):
+            if used not in target or cost < target[used][0]:
+                target[used] = (cost, plans)
 
     for seed in sorted(seeds, key=lambda s: sorted(s, key=_key_order)):
         consider(evaluate(seed), scored)
@@ -536,6 +587,20 @@ def beam_search_configuration(
                 improved = True
                 log(f"[mint] local swap: cost {best_move[0]:.1f}")
 
+    if rerank_measured > 0:
+        shortlist = dict(sorted(seen.items(), key=lambda kv: kv[1][0])[:rerank_measured])
+        shortlist.setdefault(best_seen[0], best_seen[1])
+        best_measured = None
+        for config, (est, plans) in sorted(shortlist.items(), key=lambda kv: kv[1][0]):
+            measured = sum(t.probability * planner.measured_cost(t.name, plans[t.name])[1] for t in templates)
+            if best_measured is None or measured < best_measured[0]:
+                best_measured = (measured, config, est, plans)
+        log(
+            f"[mint] measured re-rank of {len(shortlist)} configurations: picked "
+            f"{sorted(index_name(k) for k in best_measured[1])} measured {best_measured[0]:.1f} est {best_measured[2]:.1f}"
+        )
+        best_seen = (best_measured[1], (best_measured[2], best_measured[3]))
+
     config, (cost, plans) = best_seen
     return set(config), cost, plans
 
@@ -546,12 +611,14 @@ def run_experiment(
     *,
     train_seed: int = TRAIN_QUERY_SEED,
     n_train: int = N_TRAIN_QUERIES,
-    recall_margin: float = 0.02,
+    recall_margin: float = 0.03,
     beam_width: int = 5,
     seed_limit: int = 2,
     improvement_threshold: float = 0.05,
     max_iters: int = 8,
     local_search: bool = False,
+    rerank_measured: int = 0,
+    trim_deterministic: bool = False,
 ) -> None:
     faiss.omp_set_num_threads(1)
     start = time.perf_counter()
@@ -580,6 +647,7 @@ def run_experiment(
         improvement_threshold=improvement_threshold,
         max_iters=max_iters,
         local_search=local_search,
+        rerank_measured=rerank_measured,
         log=log,
     )
     log(f"[mint] chosen configuration {sorted(index_name(k) for k in config)} est cost {est_cost:.1f}")
@@ -601,6 +669,14 @@ def run_experiment(
         diags = {}
         for t in templates:
             plan, diag = planner.repair(t.name, plans[t.name])
+            if trim_deterministic and name == "mint":
+                plan = planner.trim_deterministic(t.name, plan, workload.recall_threshold + 0.005)
+                covered, ncand = planner.measure(t.name, plan.indexes, plan.eks)
+                diag = {
+                    "train_recall": float(covered.mean()),
+                    "train_min_instance_recall": float(covered.mean(axis=1).min()),
+                    "train_mean_candidates": float(ncand.mean()),
+                }
             out_plans[t.name] = {"indexes": [index_name(k) for k in plan.indexes], "ek": [int(e) for e in plan.eks]}
             diags[t.name] = {"estimated_cost": plan.estimated_cost, **diag}
         results[name] = {
@@ -625,6 +701,8 @@ def run_experiment(
             "improvement_threshold": improvement_threshold,
             "max_iters": max_iters,
             "local_search": local_search,
+            "rerank_measured": rerank_measured,
+            "trim_deterministic": trim_deterministic,
             "plans_computed": planner.n_planned,
         },
         "runtime_seconds": time.perf_counter() - start,
@@ -641,12 +719,14 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--train-seed", type=int, default=TRAIN_QUERY_SEED)
     parser.add_argument("--n-train", type=int, default=N_TRAIN_QUERIES)
-    parser.add_argument("--recall-margin", type=float, default=0.02)
+    parser.add_argument("--recall-margin", type=float, default=0.03)
     parser.add_argument("--beam-width", type=int, default=5)
     parser.add_argument("--seed-limit", type=int, default=2)
     parser.add_argument("--improvement-threshold", type=float, default=0.05)
     parser.add_argument("--max-iters", type=int, default=8)
     parser.add_argument("--local-search", action="store_true")
+    parser.add_argument("--rerank-measured", type=int, default=0)
+    parser.add_argument("--trim-deterministic", action="store_true")
     args = parser.parse_args()
     output = args.output
     if output is None:
@@ -663,6 +743,8 @@ def main() -> None:
         improvement_threshold=args.improvement_threshold,
         max_iters=args.max_iters,
         local_search=args.local_search,
+        rerank_measured=args.rerank_measured,
+        trim_deterministic=args.trim_deterministic,
     )
 
 
