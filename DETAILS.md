@@ -29,7 +29,7 @@ Two deterministic semi-synthetic workloads are provided (`data/synthetic_multive
 | `naive_small` | 3,000 | 3 (32, 40, 48) | 4: {1}, {1,2}, {2,3}, {1,2,3} | 100 | 0.90 | 3 |
 | `bicomplex_small` | 3,000 | 5 (16, 20, 24, 28, 32) | 8 subsets with >= 2 columns | 100 | 0.90 | 5 |
 
-Each template has 200 visible training queries (`make_workload(name).train_queries`).
+Each template has 1000 visible training queries (`make_workload(name).train_queries`).
 
 Cost is a machine-independent latency proxy: for each query, the sum over scanned indexes of `index dimension x ek`, plus `query dimension x number of distinct retrieved items` (re-ranking).
 
@@ -50,7 +50,7 @@ The reproduced method (`method/mint.py`) implements the paper's computational st
 
 Scaled-setup choices (not algorithm changes):
 
-- Plans are per template and must generalize to unseen queries, so planning pools the ground truth of the template's 200 training queries (the relevant-ek grid is thinned to at most 100-256 values per index, as the paper bounds it by k).
+- Plans are per template and must generalize to unseen queries, so planning pools the ground truth of the template's 1000 training queries (the relevant-ek grid is thinned to at most 100-256 values per index, as the paper bounds it by k).
 - The recall estimator is the training-sample recall minus a fixed generalization allowance of 0.03 (plans target 0.93 on the training queries for a 0.90 floor).
 - Chosen plans are checked against the actual HNSW results on the training queries and ek of already-used indexes is raised where the measured recall falls short.
 - The paper used HNSW and DiskANN C++ libraries on 1M-row public embeddings; this reproduction uses FAISS HNSW on 3,000-row synthetic workloads.
@@ -61,7 +61,7 @@ Optional flags (off for the reference): `--rerank-measured K` re-ranks the K bes
 
 # Evaluation Protocol
 
-Evaluation reads saved result artifacts (`checkpoints/*_results.json`), executes their plans and recomputes every number. It never imports `method/` and never trusts numbers, flags or declarations written in an artifact (reported costs, recalls, configuration lists, row counts, thresholds and budgets are ignored).
+Evaluation reads saved result artifacts (`checkpoints/*_results.json`), executes their plans and recomputes every number. It never imports `method/` and never trusts numbers, flags or verdicts written in an artifact: reported costs, recalls, storage counts and diagnostics are ignored, and declarations can only make a run stricter (see *Artifact consistency*).
 
 ## Artifact format
 
@@ -83,28 +83,37 @@ One JSON file per workload:
 
 - `plans` needs an entry for every template of the workload (`q1`..`q4` for `naive_small`, `q1`..`q8` for `bicomplex_small`).
 - `"x1,3"` names an index over the concatenation of columns 1 and 3 (1-based). Every index in a plan must use only that template's columns, appear once, and have an integer `ek` in `[0, 3000]`. `ek = 0` means the index is not scanned.
-- The names `per_column` and `per_query` are reserved for the evaluator's own baselines; artifact entries with these names are ignored.
+- The names `per_column` and `per_query` are reserved for the evaluator's own baselines; artifact entries with these names are never scored (but see below).
 - A method present in some artifacts but missing a workload is scored as failed on that workload.
+
+## Artifact consistency
+
+An artifact is one submission and must not contradict the fixed protocol. Every method in an artifact fails on that workload if
+
+- the artifact declares any of `n_rows`, `top_k`, `recall_threshold`, `storage_budget` with a value other than the protocol's (3000, 100, 0.90, and 3 or 5); leaving them out is fine;
+- an entry under a reserved name (`per_column`, `per_query`) is present but is not a valid plan set (same plan rules as above).
+
+A method may declare `configuration` (the list of indexes it builds). If it does, the list must hold valid, distinct index names and include every index its plans scan with `ek > 0`; otherwise the method fails.
 
 ## Execution
 
-For each template, every evaluation query is executed: each listed index with `ek > 0` is searched for its top-`ek` items with a fixed FAISS `IndexHNSWFlat` engine (inner product on L2-normalized concatenated columns, M=16, efConstruction=120, efSearch=300, single-threaded), the union is formed, and recall@100 against the exact top-100 and the cost are computed. Storage is the number of distinct indexes with `ek > 0` across all template plans.
+For each template, every evaluation query is executed: each listed index with `ek > 0` is searched for its top-`ek` items with a fixed FAISS `IndexHNSWFlat` engine (inner product on L2-normalized concatenated columns, M=16, efConstruction=120, efSearch=300, single-threaded), the union is formed, and recall@100 against the exact top-100 and the cost are computed. Storage is the number of distinct indexes with `ek > 0` across all template plans, together with any further indexes in the declared `configuration`.
 
 ## Feasibility gate
 
-A run is **failed** on a workload if any plan is invalid, any template's mean recall@100 is below 0.90, or storage exceeds the budget. A failed run gets fixed worst-case values on every metric (cost at least 100x PerColumn, speedup 0, recall 0, maximal violations and candidate counts), so it ranks below every feasible run.
+A run is **failed** on a workload if any plan is invalid, the artifact is inconsistent (above), any template's mean recall@100 is below 0.90, or storage exceeds the budget. A failed run gets fixed worst-case values on every metric (cost at least 100x PerColumn, speedup 0, recall 0, maximal violations and candidate counts), so it ranks below every feasible run.
 
 ## Slices
 
-- `scripts/evaluate_train.sh` -> `scoring/scores_train.json`: the visible training queries (in-sample for any method that plans on them).
-- `scripts/evaluate_test.sh` -> `scoring/scores_test.json`: held-out queries of the same templates (500 per template), generated only inside the evaluator.
+- `scripts/evaluate_train.sh` -> `scoring/scores_train.json`: the visible training queries (1000 per template; in-sample for any method that plans on them).
+- `scripts/evaluate_test.sh` -> `scoring/scores_test.json`: held-out queries of the same templates (1000 per template), generated only inside the evaluator.
 - `scripts/evaluate.sh` -> `scoring/scores.json`: same as the train slice.
 
 All three score every `checkpoints/*_results.json` when called without arguments.
 
 ## Comparator and metrics
 
-`per_column` (one single-column index per column, planned once on the training queries and frozen in `eval/*/baselines.json`) is the normalization baseline on the same queries. Per workload:
+`per_column` (one single-column index per column, planned once on the 1000 training queries per template and frozen in `eval/*/baselines.json`) is the normalization baseline on the same queries. Per workload:
 
 - `weighted_cost`: probability-weighted mean query cost / PerColumn's (lower is better; primary)
 - `speedup_vs_per_column`: PerColumn cost / submission cost
@@ -424,6 +433,38 @@ The ranking combines metrics with the coefficients in `scoring/reference.json` (
 - Final verification kept the milestone at `core_claim`.
 - Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
 - `python validate.py --compare` passed after the verification edits.
+
+</details>
+
+### Iteration 11: claude-opus-5-5 (hardener)
+- **Milestone**: `core_claim` | **Status**: done
+- **Working time**: 20m | **GPU**: 0.0h
+- **Jobs**: 14 total (9 completed, 3 failed)
+
+<details>
+<summary>Progress Log</summary>
+
+### [2026-06-05 03:56] - method_runs
+- Existing MINT implementation runs end-to-end on a scaled Naive-style workload.
+- Corrected the benchmark from recall@50 to the paper's recall@100 protocol; a fresh scheduled run is required before claiming `core_claim`.
+
+### [2026-06-05 05:03] - method_runs
+- Job `816d1a2a-63c` was killed before producing a corrected recall@100 artifact.
+- Optimized the actual HNSW recall repair pass and narrowed the next submission to the standardized core workload.
+
+### [2026-06-05 05:43] - core_claim
+- Job `232db930-132` completed the corrected recall@100 `naive_small` reproduction.
+- MINT achieved 1.80x speedup over PerColumn with mean/min recall@100 of 0.90 and 3 storage indexes, matching the storage budget.
+- `python validate.py --compare` passed all scoring and structure checks.
+
+### [2026-06-05 06:09] - core_claim
+- Final verification kept the milestone at `core_claim`.
+- Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
+- `python validate.py --compare` passed after the verification edits.
+
+### [2026-11-08] - core_claim (final hardening)
+- Training sample 200 -> 1000 queries per template, held-out test 500 -> 1000, comparator re-frozen; artifact consistency checks in both evaluators; exact-equivalent greedy_cover speed-up (reference rerun reproduces the committed plans).
+- Hidden test: MINT 0.554 / 0.447 normalized cost (1.81x / 2.24x vs PerColumn) at recall >= 0.915 and budget storage; seed spread 0.042 (was 0.123); calibrated variant +0.149..+0.268, PerColumn -1.539; the three tie shortcuts now fail; seed lottery +0.042. See HARDENING.md.
 
 </details>
 

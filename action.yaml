@@ -1,8 +1,6 @@
 # Once you set action to 'submit' or 'done', STOP immediately.
 # Do NOT sleep, poll, or wait for jobs. The system reads this file
 # only after your turn ends.
-action: submit
-gpus: 0
-test: false
+action: done
 milestone: core_claim
-notes: "Final hardening job 2 (CPU): greedy_cover equivalence self-test, parallelism probe, then in parallel: reference on train seeds 101/202, measured re-rank variant, calibrated variant on seeds 101/202, reference rerun from final code (plans must match checkpoints); scoring through hidden test; seed lottery."
+notes: "Final hardening: 1000 train/held-out queries per template cut seed spread 0.123->0.042; artifact-consistency checks make the three tie shortcuts fail (-104.3); calibrated variant beats reference by +0.15..+0.23 paired over 3 seeds, PerColumn -1.54; seed lottery left at +0.042 (= noise). See HARDENING.md."
