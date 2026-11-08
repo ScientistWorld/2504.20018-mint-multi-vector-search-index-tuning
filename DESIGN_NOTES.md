@@ -1,25 +1,11 @@
 # Train/Test Evaluation Design Notes
 
-## Checks performed
-- Confirmed `scripts/evaluate_train.sh` invokes `eval.train.evaluate` and writes `scoring/scores_train.json`.
-- Confirmed `scripts/evaluate_test.sh` invokes `eval.test.evaluate` and writes `scoring/scores_test.json`.
-- Confirmed both scripts enumerate `checkpoints/*_results.json` when no explicit artifacts are supplied, instead of hardcoding one method name.
-- Confirmed both train and test evaluators read method result artifacts and score the submitted query plans, rather than regenerating the paper method inline.
-- Checked for train/test score stubs; `scoring/scores_train.json` and `scoring/scores_test.json` are absent.
-- Ran `bash -n` on both train/test evaluation scripts.
-- Parsed `scoring/reference.json` as JSON.
+Current design (final hardening). Earlier notes about a query-template split are superseded.
 
-## Changes made
-- Added explicit recall and storage violation metrics to both train and test slices:
-  - `recall_floor_violation`
-  - `storage_budget_violation`
-- Added candidate-pressure metrics to both slices:
-  - `mean_candidate_multiplier_at_k`
-  - `max_candidate_multiplier_at_k`
-- Updated `scoring/reference.json` so every active metric has `higher_is_better`, `coefficient`, and `description`.
-- Kept the current query-heldout split (`train`: `q1`, `q4`; `test`: `q2`, `q3`) but strengthened it with multi-metric triangulation. This should make a method that tunes visible plans by over-retrieving candidates or exceeding the storage budget show a clearer train/test gap.
-
-## Runtime concerns for the runner iteration
-- The split is still small: each slice has only two queries because `naive_small` has four query patterns. Watch for saturation in recall-related metrics; the candidate-pressure and explicit violation metrics were added to reduce that risk.
-- The evaluators build FAISS HNSW indexes during scoring. This is method-independent and lightweight relative to training, but the runner should confirm the train/test scripts remain fast enough for repeated agent evaluations.
-- `eval/test/evaluate.py` optionally compares method keys against `scoring/scores_train.json` if that file exists. This is useful for final consistency, but if the runner evaluates test without first evaluating train, the check is intentionally skipped.
+- **Unit of submission.** One artifact per workload with a plan (indexes, `ek`) for every query template. The evaluators execute the plans with a fixed FAISS HNSW engine and recompute every metric; nothing the artifact reports is trusted.
+- **Train slice** (`eval/train/`, `scripts/evaluate_train.sh`): the 1000 public training queries per template from `data/synthetic_multivector.py` (seed 20240501). In-sample for any method that plans on them.
+- **Test slice** (`eval/test/`, `scripts/evaluate_test.sh`): 1000 held-out queries per template from the same per-template distribution, generated only in `eval/test/hidden_workload.py`, which also holds its own copy of the database and protocol (no import of `data/`).
+- **Comparator.** Frozen PerColumn plans in `eval/{train,test}/baselines.json`, planned once by the reproduced planner on the training queries; artifact entries named `per_column`/`per_query` are never scored.
+- **Feasibility gate.** Invalid plans, an inconsistent artifact (declared protocol fields that differ from the protocol, invalid reserved entries, a declared configuration missing a scanned index), any template below recall@100 0.90, or storage above the budget fail the run with worst-case values on every metric.
+- **Independence.** `eval/train/` and `eval/test/` share no code; neither imports `method/`.
+- Honest methods score alike on both slices (reference: 0.5538 / 0.5536 naive, 0.4469 / 0.4467 bicomplex); plans tuned to the training queries without a generalization allowance fail the held-out recall floor.

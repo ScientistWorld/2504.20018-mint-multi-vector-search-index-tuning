@@ -28,7 +28,7 @@
         "storage_indexes": {
           "higher_is_better": false,
           "coefficient": -0.05,
-          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
+          "description": "Number of distinct indexes with ek > 0 across all template plans, plus any further indexes in a declared configuration (a declaration can only add storage). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
         },
         "storage_budget_violation": {
           "higher_is_better": false,
@@ -100,7 +100,7 @@
         "storage_indexes": {
           "higher_is_better": false,
           "coefficient": -0.05,
-          "description": "Number of distinct indexes with ek > 0 across all template plans (derived from the plans, never from a declaration). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
+          "description": "Number of distinct indexes with ek > 0 across all template plans, plus any further indexes in a declared configuration (a declaration can only add storage). Tie-breaker only: the paper treats storage as a constraint at a fixed budget."
         },
         "storage_budget_violation": {
           "higher_is_better": false,

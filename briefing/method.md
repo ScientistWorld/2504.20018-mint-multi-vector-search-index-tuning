@@ -13,7 +13,7 @@ The reproduced method (`method/mint.py`) implements the paper's computational st
 
 Scaled-setup choices (not algorithm changes):
 
-- Plans are per template and must generalize to unseen queries, so planning pools the ground truth of the template's 200 training queries (the relevant-ek grid is thinned to at most 100-256 values per index, as the paper bounds it by k).
+- Plans are per template and must generalize to unseen queries, so planning pools the ground truth of the template's 1000 training queries (the relevant-ek grid is thinned to at most 100-256 values per index, as the paper bounds it by k).
 - The recall estimator is the training-sample recall minus a fixed generalization allowance of 0.03 (plans target 0.93 on the training queries for a 0.90 floor).
 - Chosen plans are checked against the actual HNSW results on the training queries and ek of already-used indexes is raised where the measured recall falls short.
 - The paper used HNSW and DiskANN C++ libraries on 1M-row public embeddings; this reproduction uses FAISS HNSW on 3,000-row synthetic workloads.

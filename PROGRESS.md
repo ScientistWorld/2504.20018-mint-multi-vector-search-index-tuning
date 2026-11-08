@@ -73,3 +73,10 @@ The earlier recall@50 result supported the core claim on the first scaled worklo
 - Added the `bicomplex_small` experiment (scaled BiComplex). Weights are 0.5/0.5. Storage and candidate-count coefficients were reduced to tie-breakers.
 - Reference rerun (job `949f7afa-637`), hidden test: naive cost 0.572 (1.75x vs PerColumn), bicomplex 0.458 (2.19x); recall >= 0.916; storage at budget.
 - Better variants score higher (+0.08), weaker ones lower (−1.47), and train-tuned plans fail the hidden test. All previously paying shortcuts now fail or tie. See `HARDENING.md`.
+
+## Final hardening (iteration 12)
+
+- Public training queries 200 -> 1000 per template and held-out test queries 500 -> 1000 per template; PerColumn/PerQuery comparators re-planned on the 1000 training queries.
+- Both evaluators reject inconsistent artifacts (declared protocol fields that differ from the protocol, invalid reserved baseline entries, a declared configuration missing scanned indexes); storage counts the declared configuration.
+- `greedy_cover` sorts once (identical outputs; verified by self-test and a byte-identical reference rerun); bicomplex runs take ~20 min instead of ~60 min at 1000 training queries.
+- Hidden test: reference 0.5536 / 0.4467 (1.81x / 2.24x), seed spread 0.042, calibrated variant +0.149 (paired +0.149/+0.231/+0.172 over three seeds), measured re-rank +0.045, PerColumn -1.539; inflate/storage-declaration/rewrite-protocol shortcuts fail (-104.30); seed lottery +0.042. Details in HARDENING.md.

@@ -1,15 +1,12 @@
 #!/bin/bash
-# Job entry point (CPU, no internet) for the final hardening check:
-# reference rerun (1000 training queries per template), frozen comparators,
-# scoring, then better/weaker variants, training-seed reruns and shortcuts
-# through the hidden test. Job 2 runs the stages job 1 did not reach, in
-# parallel; see redteam/final_hardening/run_final2.py and run_final.py.
-# (scripts/reproduce.sh reproduces the reference alone.)
+# Job entry point (CPU, no internet): reproduce the reference end to end.
+# Tunes both workloads with MINT (1000 training queries per template), then
+# scores every checkpoints/*_results.json on the visible train slice, the
+# held-out test slice and scores.json. The final hardening audit drivers are
+# redteam/final_hardening/run_final.py and run_final2.py.
 
 set -e
 
 cd /home/user
 
-export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-
-python redteam/final_hardening/run_final2.py
+bash scripts/reproduce.sh

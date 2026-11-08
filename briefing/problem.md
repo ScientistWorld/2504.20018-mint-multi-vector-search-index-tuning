@@ -21,6 +21,6 @@ Two deterministic semi-synthetic workloads are provided (`data/synthetic_multive
 | `naive_small` | 3,000 | 3 (32, 40, 48) | 4: {1}, {1,2}, {2,3}, {1,2,3} | 100 | 0.90 | 3 |
 | `bicomplex_small` | 3,000 | 5 (16, 20, 24, 28, 32) | 8 subsets with >= 2 columns | 100 | 0.90 | 5 |
 
-Each template has 200 visible training queries (`make_workload(name).train_queries`).
+Each template has 1000 visible training queries (`make_workload(name).train_queries`).
 
 Cost is a machine-independent latency proxy: for each query, the sum over scanned indexes of `index dimension x ek`, plus `query dimension x number of distinct retrieved items` (re-ranking).

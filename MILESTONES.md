@@ -22,5 +22,9 @@
 - Cleaned method-agnostic documentation wording and ensured the small canonical result artifact can be tracked for fresh-clone evaluation.
 - `python validate.py --compare` passed after the verification edits.
 
+### [2026-11-08] - core_claim (final hardening)
+- Training sample 200 -> 1000 queries per template, held-out test 500 -> 1000, comparator re-frozen; artifact consistency checks in both evaluators; exact-equivalent greedy_cover speed-up (reference rerun reproduces the committed plans).
+- Hidden test: MINT 0.554 / 0.447 normalized cost (1.81x / 2.24x vs PerColumn) at recall >= 0.915 and budget storage; seed spread 0.042 (was 0.123); calibrated variant +0.149..+0.268, PerColumn -1.539; the three tie shortcuts now fail; seed lottery +0.042. See HARDENING.md.
+
 ## Stop Justification
 - Completed at milestone `core_claim`.
