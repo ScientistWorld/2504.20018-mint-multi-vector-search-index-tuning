@@ -1,5 +1,5 @@
 {
-  "_note": "Fixed comparator plans (per query template: index names and ek). per_column = one single-column index per column; per_query = one exact index per template (exceeds the storage budget; reported for reference only). Planned once on the public training instances by the reproduced planner with the same recall allowance as the reference.",
+  "_note": "Fixed comparator plans (per query template: index names and ek). per_column = one single-column index per column; per_query = one exact index per template (exceeds the storage budget; reported for reference only). Planned once by the reproduced planner on the public training queries (1000 per template, train seed 20240501) with the same recall allowance as the reference.",
   "naive_small": {
     "per_column": {
       "plans": {
@@ -17,8 +17,8 @@
             "x2"
           ],
           "ek": [
-            349,
-            203
+            320,
+            188
           ]
         },
         "q3": {
@@ -27,8 +27,8 @@
             "x3"
           ],
           "ek": [
-            292,
-            178
+            279,
+            200
           ]
         },
         "q4": {
@@ -38,9 +38,9 @@
             "x3"
           ],
           "ek": [
-            341,
-            254,
-            183
+            377,
+            258,
+            173
           ]
         }
       }
@@ -92,9 +92,9 @@
             "x4"
           ],
           "ek": [
-            491,
-            186,
-            135
+            428,
+            251,
+            129
           ]
         },
         "q2": {
@@ -104,9 +104,9 @@
             "x5"
           ],
           "ek": [
-            366,
-            286,
-            173
+            394,
+            278,
+            131
           ]
         },
         "q3": {
@@ -117,10 +117,10 @@
             "x5"
           ],
           "ek": [
-            543,
-            275,
-            159,
-            98
+            560,
+            261,
+            124,
+            114
           ]
         },
         "q4": {
@@ -132,11 +132,11 @@
             "x5"
           ],
           "ek": [
-            627,
-            158,
-            204,
-            205,
-            79
+            497,
+            315,
+            201,
+            148,
+            106
           ]
         },
         "q5": {
@@ -145,8 +145,8 @@
             "x4"
           ],
           "ek": [
-            322,
-            157
+            326,
+            160
           ]
         },
         "q6": {
@@ -156,9 +156,9 @@
             "x5"
           ],
           "ek": [
-            364,
-            248,
-            168
+            354,
+            281,
+            170
           ]
         },
         "q7": {
@@ -168,9 +168,9 @@
             "x5"
           ],
           "ek": [
-            377,
-            294,
-            99
+            414,
+            275,
+            98
           ]
         },
         "q8": {
@@ -179,8 +179,8 @@
             "x3"
           ],
           "ek": [
-            333,
-            143
+            320,
+            168
           ]
         }
       }

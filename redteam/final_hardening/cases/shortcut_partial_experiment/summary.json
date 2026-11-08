@@ -1,0 +1,39 @@
+{
+  "test": {
+    "rank_delta": -52.266567107104045,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "failed"
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": [
+        "no bicomplex_small artifact for this method"
+      ]
+    },
+    "metrics": {
+      "naive_small": {
+        "weighted_cost": 0.5536321340881799,
+        "mean_recall_at_k": 0.9323624999999869,
+        "min_recall_at_k": 0.9299999999999808,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 3.1799999999999997,
+        "max_candidate_multiplier_at_k": 9.93,
+        "speedup_vs_per_column": 1.8062535362889987
+      },
+      "bicomplex_small": {
+        "weighted_cost": 100.0,
+        "mean_recall_at_k": 0.0,
+        "min_recall_at_k": 0.0,
+        "recall_floor_violation": 0.9,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 1.0,
+        "mean_candidate_multiplier_at_k": 30.0,
+        "max_candidate_multiplier_at_k": 30.0,
+        "speedup_vs_per_column": 0.0
+      }
+    }
+  }
+}

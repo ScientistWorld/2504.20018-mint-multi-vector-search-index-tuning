@@ -1,0 +1,369 @@
+[
+  {
+    "case": "better_calibrated",
+    "test_rank": 0.14891571716910496,
+    "train_rank": 0.14886014053021435,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5163965668100435,
+      "bicomplex_small": 0.4244968976173788
+    },
+    "min_recall": {
+      "naive_small": 0.9099999999999923,
+      "bicomplex_small": 0.9099999999999923
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "probe_valid_baseline_edit",
+    "test_rank": 0.0,
+    "train_rank": null,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5536321340881799,
+      "bicomplex_small": 0.446714696115435
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147500000000034
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "shortcut_below_floor",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "recall floor: q1 mean recall@100 0.8800 < 0.9"
+      ],
+      "bicomplex_small": [
+        "recall floor: q2 mean recall@100 0.8800 < 0.9"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_duplicate_index_alias",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "invalid plan: plan for q1 lists x01 twice"
+      ],
+      "bicomplex_small": [
+        "invalid plan: plan for q1 lists x01 twice"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_forged_metrics",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "plans scan indexes missing from the declared configuration: ['x1', 'x2', 'x3']"
+      ],
+      "bicomplex_small": [
+        "plans scan indexes missing from the declared configuration: ['x1', 'x2', 'x3', 'x4', 'x5']"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_inflate_baseline",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "artifact's per_column entry is not a valid plan set (plan for q1 has ek 30000 outside [0, 3000])",
+        "artifact's per_query entry is not a valid plan set (plan for q1 has ek 30000 outside [0, 3000])"
+      ],
+      "bicomplex_small": [
+        "artifact's per_column entry is not a valid plan set (plan for q1 has ek 30000 outside [0, 3000])",
+        "artifact's per_query entry is not a valid plan set (plan for q1 has ek 30000 outside [0, 3000])"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_overstorage",
+    "test_rank": -104.99701843320445,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 4.0,
+      "bicomplex_small": 8.0
+    },
+    "reasons": {
+      "naive_small": [
+        "storage: 4 indexes > budget 3"
+      ],
+      "bicomplex_small": [
+        "storage: 8 indexes > budget 5"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_partial_experiment",
+    "test_rank": -52.266567107104045,
+    "train_rank": null,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 0.5536321340881799,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": [
+        "no bicomplex_small artifact for this method"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_rank_tradeoff",
+    "test_rank": -0.01098478752766764,
+    "train_rank": null,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5601549995835893,
+      "bicomplex_small": 0.447873619332704
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147500000000034
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "shortcut_rewrite_protocol",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "artifact declares n_rows=4; the protocol fixes 3000",
+        "artifact declares top_k=1; the protocol fixes 100",
+        "artifact declares recall_threshold=0; the protocol fixes 0.9",
+        "artifact declares storage_budget=999; the protocol fixes 3"
+      ],
+      "bicomplex_small": [
+        "artifact declares n_rows=4; the protocol fixes 3000",
+        "artifact declares top_k=1; the protocol fixes 100",
+        "artifact declares recall_threshold=0; the protocol fixes 0.9",
+        "artifact declares storage_budget=999; the protocol fixes 5"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_storage_declaration",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "artifact declares storage_budget=999; the protocol fixes 3"
+      ],
+      "bicomplex_small": [
+        "artifact declares storage_budget=999; the protocol fixes 5"
+      ]
+    }
+  },
+  {
+    "case": "shortcut_test_size",
+    "test_rank": -104.29701843320444,
+    "train_rank": null,
+    "status": {
+      "naive_small": "failed",
+      "bicomplex_small": "failed"
+    },
+    "cost": {
+      "naive_small": 100.0,
+      "bicomplex_small": 100.0
+    },
+    "min_recall": {
+      "naive_small": 0.0,
+      "bicomplex_small": 0.0
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [
+        "artifact declares n_rows=4; the protocol fixes 3000"
+      ],
+      "bicomplex_small": [
+        "artifact declares n_rows=4; the protocol fixes 3000"
+      ]
+    }
+  },
+  {
+    "case": "weaker_no_multicolumn",
+    "test_rank": -1.539078520704451,
+    "train_rank": -1.5351086037252568,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 1.0,
+      "bicomplex_small": 1.0
+    },
+    "min_recall": {
+      "naive_small": 0.9253600000000031,
+      "bicomplex_small": 0.9249500000000039
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  }
+]
