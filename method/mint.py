@@ -157,13 +157,18 @@ def greedy_cover(ranks: np.ndarray, eks: np.ndarray, required: int, term, cap: i
     e = np.array(eks, dtype=np.int64).copy()
     covered = (ranks <= e[:, None]).any(axis=0)
     count = int(covered.sum())
+    if count >= required:
+        return e, count
+    # Sort each index's ranks once; the sorted ranks of the uncovered items are
+    # then a masked slice (same values as re-sorting ranks[i, ~covered]).
+    orders = [np.argsort(ranks[i], kind="stable") for i in range(ranks.shape[0])]
+    sorted_ranks = [ranks[i][orders[i]] for i in range(ranks.shape[0])]
     while count < required:
         need = required - count
-        unc = ~covered
         best = None
         for i in range(ranks.shape[0]):
-            cand = np.sort(ranks[i, unc])
-            cand = cand[cand <= cap]
+            cand = sorted_ranks[i][~covered[orders[i]]]
+            cand = cand[: int(np.searchsorted(cand, cap, side="right"))]
             if cand.size == 0:
                 continue
             base = float(index_term(term[0][i], term[1], e[i]))
