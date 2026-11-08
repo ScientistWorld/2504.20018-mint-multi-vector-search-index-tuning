@@ -1,2 +1,8 @@
-action: done
-notes: "Audit committed as 550c663: stronger +0.242762 exceeds seed spread 0.122839; weaker -1.466176; 21 shortcuts tested, one gain within seed variation and three ignored-field ties. Scientific files restored."
+# Once you set action to 'submit' or 'done', STOP immediately.
+# Do NOT sleep, poll, or wait for jobs. The system reads this file
+# only after your turn ends.
+action: submit
+gpus: 0
+test: false
+milestone: core_claim
+notes: "Final hardening job 2 (CPU): greedy_cover equivalence self-test, parallelism probe, then in parallel: reference on train seeds 101/202, measured re-rank variant, calibrated variant on seeds 101/202, reference rerun from final code (plans must match checkpoints); scoring through hidden test; seed lottery."
