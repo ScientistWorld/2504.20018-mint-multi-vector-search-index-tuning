@@ -1,0 +1,12 @@
+{
+  "naive_small": {
+    "per_column": true,
+    "per_query": true,
+    "mint": true
+  },
+  "bicomplex_small": {
+    "per_column": true,
+    "per_query": true,
+    "mint": true
+  }
+}

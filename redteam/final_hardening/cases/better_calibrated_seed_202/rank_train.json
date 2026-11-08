@@ -1,0 +1,27 @@
+{
+  "rank_delta": 0.21421629084214477,
+  "terms": {
+    "naive_small": {
+      "weighted_cost": 0.02253450968022419,
+      "mean_recall_at_k": -0.004663749999997913,
+      "min_recall_at_k": -0.004999999999997146,
+      "recall_floor_violation": -0.0,
+      "storage_indexes": -0.0,
+      "storage_budget_violation": -0.0,
+      "mean_candidate_multiplier_at_k": 0.015796174999999996,
+      "max_candidate_multiplier_at_k": 0.03129235,
+      "speedup_vs_per_column": 0.07998530028712758
+    },
+    "bicomplex_small": {
+      "weighted_cost": 0.012222673567153064,
+      "mean_recall_at_k": -0.003735312499998533,
+      "min_recall_at_k": -0.001095000000003149,
+      "recall_floor_violation": -0.0,
+      "storage_indexes": -0.0,
+      "storage_budget_violation": -0.0,
+      "mean_candidate_multiplier_at_k": 0.0017594125000000016,
+      "max_candidate_multiplier_at_k": 0.0003700499999999973,
+      "speedup_vs_per_column": 0.06474988230763667
+    }
+  }
+}

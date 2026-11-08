@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "seconds": 1529.8772902488708,
+  "naive_small": {
+    "per_column": true,
+    "per_query": true,
+    "mint": true
+  },
+  "bicomplex_small": {
+    "per_column": true,
+    "per_query": true,
+    "mint": true
+  }
+}

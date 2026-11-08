@@ -25,6 +25,81 @@
     }
   },
   {
+    "case": "better_calibrated_seed_101",
+    "test_rank": 0.2681875821186128,
+    "train_rank": 0.26727232659903044,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.4964285562785724,
+      "bicomplex_small": 0.415963625451728
+    },
+    "min_recall": {
+      "naive_small": 0.9099999999999923,
+      "bicomplex_small": 0.9099999999999923
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "better_calibrated_seed_202",
+    "test_rank": 0.2142662453249518,
+    "train_rank": 0.21421629084214477,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.508573821218382,
+      "bicomplex_small": 0.4222461152309565
+    },
+    "min_recall": {
+      "naive_small": 0.9099999999999923,
+      "bicomplex_small": 0.9099999999999923
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "better_measured_cost",
+    "test_rank": 0.04457331143700182,
+    "train_rank": 0.04456066796488797,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5508793479538453,
+      "bicomplex_small": 0.446714696115435
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147500000000034
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
     "case": "probe_valid_baseline_edit",
     "test_rank": 0.0,
     "train_rank": null,
@@ -39,6 +114,56 @@
     "min_recall": {
       "naive_small": 0.9299999999999808,
       "bicomplex_small": 0.9147500000000034
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "reference_seed_101",
+    "test_rank": 0.037083188118472436,
+    "train_rank": 0.03644147526725384,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.539787042215105,
+      "bicomplex_small": 0.4455238974730826
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147700000000034
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    }
+  },
+  {
+    "case": "reference_seed_202",
+    "test_rank": 0.042190648998124275,
+    "train_rank": 0.04110741833028224,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5355487487845718,
+      "bicomplex_small": 0.44727133804553276
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147900000000033
     },
     "storage": {
       "naive_small": 3.0,
@@ -281,6 +406,31 @@
         "artifact declares recall_threshold=0; the protocol fixes 0.9",
         "artifact declares storage_budget=999; the protocol fixes 5"
       ]
+    }
+  },
+  {
+    "case": "shortcut_seed_lottery",
+    "test_rank": 0.042190648998124275,
+    "train_rank": null,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "cost": {
+      "naive_small": 0.5355487487845718,
+      "bicomplex_small": 0.44727133804553276
+    },
+    "min_recall": {
+      "naive_small": 0.9299999999999808,
+      "bicomplex_small": 0.9147900000000033
+    },
+    "storage": {
+      "naive_small": 3.0,
+      "bicomplex_small": 5.0
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
     }
   },
   {

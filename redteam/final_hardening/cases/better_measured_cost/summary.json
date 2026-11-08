@@ -1,0 +1,72 @@
+{
+  "test": {
+    "rank_delta": 0.04457331143700182,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    },
+    "metrics": {
+      "naive_small": {
+        "weighted_cost": 0.5508793479538453,
+        "mean_recall_at_k": 0.9301774999999862,
+        "min_recall_at_k": 0.9299999999999808,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 1.8723275,
+        "max_candidate_multiplier_at_k": 4.69931,
+        "speedup_vs_per_column": 1.815279523028668
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.446714696115435,
+        "mean_recall_at_k": 0.9286474999999925,
+        "min_recall_at_k": 0.9147500000000034,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.223319999999999,
+        "max_candidate_multiplier_at_k": 13.59487,
+        "speedup_vs_per_column": 2.2385652603235404
+      }
+    }
+  },
+  "train": {
+    "rank_delta": 0.04456066796488797,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    },
+    "metrics": {
+      "naive_small": {
+        "weighted_cost": 0.5511865804973233,
+        "mean_recall_at_k": 0.9302524999999863,
+        "min_recall_at_k": 0.9299999999999808,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 1.87309,
+        "max_candidate_multiplier_at_k": 4.70236,
+        "speedup_vs_per_column": 1.814267682456497
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.4468683869927761,
+        "mean_recall_at_k": 0.9281987499999924,
+        "min_recall_at_k": 0.9143800000000049,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.2186775,
+        "max_candidate_multiplier_at_k": 13.54595,
+        "speedup_vs_per_column": 2.237795353413903
+      }
+    }
+  }
+}

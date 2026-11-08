@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "seconds": 1337.8568453788757,
+  "test": {
+    "rank_delta": 0.037083188118472436,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    },
+    "metrics": {
+      "naive_small": {
+        "weighted_cost": 0.539787042215105,
+        "mean_recall_at_k": 0.9309024999999869,
+        "min_recall_at_k": 0.9299999999999808,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 3.0574999999999997,
+        "max_candidate_multiplier_at_k": 9.44,
+        "speedup_vs_per_column": 1.8525824478785846
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.4455238974730826,
+        "mean_recall_at_k": 0.9288462499999924,
+        "min_recall_at_k": 0.9147700000000034,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.2172475,
+        "max_candidate_multiplier_at_k": 13.59812,
+        "speedup_vs_per_column": 2.244548509455472
+      }
+    }
+  },
+  "train": {
+    "rank_delta": 0.03644147526725384,
+    "status": {
+      "naive_small": "ok",
+      "bicomplex_small": "ok"
+    },
+    "reasons": {
+      "naive_small": [],
+      "bicomplex_small": []
+    },
+    "metrics": {
+      "naive_small": {
+        "weighted_cost": 0.5399488028043797,
+        "mean_recall_at_k": 0.929614999999987,
+        "min_recall_at_k": 0.9284600000000054,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 3.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 3.0574999999999997,
+        "max_candidate_multiplier_at_k": 9.44,
+        "speedup_vs_per_column": 1.8520274418726586
+      },
+      "bicomplex_small": {
+        "weighted_cost": 0.4457451249762539,
+        "mean_recall_at_k": 0.9283262499999926,
+        "min_recall_at_k": 0.9143800000000049,
+        "recall_floor_violation": 0.0,
+        "storage_indexes": 5.0,
+        "storage_budget_violation": 0.0,
+        "mean_candidate_multiplier_at_k": 4.213055000000001,
+        "max_candidate_multiplier_at_k": 13.548070000000001,
+        "speedup_vs_per_column": 2.2434345188929945
+      }
+    }
+  }
+}
